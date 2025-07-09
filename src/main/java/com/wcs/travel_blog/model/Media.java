@@ -1,10 +1,12 @@
 package com.wcs.travel_blog.model;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.*;
 import java.time.LocalDateTime;
 
 @Entity
+@JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
 public class Media {
 
     @Id
@@ -31,6 +33,11 @@ public class Media {
     @JsonBackReference("step-medias")
     @JoinColumn(name = "step_id")
     private Step step;
+
+    // ✅ Nouvelle relation OneToOne vers TravelDiary
+    @OneToOne(mappedBy = "coverMedia")
+    @JsonBackReference("diary-cover")
+    private TravelDiary travelDiary;
 
     public enum MediaType {
         PHOTO, VIDEO
@@ -94,5 +101,13 @@ public class Media {
 
     public void setStep(Step step) {
         this.step = step;
+    }
+
+    public TravelDiary getTravelDiary() {
+        return travelDiary;
+    }
+
+    public void setTravelDiary(TravelDiary travelDiary) {
+        this.travelDiary = travelDiary;
     }
 }

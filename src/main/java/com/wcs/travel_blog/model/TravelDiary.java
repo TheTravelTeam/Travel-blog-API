@@ -6,6 +6,7 @@ import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 
 @Entity
@@ -27,6 +28,9 @@ public class TravelDiary {
     private Boolean isPrivate = false;
     private Boolean isPublished = false;
 
+    private Double latitude;
+    private Double longitude;
+
     @Enumerated(EnumType.STRING)
     private Status status = Status.IN_PROGRESS;
 
@@ -38,9 +42,15 @@ public class TravelDiary {
     @JoinColumn(name = "user_id")
     private User user;
 
-    @OneToMany(mappedBy = "travelDiary", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    @OneToMany(mappedBy = "travelDiary", cascade = CascadeType.ALL, fetch = FetchType.LAZY,  orphanRemoval = true)
     @JsonManagedReference("diary-steps")
-    private List<Step> steps;
+    private List<Step> steps = new ArrayList<>();
+
+    // ✅ Ajout relation OneToOne vers Media
+    @OneToOne(cascade = CascadeType.ALL)
+    @JoinColumn(name = "cover_media_id", referencedColumnName = "id")
+    @JsonManagedReference("diary-cover")
+    private Media coverMedia;
 
     public enum Status {
         IN_PROGRESS, COMPLETED, CAN_COMMENT
@@ -132,5 +142,29 @@ public class TravelDiary {
 
     public void setSteps(List<Step> steps) {
         this.steps = steps;
+    }
+
+    public Double getLatitude() {
+        return latitude;
+    }
+
+    public void setLatitude(Double latitude) {
+        this.latitude = latitude;
+    }
+
+    public Double getLongitude() {
+        return longitude;
+    }
+
+    public void setLongitude(Double longitude) {
+        this.longitude = longitude;
+    }
+
+    public Media getCoverMedia() {
+        return coverMedia;
+    }
+
+    public void setCoverMedia(Media coverMedia) {
+        this.coverMedia = coverMedia;
     }
 }

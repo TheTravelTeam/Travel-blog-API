@@ -1,5 +1,6 @@
 package com.wcs.travel_blog.controller;
 
+import com.wcs.travel_blog.dto.CreateTravelDiaryDto;
 import com.wcs.travel_blog.dto.StepRequestDto;
 import com.wcs.travel_blog.model.TravelDiary;
 import com.wcs.travel_blog.repository.TravelDiaryRepository;
@@ -32,5 +33,11 @@ public class TravelDiaryController {
     @PostMapping("/{travelId}/steps")
     public TravelDiary addStepToTravel(@PathVariable Long travelId, @RequestBody StepRequestDto dto) {
         return travelDiaryService.addStepToTravel(travelId, dto);
+    }
+
+
+    @PostMapping
+    public TravelDiary createDiary(@RequestBody CreateTravelDiaryDto dto) {
+        return travelDiaryService.createDiaryWithFirstStep(dto);
     }
 }
