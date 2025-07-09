@@ -8,6 +8,6 @@ import java.util.List;
 
 public interface TravelDiaryRepository extends JpaRepository<TravelDiary, Long> {
     // Si tu veux tout charger directement (user et steps) via un query
-    @EntityGraph(attributePaths = {"steps", "user"})
+//    @EntityGraph(attributePaths = {"steps", "user"})
     List<TravelDiary> findAll();
 }

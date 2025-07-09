@@ -1,8 +1,6 @@
 package com.wcs.travel_blog.dto;
 
-import com.wcs.travel_blog.model.Media;
-
-public class CreateTravelDiaryDto {
+public class UpsertTravelDiaryDto {
     private String title;
     private String description;
     private double latitude;

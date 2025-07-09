@@ -19,12 +19,6 @@ public class TravelDiary {
     @Column(length = 1000)
     private String description;
 
-    @Column(name = "created_at", updatable = false)
-    private LocalDateTime createdAt = LocalDateTime.now();
-
-    @Column(name = "updated_at")
-    private LocalDateTime updatedAt = LocalDateTime.now();
-
     private Boolean isPrivate = false;
     private Boolean isPublished = false;
 
@@ -37,19 +31,22 @@ public class TravelDiary {
     @Column(name = "can_comment")
     private Boolean canComment = true;
 
+    @Column(name = "created_at", updatable = false)
+    private LocalDateTime createdAt = LocalDateTime.now();
+
+    @Column(name = "updated_at")
+    private LocalDateTime updatedAt = LocalDateTime.now();
+
     @ManyToOne
-    @JsonIgnoreProperties({"travelDiaries", "articles", "comments", "password", "roles"})
     @JoinColumn(name = "user_id")
     private User user;
 
     @OneToMany(mappedBy = "travelDiary", cascade = CascadeType.ALL, fetch = FetchType.LAZY,  orphanRemoval = true)
-    @JsonManagedReference("diary-steps")
     private List<Step> steps = new ArrayList<>();
 
     // ✅ Ajout relation OneToOne vers Media
     @OneToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "cover_media_id", referencedColumnName = "id")
-    @JsonManagedReference("diary-cover")
     private Media coverMedia;
 
     public enum Status {

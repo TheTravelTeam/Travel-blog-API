@@ -14,12 +14,10 @@ public class StepTheme {
 
     @ManyToOne
     @JoinColumn(name = "step_id")
-    @JsonBackReference("step-stepThemes")
     private Step step;
 
     @ManyToOne
     @JoinColumn(name = "theme_id")
-    @JsonManagedReference("theme-stepThemes")
     private Theme theme;
 
     public Long getId() {

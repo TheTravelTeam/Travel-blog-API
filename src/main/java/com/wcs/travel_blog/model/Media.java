@@ -30,13 +30,10 @@ public class Media {
     private Status status = Status.VISIBLE;
 
     @ManyToOne
-    @JsonBackReference("step-medias")
     @JoinColumn(name = "step_id")
     private Step step;
 
-    // ✅ Nouvelle relation OneToOne vers TravelDiary
     @OneToOne(mappedBy = "coverMedia")
-    @JsonBackReference("diary-cover")
     private TravelDiary travelDiary;
 
     public enum MediaType {

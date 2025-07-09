@@ -2,29 +2,11 @@ package com.wcs.travel_blog.dto;
 
 import java.time.LocalDateTime;
 
-public class MediaDto {
+public class ThemeDto {
     private Long id;
-    private String fileUrl;
-    private String mediaType;
-    private String status;
+    private String name;
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
-
-    public String getFileUrl() {
-        return fileUrl;
-    }
-
-    public void setFileUrl(String fileUrl) {
-        this.fileUrl = fileUrl;
-    }
-
-    public String getMediaType() {
-        return mediaType;
-    }
-
-    public void setMediaType(String mediaType) {
-        this.mediaType = mediaType;
-    }
 
     public Long getId() {
         return id;
@@ -34,12 +16,12 @@ public class MediaDto {
         this.id = id;
     }
 
-    public String getStatus() {
-        return status;
+    public String getName() {
+        return name;
     }
 
-    public void setStatus(String status) {
-        this.status = status;
+    public void setName(String name) {
+        this.name = name;
     }
 
     public LocalDateTime getCreatedAt() {

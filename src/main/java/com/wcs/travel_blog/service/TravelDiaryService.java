@@ -1,94 +1,84 @@
 package com.wcs.travel_blog.service;
 
-import com.wcs.travel_blog.dto.CreateTravelDiaryDto;
+import com.wcs.travel_blog.dto.UpsertTravelDiaryDto;
 import com.wcs.travel_blog.dto.StepRequestDto;
-import com.wcs.travel_blog.model.Media;
+import com.wcs.travel_blog.dto.TravelDiaryDto;
+import com.wcs.travel_blog.exception.ResourceNotFoundException;
+import com.wcs.travel_blog.mapper.TravelDiaryMapper;
 import com.wcs.travel_blog.model.Step;
 import com.wcs.travel_blog.model.TravelDiary;
-import com.wcs.travel_blog.repository.StepRepository;
 import com.wcs.travel_blog.repository.TravelDiaryRepository;
 import org.springframework.stereotype.Service;
 
-import java.time.LocalDateTime;
 import java.util.List;
 import java.util.stream.Collectors;
-
-import static com.wcs.travel_blog.model.Step.Status.*;
 
 @Service
 public class TravelDiaryService {
     private final TravelDiaryRepository travelDiaryRepository;
-    private final StepRepository stepRepository;
+    private final TravelDiaryMapper travelDiaryMapper;
 
-    public TravelDiaryService(TravelDiaryRepository travelDiaryRepository, StepRepository stepRepository) {
+    public TravelDiaryService(TravelDiaryRepository travelDiaryRepository,
+                              TravelDiaryMapper travelDiaryMapper) {
         this.travelDiaryRepository = travelDiaryRepository;
-        this.stepRepository = stepRepository;
+        this.travelDiaryMapper = travelDiaryMapper;
     }
 
-    public List<TravelDiary> getAllDiariesWithStepsAndUser() {
-        return travelDiaryRepository.findAll();
+    public List<TravelDiaryDto> getAllDiariesWithStepsAndUser() {
+        List<TravelDiary> travelDiaries = travelDiaryRepository.findAll();
+        if(travelDiaries.isEmpty()){
+            throw new ResourceNotFoundException("Aucun Journal trouvé");
+        }
+        return travelDiaries.stream()
+                .map(travelDiaryMapper::mapTravelDiaryToDto)
+                .collect(Collectors.toList());
     }
 
-    public TravelDiary getTravelDiaryById(Long id) {
-        return travelDiaryRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Diary not found"));
+    public TravelDiaryDto getTravelDiaryById(Long id) {
+        TravelDiary travelDiary = travelDiaryRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Le journal avec l'id " + id + " n'a pas été trouvé"));;
+        return travelDiaryMapper.mapTravelDiaryToDto(travelDiary);
     }
 
-    public TravelDiary addStepToTravel(Long travelId, StepRequestDto dto) {
+    public TravelDiaryDto addStepToTravel(Long travelId, StepRequestDto dto) {
         TravelDiary travel = travelDiaryRepository.findById(travelId)
-                .orElseThrow(() -> new RuntimeException("Travel not found"));
+                .orElseThrow(() ->  new ResourceNotFoundException("Le journal avec l'id " + travelId + " n'a pas été trouvé"));
 
-        Step step = new Step();
-        step.setTitle(dto.title());
-        step.setDescription(dto.description());
-        step.setLatitude(dto.latitude());
-        step.setLongitude(dto.longitude());
-        step.setTravelDiary(travel);
+        Step step = travelDiaryMapper.createStepFromStepRequestDto(dto, travel);
 
         travel.getSteps().add(step);
-        travelDiaryRepository.save(travel); // cascade persist si bien configuré
-        return travel;
+        travelDiaryRepository.save(travel);
+        return travelDiaryMapper.mapTravelDiaryToDto(travel);
     }
 
-    public TravelDiary createDiaryWithFirstStep(CreateTravelDiaryDto dto) {
-        TravelDiary diary = new TravelDiary();
-        diary.setTitle(dto.getTitle());
-        diary.setDescription(dto.getDescription());
-        diary.setLatitude(dto.getLatitude());
-        diary.setLongitude(dto.getLongitude());
-        diary.setPrivate(false);
-        diary.setPublished(true);
-        diary.setStatus(TravelDiary.Status.IN_PROGRESS);
-        diary.setCreatedAt(LocalDateTime.now());
-        diary.setUpdatedAt(LocalDateTime.now());
+    public TravelDiaryDto createDiaryWithFirstStep(UpsertTravelDiaryDto dto) {
+       TravelDiary travelDiary = travelDiaryMapper.createTravelDiaryFromCreateTravelDiaryDto(dto);
+       Step firstStep = travelDiaryMapper.createFirstStepFromCreateTravelDiaryDto(dto, travelDiary);
 
+        travelDiary.getSteps().add(firstStep);
 
-        // Si coverMedia envoyé
-        if (dto.getCoverMedia() != null) {
-            Media media = new Media();
-            media.setFileUrl(dto.getCoverMedia().getFileUrl());
-            media.setMediaType(Media.MediaType.valueOf(dto.getCoverMedia().getMediaType()));
-            media.setCreatedAt(LocalDateTime.now());
-            media.setUpdatedAt(LocalDateTime.now());
-            media.setStatus(Media.Status.VISIBLE);
-
-            diary.setCoverMedia(media);
-        }
-
-        // Création de la première étape (point de départ)
-        Step firstStep = new Step();
-        firstStep.setTitle("Départ");
-        firstStep.setDescription("Point de départ");
-        firstStep.setLatitude(dto.getLatitude());
-        firstStep.setLongitude(dto.getLongitude());
-        firstStep.setCreatedAt(LocalDateTime.now());
-        firstStep.setUpdatedAt(LocalDateTime.now());
-        firstStep.setStatus(COMPLETED);
-        firstStep.setTravelDiary(diary);
-
-        diary.getSteps().add(firstStep);
-
-        // Sauvegarde (attention : save cascade sur steps doit être activé)
-        return travelDiaryRepository.save(diary);
+        TravelDiary savedDiary = travelDiaryRepository.save(travelDiary);
+        return travelDiaryMapper.mapTravelDiaryToDto(savedDiary);
     }
+
+    public boolean deleteTravelDiary(Long id) {
+        TravelDiary travelDiary = travelDiaryRepository.findById(id)
+                .orElseThrow(()->new ResourceNotFoundException("Impossible de supprimé le diary avec l'id : " + id ));
+
+        travelDiaryRepository.delete(travelDiary);
+        return true;
+    }
+
+    public TravelDiaryDto updateTravelDiary(Long id, UpsertTravelDiaryDto dto) {
+        TravelDiary diary = travelDiaryRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Le journal avec l'id " + id + " n'a pas été trouvé"));
+
+        // Modifie directement en memoire le diary -- pas besoin de le stocker dans une variable intermédiaire
+        travelDiaryMapper.updateDiaryFromUpsetDiaryDto(dto, diary);
+
+        TravelDiary updated = travelDiaryRepository.save(diary);
+        return travelDiaryMapper.mapTravelDiaryToDto(updated);
+    }
+
+
 }

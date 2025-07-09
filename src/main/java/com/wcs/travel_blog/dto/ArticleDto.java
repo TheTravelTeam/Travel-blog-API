@@ -1,33 +1,16 @@
-package com.wcs.travel_blog.model;
-
-import com.fasterxml.jackson.annotation.JsonBackReference;
-import jakarta.persistence.*;
+package com.wcs.travel_blog.dto;
 
 import java.time.LocalDateTime;
 
-@Entity
-public class Article {
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+public class ArticleDto {
     private Long id;
-
     private String title;
-
-    @Column(columnDefinition = "TEXT", nullable = false)
     private String content;
-
-    @Column(name = "created_at", updatable = false)
-    private LocalDateTime createdAt = LocalDateTime.now();
-
-    @Column(name = "updated_at")
-    private LocalDateTime updatedAt = LocalDateTime.now();
-
-    @Column(nullable = false, unique = true)
     private String slug;
+    private LocalDateTime createdAt;
+    private LocalDateTime updatedAt;
 
-    @ManyToOne
-    @JoinColumn(name = "user_id")
-    private User user;
+    private UserSummaryDto user;
 
     public Long getId() {
         return id;
@@ -53,6 +36,14 @@ public class Article {
         this.content = content;
     }
 
+    public String getSlug() {
+        return slug;
+    }
+
+    public void setSlug(String slug) {
+        this.slug = slug;
+    }
+
     public LocalDateTime getCreatedAt() {
         return createdAt;
     }
@@ -69,19 +60,11 @@ public class Article {
         this.updatedAt = updatedAt;
     }
 
-    public String getSlug() {
-        return slug;
-    }
-
-    public void setSlug(String slug) {
-        this.slug = slug;
-    }
-
-    public User getUser() {
+    public UserSummaryDto getUser() {
         return user;
     }
 
-    public void setUser(User user) {
+    public void setUser(UserSummaryDto user) {
         this.user = user;
     }
 }

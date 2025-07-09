@@ -33,15 +33,12 @@ public class User implements UserDetails {
     private Set<String> roles = new HashSet<>();
 
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
-    @JsonManagedReference("user-travelDiaries")
     private List<TravelDiary> travelDiaries;
 
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
-    @JsonManagedReference("user-articles")
     private List<Article> articles;
 
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
-    @JsonManagedReference("user-comments")
     private List<Comment> comments;
 
     //Handle Methods
@@ -163,7 +160,7 @@ public class User implements UserDetails {
 
     @Override
     public String getUsername() {
-        return email;
+        return username;
     }
 
     @Override

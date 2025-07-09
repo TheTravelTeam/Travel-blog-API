@@ -2,29 +2,14 @@ package com.wcs.travel_blog.dto;
 
 import java.time.LocalDateTime;
 
-public class MediaDto {
+public class CommentDto {
     private Long id;
-    private String fileUrl;
-    private String mediaType;
+    private String content;
     private String status;
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
 
-    public String getFileUrl() {
-        return fileUrl;
-    }
-
-    public void setFileUrl(String fileUrl) {
-        this.fileUrl = fileUrl;
-    }
-
-    public String getMediaType() {
-        return mediaType;
-    }
-
-    public void setMediaType(String mediaType) {
-        this.mediaType = mediaType;
-    }
+    private UserSummaryDto user;
 
     public Long getId() {
         return id;
@@ -32,6 +17,14 @@ public class MediaDto {
 
     public void setId(Long id) {
         this.id = id;
+    }
+
+    public String getContent() {
+        return content;
+    }
+
+    public void setContent(String content) {
+        this.content = content;
     }
 
     public String getStatus() {
@@ -56,5 +49,13 @@ public class MediaDto {
 
     public void setUpdatedAt(LocalDateTime updatedAt) {
         this.updatedAt = updatedAt;
+    }
+
+    public UserSummaryDto getUser() {
+        return user;
+    }
+
+    public void setUser(UserSummaryDto user) {
+        this.user = user;
     }
 }

@@ -39,20 +39,16 @@ public class Step {
     private Double longitude;
 
     @ManyToOne
-    @JsonBackReference("diary-steps")
     @JoinColumn(name = "travel_diary_id")
     private TravelDiary travelDiary;
 
     @OneToMany(mappedBy = "step", cascade = CascadeType.ALL)
-    @JsonManagedReference("step-medias")
     private List<Media> medias;
 
     @OneToMany(mappedBy = "step", cascade = CascadeType.ALL)
-    @JsonManagedReference("step-comments")
     private List<Comment> comments;
 
     @OneToMany(mappedBy = "step", cascade = CascadeType.ALL)
-    @JsonManagedReference("step-stepThemes")
     private List<StepTheme> stepThemes;
 
     public enum Status {

@@ -23,7 +23,6 @@ public class Theme {
     private LocalDateTime updatedAt = LocalDateTime.now();
 
     @OneToMany(mappedBy = "theme", cascade = CascadeType.ALL)
-    @JsonBackReference("theme-stepThemes")
     private List<StepTheme> stepThemes;
 
     public Long getId() {

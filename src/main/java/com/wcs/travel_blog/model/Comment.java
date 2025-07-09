@@ -26,12 +26,10 @@ public class Comment {
 
     @ManyToOne
     @JoinColumn(name = "user_id")
-    @JsonBackReference("user-comments")
     private User user;
 
     @ManyToOne
     @JoinColumn(name = "step_id")
-    @JsonBackReference("step-comments")
     private Step step;
 
     public enum Status {
