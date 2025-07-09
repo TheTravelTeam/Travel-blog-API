@@ -4,7 +4,7 @@ import com.wcs.travel_blog.dto.ArticleDto;
 import com.wcs.travel_blog.model.Article;
 
 public class ArticleMapper {
-    public static ArticleDto toDTO(Article article) {
+    public static ArticleDto mapArticleToDto(Article article) {
         if (article == null) return null;
 
         ArticleDto dto = new ArticleDto();
