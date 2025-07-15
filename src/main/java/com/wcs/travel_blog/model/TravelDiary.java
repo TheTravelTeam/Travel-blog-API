@@ -4,11 +4,16 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.*;
+import lombok.Getter;
+import lombok.Setter;
 
 import java.time.LocalDateTime;
 import java.util.List;
 
 @Entity
+
+@Getter
+@Setter
 public class TravelDiary {
     @Id
     @GeneratedValue(strategy= GenerationType.IDENTITY)
@@ -30,7 +35,7 @@ public class TravelDiary {
     private Boolean isPublished;
 
     @Enumerated(EnumType.STRING)
-    private Status status;
+    private TravelStatus status;
 
     private Boolean canComment;
 
@@ -38,7 +43,7 @@ public class TravelDiary {
 
     private Double longitude;
 
-    @OneToMany(mappedBy = "step")
+    @OneToMany(mappedBy = "travelDiary")
     private List<Step> steps;
 
     @ManyToOne
@@ -47,7 +52,6 @@ public class TravelDiary {
 
     @OneToOne(mappedBy = "travelDiary")
     private Media media;
-
 
 }
 
