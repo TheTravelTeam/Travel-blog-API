@@ -1,9 +1,16 @@
 package com.wcs.travel_blog.model;
 
 import jakarta.persistence.*;
+import lombok.Getter;
+import lombok.Setter;
+import org.springframework.format.annotation.DateTimeFormat;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.List;
 
+@Setter
+@Getter
 @Entity
 public class Step {
 
@@ -17,30 +24,50 @@ public class Step {
     @Column(columnDefinition = "TEXT")
     private String description;
 
-    private LocalDateTime createdAt;
+    @Column(nullable = false)
+    private LocalDateTime createdAt= LocalDateTime.now();
 
-    private LocalDateTime updatedAt;
+    @Column(nullable = false)
+    private LocalDateTime updatedAt= LocalDateTime.now();
 
-    private LocalDateTime startDate;
+    @DateTimeFormat(pattern = "dd-MM-yyyy")
+    private LocalDate startDate;
 
-    private LocalDateTime endDate;
+    @DateTimeFormat(pattern = "dd-MM-yyyy")
+    private LocalDate endDate;
+
+    @Enumerated(EnumType.STRING)
+    private TravelStatus status;
 
     private Double latitude;
 
     private Double longitude;
 
-    private String location;
+    @Column(nullable = false, length = 100)
+    private String city;
 
+    @Column(nullable = false, length = 100)
     private String country;
 
+    @Column(nullable = false, length = 100)
     private String continent;
 
-//    end_date
-//    status
-//    location
-//    country
-//    continent
-//    latitude
-//    longitude
-//#travel_journal_Id
+    @ManyToOne
+    @JoinColumn(name = "travel_diary_id")
+    private TravelDiary travelDiary;
+
+    @OneToMany(mappedBy = "step", cascade = CascadeType.ALL)
+    private List<Media> medias;
+
+    @OneToMany(mappedBy = "step", cascade = CascadeType.ALL)
+    private List<Comment> comments;
+
+    @ManyToMany(mappedBy = "step", cascade = CascadeType.ALL)
+    @JoinTable(
+       name = "step_theme",
+       joinColumns = @JoinColumn(name = "step_id"),
+       inverseJoinColumns = @JoinColumn(name = "theme_id")
+    )
+    private List<Theme> themes;
+
 }
