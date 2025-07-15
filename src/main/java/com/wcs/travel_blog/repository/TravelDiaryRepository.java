@@ -7,7 +7,5 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import java.util.List;
 
 public interface TravelDiaryRepository extends JpaRepository<TravelDiary, Long> {
-    // Si tu veux tout charger directement (user et steps) via un query
-//    @EntityGraph(attributePaths = {"steps", "user"})
     List<TravelDiary> findAll();
 }

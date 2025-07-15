@@ -33,7 +33,8 @@ public class Media {
     @JoinColumn(name = "step_id")
     private Step step;
 
-    @OneToOne(mappedBy = "coverMedia")
+    @OneToOne
+    @JoinColumn(name = "travel_diary_id")
     private TravelDiary travelDiary;
 
     public enum MediaType {
