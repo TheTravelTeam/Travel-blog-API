@@ -1,5 +1,10 @@
-package com.wcs.travel_blog.model;
+package com.wcs.travel_blog.step.model;
 
+import com.wcs.travel_blog.comment.model.Comment;
+import com.wcs.travel_blog.media.model.Media;
+import com.wcs.travel_blog.theme.model.Theme;
+import com.wcs.travel_blog.travel_diary.model.TravelDiary;
+import com.wcs.travel_blog.travel_diary.model.TravelStatus;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
@@ -62,7 +67,7 @@ public class Step {
     @OneToMany(mappedBy = "step", cascade = CascadeType.ALL)
     private List<Comment> comments;
 
-    @ManyToMany(cascade = CascadeType.ALL)
+    @ManyToMany
     @JoinTable(
        name = "step_theme",
        joinColumns = @JoinColumn(name = "step_id"),

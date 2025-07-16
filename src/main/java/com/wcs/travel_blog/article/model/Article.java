@@ -1,5 +1,6 @@
-package com.wcs.travel_blog.model;
+package com.wcs.travel_blog.article.model;
 
+import com.wcs.travel_blog.user.model.User;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;

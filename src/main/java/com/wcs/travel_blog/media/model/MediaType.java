@@ -1,16 +1,16 @@
-package com.wcs.travel_blog.model;
+package com.wcs.travel_blog.media.model;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonValue;
 
-public enum TravelStatus {
-        IN_PROGRESS("en cours"),
-        COMPLETED("complet"),
+public enum MediaType {
+        PHOTO("Photo"),
+        VIDEO("Vidéo"),
         ;
 
         private final String code;
 
-        TravelStatus(String code) {
+        MediaType(String code) {
                 this.code = code;
         }
 
@@ -20,12 +20,12 @@ public enum TravelStatus {
         }
 
         @JsonCreator
-        public static TravelStatus fromCode(String code) {
-                for (TravelStatus status : values()) {
+        public static MediaType fromCode(String code) {
+                for (MediaType status : values()) {
                         if (status.code.equalsIgnoreCase(code)) {
                                 return status;
                         }
                 }
-                throw new IllegalArgumentException("Status invalide : " + code);
+                throw new IllegalArgumentException("Type de média invalide : " + code);
         }
 }

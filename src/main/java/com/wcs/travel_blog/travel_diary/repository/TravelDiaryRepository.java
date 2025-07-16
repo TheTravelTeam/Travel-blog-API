@@ -1,7 +1,6 @@
-package com.wcs.travel_blog.repository;
+package com.wcs.travel_blog.travel_diary.repository;
 
-import com.wcs.travel_blog.model.TravelDiary;
-import com.wcs.travel_blog.model.User;
+import com.wcs.travel_blog.travel_diary.model.TravelDiary;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 public interface TravelDiaryRepository extends JpaRepository<TravelDiary, Long> {

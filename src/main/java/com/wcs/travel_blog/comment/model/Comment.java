@@ -1,5 +1,7 @@
-package com.wcs.travel_blog.model;
+package com.wcs.travel_blog.comment.model;
 
+import com.wcs.travel_blog.step.model.Step;
+import com.wcs.travel_blog.user.model.User;
 import jakarta.persistence.Entity;
 import jakarta.persistence.*;
 import lombok.Getter;
@@ -7,7 +9,6 @@ import lombok.Setter;
 import org.springframework.format.annotation.DateTimeFormat;
 
 import java.time.LocalDateTime;
-import java.util.List;
 
 @Entity
 

@@ -1,4 +1,4 @@
-package com.wcs.travel_blog.model;
+package com.wcs.travel_blog.user.model;
 
 
 import lombok.Getter;

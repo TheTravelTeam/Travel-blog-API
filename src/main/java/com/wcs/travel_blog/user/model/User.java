@@ -1,12 +1,19 @@
-package com.wcs.travel_blog.model;
+package com.wcs.travel_blog.user.model;
 
+import com.wcs.travel_blog.article.model.Article;
+import com.wcs.travel_blog.comment.model.Comment;
+import com.wcs.travel_blog.travel_diary.model.TravelDiary;
 import jakarta.persistence.*;
+import lombok.Getter;
+import lombok.Setter;
 
 import java.time.LocalDateTime;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+@Setter
+@Getter
 @Entity
 public class User {
 
@@ -32,10 +39,10 @@ public class User {
     private String biography;
 
     @Column(nullable = false)
-    private LocalDateTime createdAt = LocalDateTime.now();;
+    private LocalDateTime createdAt = LocalDateTime.now();
 
     @Column(nullable = false)
-    private LocalDateTime updatedAt = LocalDateTime.now();;
+    private LocalDateTime updatedAt = LocalDateTime.now();
 
     @Enumerated(EnumType.STRING)
     private UserStatus status = UserStatus.ACTIVE;

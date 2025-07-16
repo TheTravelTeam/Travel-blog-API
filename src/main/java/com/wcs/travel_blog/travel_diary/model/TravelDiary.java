@@ -1,5 +1,8 @@
-package com.wcs.travel_blog.model;
+package com.wcs.travel_blog.travel_diary.model;
 
+import com.wcs.travel_blog.media.model.Media;
+import com.wcs.travel_blog.user.model.User;
+import com.wcs.travel_blog.step.model.Step;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -54,17 +57,3 @@ public class TravelDiary {
     private Media media;
 
 }
-
-// relation avec step, media et user
-//id;
-//title;
-//description;
-//isPrivate ;
-//isPublished ;
-//latitude;
-//longitude;
-//status
-//canComment;
-//createdAt
-//updatedAt
-
