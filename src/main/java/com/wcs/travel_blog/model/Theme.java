@@ -12,7 +12,7 @@ import java.util.List;
 @Entity
 public class Theme {
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
     @Column(nullable = false)

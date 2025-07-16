@@ -62,7 +62,7 @@ public class Step {
     @OneToMany(mappedBy = "step", cascade = CascadeType.ALL)
     private List<Comment> comments;
 
-    @ManyToMany(mappedBy = "step", cascade = CascadeType.ALL)
+    @ManyToMany(cascade = CascadeType.ALL)
     @JoinTable(
        name = "step_theme",
        joinColumns = @JoinColumn(name = "step_id"),
