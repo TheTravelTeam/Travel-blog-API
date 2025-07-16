@@ -27,4 +27,12 @@ public class Theme {
 
     @ManyToMany(mappedBy = "themes")
     private List<Step> steps;
+
+    /**
+     * permet de mettre à jour automatiquement (à voir)
+     *
+     @PreUpdate
+    public void preUpdate() {
+        this.updatedAt = LocalDateTime.now();
+    }*/
 }
