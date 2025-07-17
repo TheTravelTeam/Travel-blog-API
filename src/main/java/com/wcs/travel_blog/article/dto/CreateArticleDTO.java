@@ -12,6 +12,5 @@ public class CreateArticleDTO {
 
     private String title;
     private String content;
-    private String slug;
     private Long userId;
 }

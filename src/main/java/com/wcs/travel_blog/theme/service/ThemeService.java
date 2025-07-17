@@ -7,8 +7,8 @@ import java.util.List;
 
 public interface ThemeService {
 
-    Theme createTheme(ThemeDTO themeDTO);
+    void createTheme(ThemeDTO themeDTO);
     ThemeDTO updateTheme(Long id, Theme theme);
     List<ThemeDTO> getAllTheme();
-    ThemeDTO getTheme(Long id);
+    ThemeDTO getThemeById(Long id);
 }

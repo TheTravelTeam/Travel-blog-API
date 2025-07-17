@@ -1,13 +1,14 @@
 package com.wcs.travel_blog.travel_diary.controller;
 
+import com.wcs.travel_blog.travel_diary.dto.CreateTravelDiaryDTO;
+import com.wcs.travel_blog.travel_diary.dto.TravelDiaryDTO;
+import com.wcs.travel_blog.travel_diary.dto.UpdateTravelDiaryDTO;
 import com.wcs.travel_blog.travel_diary.model.TravelDiary;
-import com.wcs.travel_blog.travel_diary.repository.TravelDiaryRepository;
 import com.wcs.travel_blog.travel_diary.service.TravelDiaryService;
+import jakarta.validation.Valid;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
@@ -17,13 +18,13 @@ public class TravelDiaryController {
 
     private final TravelDiaryService travelDiaryService;
 
-    public TravelDiaryController(TravelDiaryRepository travelDiaryRepository) {
+    public TravelDiaryController(TravelDiaryService travelDiaryService) {
         this.travelDiaryService = travelDiaryService;
     }
 
     @GetMapping
-    public ResponseEntity<List<TravelDiary>> getAllTravelDiaries(){
-        List<TravelDiary> travelDiaries=travelDiaryService.getAllTravelDiaries();
+    public ResponseEntity<List<TravelDiaryDTO>> getAllTravelDiaries(){
+        List<TravelDiaryDTO> travelDiaries=travelDiaryService.getAllTravelDiaries();
         if(travelDiaries.isEmpty()){
             return ResponseEntity.noContent().build();
         }
@@ -32,10 +33,33 @@ public class TravelDiaryController {
 
     @GetMapping("/{id}")
     public ResponseEntity<TravelDiary> getTravelDiaryById(@PathVariable Long id){
-        TravelDiary travelDiary = travelDiaryService.findById(id);
+        TravelDiary travelDiary = travelDiaryService.getTravelDiaryById(id);
         if(travelDiary==null){
             return ResponseEntity.notFound().build();
         }
         return ResponseEntity.ok(travelDiary);
     }
+
+    @PostMapping
+    public ResponseEntity<TravelDiaryDTO> createArticle(@Valid @RequestBody CreateTravelDiaryDTO createTravelDiaryRequest){
+        TravelDiaryDTO travelDiaryResponse = travelDiaryService.createTravelDiary(createTravelDiaryRequest);
+        return ResponseEntity.status(HttpStatus.CREATED).body(travelDiaryResponse);
+    }
+
+    @PutMapping("/{id}")
+    public ResponseEntity<TravelDiaryDTO> updateTravelDiary(@PathVariable Long id , @RequestBody UpdateTravelDiaryDTO updateTravelDiaryRequest){
+        TravelDiaryDTO updateTravelDiaryResponse = travelDiaryService.updateTravelDiary(id,updateTravelDiaryRequest);
+        if(updateTravelDiaryResponse==null){
+            return ResponseEntity.notFound().build();
+        }
+        return ResponseEntity.ok(updateTravelDiaryResponse);
+    }
+
+    @DeleteMapping("/{id}")
+    public ResponseEntity<String> deleteTravelDiary(@PathVariable Long id){
+        travelDiaryService.deleteTravelDiary(id);
+        return ResponseEntity.ok("Carnet de voyage supprimé avec succès");
+    }
+
+
 }

@@ -1,13 +1,14 @@
 package com.wcs.travel_blog.article.controller;
 
 import com.wcs.travel_blog.article.dto.ArticleDTO;
+import com.wcs.travel_blog.article.dto.CreateArticleDTO;
+import com.wcs.travel_blog.article.dto.UpdateArticleDTO;
 import com.wcs.travel_blog.article.model.Article;
 import com.wcs.travel_blog.article.repository.ArticleRepository;
+import com.wcs.travel_blog.article.service.ArticleService;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
@@ -15,23 +16,46 @@ import java.util.List;
 @RequestMapping("/articles")
 public class ArticleController {
 
-    private final ArticleRepository articleRepository;
+    private final ArticleService articleService;
 
-    public ArticleController(ArticleRepository articleRepository) {
-        this.articleRepository = articleRepository;
+    public ArticleController( ArticleService articleService) {
+        this.articleService = articleService;
     }
 
+    // READ ALL
     @GetMapping
-    public ResponseEntity<List<Article>> getAllArticles() {
-        List<Article> articles = articleRepository.findAll();
+    public ResponseEntity<List<ArticleDTO>> getAllArticles() {
+        List<ArticleDTO> articles = articleService.getAllArticles();
         if (articles.isEmpty()) {
             return ResponseEntity.noContent().build();
         }
         return ResponseEntity.ok(articles);
     }
 
-//    @GetMapping("/{id}")
-//    public ResponseEntity<Article> getArticleById(@PathVariable Long id) {
-//        ArticleDTO article =
-//    }
+    // READ BY ID
+    @GetMapping("/{articleId}")
+    public ResponseEntity<ArticleDTO> getArticleById(@PathVariable Long articleId) {
+        ArticleDTO article = articleService.getArticleById(articleId);
+        return ResponseEntity.ok(article);
+    }
+
+    // CREATE
+    @PostMapping
+    public ResponseEntity<ArticleDTO> createArticle(@RequestBody CreateArticleDTO createArticleDTO) {
+        ArticleDTO savedArticle= articleService.createArticle(createArticleDTO);
+        return  ResponseEntity.status(HttpStatus.CREATED).body(savedArticle);
+    }
+
+    @PutMapping("{articleId}")
+    public ResponseEntity<ArticleDTO> updateArticle(@RequestBody Long articleId, UpdateArticleDTO updateArticleDTO) {
+        ArticleDTO updatedArticle = articleService.updateArticle(articleId, updateArticleDTO);
+        return  ResponseEntity.ok(updatedArticle);
+    }
+
+    @DeleteMapping("{articleId}")
+    public ResponseEntity<Void> deleteArticle(@PathVariable Long articleId) {
+        articleService.deleteArticle(articleId);
+        return ResponseEntity.noContent().build();
+    }
+
 }

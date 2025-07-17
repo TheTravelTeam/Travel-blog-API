@@ -5,6 +5,7 @@ import com.wcs.travel_blog.media.repository.MediaRepository;
 import com.wcs.travel_blog.step.model.Step;
 import com.wcs.travel_blog.step.repository.StepRepository;
 import com.wcs.travel_blog.travel_diary.dto.CreateTravelDiaryDTO;
+import com.wcs.travel_blog.travel_diary.dto.TravelDiaryDTO;
 import com.wcs.travel_blog.travel_diary.dto.UpdateTravelDiaryDTO;
 import com.wcs.travel_blog.travel_diary.mapper.TravelDiaryMapper;
 import com.wcs.travel_blog.travel_diary.model.TravelDiary;
@@ -17,6 +18,7 @@ import org.springframework.stereotype.Service;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.NoSuchElementException;
+import java.util.stream.Collectors;
 
 @Service
 public class TravelDiaryService {
@@ -35,15 +37,16 @@ public class TravelDiaryService {
         this.stepRepository = stepRepository;
     }
 
-    public List<TravelDiary> getAllTravelDiaries(){
-        return  travelDiaryRepository.findAll();
+    public List<TravelDiaryDTO> getAllTravelDiaries(){
+        List<TravelDiary> travelDiaries = travelDiaryRepository.findAll();
+        return travelDiaries.stream().map(travelDiaryMapper::toDto).collect(Collectors.toList());
     }
 
     public TravelDiary getTravelDiaryById(Long id){
         return travelDiaryRepository.findById(id).orElseThrow(()-> new NoSuchElementException("Le carnet de voyage avec l'id "+ id + " n'a pas été trouvé"));
     }
 
-    public TravelDiary createTravelDiary(CreateTravelDiaryDTO createTravelDto){
+    public TravelDiaryDTO createTravelDiary(CreateTravelDiaryDTO createTravelDto){
         TravelDiary travelDiary = travelDiaryMapper.toEntity(createTravelDto);
 
         travelDiary.setCreatedAt(LocalDateTime.now());
@@ -71,12 +74,54 @@ public class TravelDiaryService {
             travelDiary.setSteps(steps);
         }
 
-        return travelDiaryRepository.save(travelDiary);
+        TravelDiary travelDiaryToSaved= travelDiaryRepository.save(travelDiary);
 
+        return travelDiaryMapper.toDto(travelDiaryToSaved);
     }
 
-//    public TravelDiary updateTravelDiary(Long id, UpdateTravelDiaryDTO updateTravelDiaryDTO){
-//
-//    }
+   public TravelDiaryDTO updateTravelDiary(Long id, UpdateTravelDiaryDTO updateTravelDiaryDTO) {
+       TravelDiary travelDiary = travelDiaryRepository.findById(id).orElseThrow(() -> new EntityNotFoundException("Carnet de voyage non trouvé"));
 
+       travelDiary.setTitle(updateTravelDiaryDTO.getTitle());
+       travelDiary.setDescription(updateTravelDiaryDTO.getDescription());
+       travelDiary.setIsPrivate(updateTravelDiaryDTO.getIsPrivate());
+       travelDiary.setIsPublished(updateTravelDiaryDTO.getIsPublished());
+       travelDiary.setStatus(updateTravelDiaryDTO.getStatus());
+       travelDiary.setCanComment(updateTravelDiaryDTO.getCanComment());
+       travelDiary.setLatitude(updateTravelDiaryDTO.getLatitude());
+       travelDiary.setLongitude(updateTravelDiaryDTO.getLongitude());
+       travelDiary.setUpdatedAt(LocalDateTime.now());
+
+       if (updateTravelDiaryDTO.getUser() != null) {
+           User user = userRepository.findById(updateTravelDiaryDTO.getUser()).orElseThrow(() -> new EntityNotFoundException("Utilisateur non trouvé"));
+           travelDiary.setUser(user);
+       } else{
+           throw new IllegalArgumentException("L'utilisateur est obligatoire pour un carnet de voyage");
+       }
+
+       if(updateTravelDiaryDTO.getMedia()!=null){
+           Media media = mediaRepository.findById(updateTravelDiaryDTO.getMedia()).orElseThrow(()-> new EntityNotFoundException("Média non trouvé"));
+           travelDiary.setMedia(media);
+       } else {
+           travelDiary.setMedia(null);
+       }
+
+       if(updateTravelDiaryDTO.getSteps()!=null && !updateTravelDiaryDTO.getSteps().isEmpty()){
+            List<Step>steps=stepRepository.findAllById(updateTravelDiaryDTO.getSteps());
+                if(steps.size()!=updateTravelDiaryDTO.getSteps().size()){
+                    throw new EntityNotFoundException("Quelques étapes n'ont pas été trouvé");
+                }
+                travelDiary.setSteps(steps);
+       } else {
+           travelDiary.getSteps().clear();
+       }
+
+       TravelDiary updated = travelDiaryRepository.save(travelDiary);
+       return travelDiaryMapper.toDto(updated);
+   }
+
+   public void deleteTravelDiary(Long id){
+        TravelDiary travelDiary=travelDiaryRepository.findById(id).orElseThrow(()->new EntityNotFoundException("Carnet de voyage Non trouvé"));
+        travelDiaryRepository.delete(travelDiary);
+   }
 }

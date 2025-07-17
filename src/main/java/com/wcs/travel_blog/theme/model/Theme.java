@@ -29,10 +29,10 @@ public class Theme {
     private List<Step> steps;
 
     /**
-     * permet de mettre à jour automatiquement (à voir)
-     *
-     @PreUpdate
-    public void preUpdate() {
+     * permet de mettre à jour le update automatiquement (à voir)
+     **/
+    //@PreUpdate
+    /*public void preUpdate() {
         this.updatedAt = LocalDateTime.now();
     }*/
 }

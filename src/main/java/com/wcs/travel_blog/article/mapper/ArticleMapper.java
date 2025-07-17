@@ -3,10 +3,10 @@ import com.wcs.travel_blog.article.dto.ArticleDTO;
 import com.wcs.travel_blog.article.dto.CreateArticleDTO;
 import com.wcs.travel_blog.article.model.Article;
 import com.wcs.travel_blog.user.model.User;
-import com.wcs.travel_blog.user.repository.UserRepository;
+import org.springframework.stereotype.Component;
 
 
-
+@Component
 public class ArticleMapper {
 
     // convert to DTO
@@ -28,7 +28,6 @@ public class ArticleMapper {
         Article article = new Article();
         article.setTitle(createArticleDTO.getTitle());
         article.setContent(createArticleDTO.getContent());
-        article.setSlug(createArticleDTO.getSlug());
         article.setUser(user);
         return article;
     }

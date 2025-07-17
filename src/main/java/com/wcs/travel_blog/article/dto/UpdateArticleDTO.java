@@ -9,8 +9,7 @@ import java.time.LocalDateTime;
 @Setter
 public class UpdateArticleDTO {
 
-    private Long id;
     private String title;
     private String content;
-    private  LocalDateTime updatedAt;
+    private Long userId;
 }
