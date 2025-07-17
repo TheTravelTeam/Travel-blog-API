@@ -47,7 +47,7 @@ public class ArticleController {
     }
 
     @PutMapping("{articleId}")
-    public ResponseEntity<ArticleDTO> updateArticle(@RequestBody Long articleId, UpdateArticleDTO updateArticleDTO) {
+    public ResponseEntity<ArticleDTO> updateArticle(@PathVariable Long articleId, @RequestBody UpdateArticleDTO updateArticleDTO) {
         ArticleDTO updatedArticle = articleService.updateArticle(articleId, updateArticleDTO);
         return  ResponseEntity.ok(updatedArticle);
     }

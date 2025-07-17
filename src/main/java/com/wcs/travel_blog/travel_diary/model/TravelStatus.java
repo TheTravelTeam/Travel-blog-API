@@ -4,8 +4,8 @@ import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonValue;
 
 public enum TravelStatus {
-        IN_PROGRESS("en cours"),
-        COMPLETED("complet"),
+        IN_PROGRESS("IN_PROGRESS"),
+        COMPLETED("COMPLETED"),
         ;
 
         private final String code;

@@ -16,6 +16,7 @@ public class ArticleMapper {
         articleDTO.setTitle(article.getTitle());
         articleDTO.setContent(article.getContent());
         articleDTO.setUpdatedAt(article.getUpdatedAt());
+        articleDTO.setSlug(article.getSlug());
         if (article.getUser() != null) {
             articleDTO.setUserId(article.getUser().getId());
             articleDTO.setUsername(article.getUser().getUsername());

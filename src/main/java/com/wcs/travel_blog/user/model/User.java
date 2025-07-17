@@ -32,8 +32,8 @@ public class User {
     @Column(nullable = false, length = 20)
     private String password;
 
-    @Column(nullable = false)
-    private LocalDateTime logginAt = LocalDateTime.now();
+//    @Column(nullable = false)
+//    private LocalDateTime logginAt = LocalDateTime.now();
 
     @Column(columnDefinition = "TEXT")
     private String biography;

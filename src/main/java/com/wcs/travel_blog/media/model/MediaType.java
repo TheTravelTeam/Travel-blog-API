@@ -4,8 +4,8 @@ import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonValue;
 
 public enum MediaType {
-        PHOTO("Photo"),
-        VIDEO("Vidéo"),
+        PHOTO("PHOTO"),
+        VIDEO("VIDEO"),
         ;
 
         private final String code;
