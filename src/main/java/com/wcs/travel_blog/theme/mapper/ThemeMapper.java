@@ -4,6 +4,8 @@ import com.wcs.travel_blog.theme.dto.ThemeDTO;
 import com.wcs.travel_blog.theme.model.Theme;
 import org.springframework.stereotype.Component;
 
+import java.time.LocalDateTime;
+
 @Component
 public class ThemeMapper {
 
@@ -25,6 +27,14 @@ public class ThemeMapper {
         Theme theme = new Theme();
         theme.setId(themeDTO.getId());
         theme.setName(themeDTO.getName());
+
+        LocalDateTime now = LocalDateTime.now();
+        if (themeDTO.getId() == null) {
+            theme.setCreatedAt(now);
+        } else {
+            theme.setUpdatedAt(theme.getCreatedAt() != null ? theme.getCreatedAt() : now);
+        }
+        theme.setUpdatedAt(now);
 
         return theme;
     }

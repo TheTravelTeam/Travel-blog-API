@@ -1,8 +1,8 @@
 package com.wcs.travel_blog.theme.controller;
 
 import com.wcs.travel_blog.theme.dto.ThemeDTO;
-import com.wcs.travel_blog.theme.model.Theme;
 import com.wcs.travel_blog.theme.service.ThemeService;
+import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -19,7 +19,7 @@ public class ThemeController {
     }
 
     @PostMapping("/create")
-    public void create(@RequestBody ThemeDTO themeDTO) {
+    public void create(@Valid @RequestBody ThemeDTO themeDTO) {
         themeService.createTheme(themeDTO);
     }
 
@@ -40,4 +40,21 @@ public class ThemeController {
         return ResponseEntity.ok(themeDTO);
     }
 
+    @PutMapping("/update/{id}")
+    public ResponseEntity<ThemeDTO> updateTheme(@PathVariable Long id, @Valid @RequestBody ThemeDTO themeDTO) {
+        ThemeDTO updatedTheme = themeService.updateTheme(id, themeDTO);
+        if (updatedTheme == null)
+            return ResponseEntity.notFound().build();
+        return ResponseEntity.ok(updatedTheme);
+    }
+
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Void> deleteTheme(@PathVariable Long id) {
+        try {
+            themeService.deleteTheme(id);
+            return ResponseEntity.noContent().build();
+        } catch (Exception e) {
+            return ResponseEntity.notFound().build();
+        }
+    }
 }

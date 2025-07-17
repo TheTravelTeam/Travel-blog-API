@@ -7,6 +7,7 @@ import com.wcs.travel_blog.theme.repository.ThemeRepository;
 import jakarta.persistence.EntityNotFoundException;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -15,23 +16,26 @@ public class ThemeServiceImpl implements ThemeService {
     private final ThemeRepository themeRepository;
     private final ThemeMapper themeMapper;
 
-
     public ThemeServiceImpl(ThemeRepository themeRepository, ThemeMapper themeMapper) {
         this.themeRepository = themeRepository;
         this.themeMapper = themeMapper;
     }
 
     @Override
-    public void createTheme(ThemeDTO themeDTO) {
+    public ThemeDTO createTheme(ThemeDTO themeDTO) {
         Theme theme = themeMapper.toEntity(themeDTO);
-        themeRepository.save(theme);
+        Theme themeSaved = themeRepository.save(theme);
+        return themeMapper.toDto(themeSaved);
     }
 
     @Override
-    public ThemeDTO updateTheme(Long id, Theme theme) {
-
-
-        return null;
+    public ThemeDTO updateTheme(Long id, ThemeDTO themeDTO) {
+        Theme existingTheme = themeRepository.findById(id)
+                .orElseThrow(() -> new EntityNotFoundException("Theme not found with id: " + id));
+        existingTheme.setName(themeDTO.getName());
+        existingTheme.setUpdatedAt(LocalDateTime.now());
+        Theme updatedTheme = themeRepository.save(existingTheme);
+        return themeMapper.toDto(updatedTheme);
     }
 
     @Override
@@ -46,5 +50,12 @@ public class ThemeServiceImpl implements ThemeService {
     public ThemeDTO getThemeById(Long id) {
         Theme theme = themeRepository.findById(id).orElseThrow(() -> new EntityNotFoundException("theme not found"));
         return themeMapper.toDto(theme);
+    }
+
+    @Override
+    public void deleteTheme(Long id) {
+        Theme theme = themeRepository.findById(id)
+                .orElseThrow(() -> new EntityNotFoundException("Theme not found with id: " + id));
+        themeRepository.delete(theme);
     }
 }
