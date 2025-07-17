@@ -12,15 +12,13 @@ import java.util.stream.Collectors;
 
 @Service
 public class ThemeServiceImpl implements ThemeService {
-
     private final ThemeRepository themeRepository;
     private final ThemeMapper themeMapper;
-    private final ThemeService themeService;
 
-    public ThemeServiceImpl(ThemeRepository themeRepository, ThemeMapper themeMapper, ThemeService themeService) {
+
+    public ThemeServiceImpl(ThemeRepository themeRepository, ThemeMapper themeMapper) {
         this.themeRepository = themeRepository;
         this.themeMapper = themeMapper;
-        this.themeService = themeService;
     }
 
     @Override

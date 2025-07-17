@@ -19,6 +19,8 @@ import java.util.List;
 @Setter
 public class TravelDiary {
 
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
 
