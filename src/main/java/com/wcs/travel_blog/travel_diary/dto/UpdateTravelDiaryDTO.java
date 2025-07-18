@@ -14,7 +14,6 @@ import java.util.List;
 
 @Component
 public class UpdateTravelDiaryDTO {
-    private Long id;
 
     private String title;
 

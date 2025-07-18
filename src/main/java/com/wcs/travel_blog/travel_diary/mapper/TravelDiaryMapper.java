@@ -42,24 +42,6 @@ public class TravelDiaryMapper {
 
     }
 
-    public TravelDiary toEntity(TravelDiaryDTO dto){
-
-        TravelDiary travelDiary = new TravelDiary();
-
-        travelDiary.setTitle(dto.getTitle());
-        travelDiary.setDescription(dto.getDescription());
-        travelDiary.setCreatedAt(LocalDateTime.now());
-        travelDiary.setUpdatedAt(LocalDateTime.now());
-        travelDiary.setIsPrivate(dto.getIsPrivate());
-        travelDiary.setIsPublished(dto.getIsPublished());
-        travelDiary.setStatus(dto.getStatus());
-        travelDiary.setCanComment(dto.getCanComment());
-        travelDiary.setLatitude(dto.getLatitude());
-        travelDiary.setLongitude(dto.getLongitude());
-
-        return travelDiary;
-        }
-
     public TravelDiary toEntity(CreateTravelDiaryDTO dto) {
         TravelDiary travelDiary = new TravelDiary();
 
@@ -77,25 +59,5 @@ public class TravelDiaryMapper {
 
         return travelDiary;
     }
-
-    public TravelDiary toEntity(UpdateTravelDiaryDTO dto) {
-        TravelDiary travelDiary = new TravelDiary();
-
-        travelDiary.setId(dto.getId());
-        travelDiary.setTitle(dto.getTitle());
-        travelDiary.setDescription(dto.getDescription());
-        travelDiary.setIsPrivate(dto.getIsPrivate());
-        travelDiary.setIsPublished(dto.getIsPublished());
-        travelDiary.setStatus(dto.getStatus());
-        travelDiary.setCanComment(dto.getCanComment());
-        travelDiary.setLatitude(dto.getLatitude());
-        travelDiary.setLongitude(dto.getLongitude());
-
-        travelDiary.setUpdatedAt(LocalDateTime.now());
-
-        return travelDiary;
-    }
-
-
 
 }

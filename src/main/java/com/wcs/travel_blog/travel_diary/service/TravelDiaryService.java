@@ -42,8 +42,9 @@ public class TravelDiaryService {
         return travelDiaries.stream().map(travelDiaryMapper::toDto).collect(Collectors.toList());
     }
 
-    public TravelDiary getTravelDiaryById(Long id){
-        return travelDiaryRepository.findById(id).orElseThrow(()-> new NoSuchElementException("Le carnet de voyage avec l'id "+ id + " n'a pas été trouvé"));
+    public TravelDiaryDTO getTravelDiaryById(Long id){
+        TravelDiary travelDiary=travelDiaryRepository.findById(id).orElseThrow(()-> new NoSuchElementException("Le carnet de voyage avec l'id "+ id + " n'a pas été trouvé"));
+        return travelDiaryMapper.toDto(travelDiary);
     }
 
     public TravelDiaryDTO createTravelDiary(CreateTravelDiaryDTO createTravelDto){
@@ -79,36 +80,57 @@ public class TravelDiaryService {
         return travelDiaryMapper.toDto(travelDiaryToSaved);
     }
 
-   public TravelDiaryDTO updateTravelDiary(Long id, UpdateTravelDiaryDTO updateTravelDiaryDTO) {
+   public TravelDiaryDTO updateTravelDiary(Long id, UpdateTravelDiaryDTO updateTravelDiaryResponse) {
        TravelDiary travelDiary = travelDiaryRepository.findById(id).orElseThrow(() -> new EntityNotFoundException("Carnet de voyage non trouvé"));
 
-       travelDiary.setTitle(updateTravelDiaryDTO.getTitle());
-       travelDiary.setDescription(updateTravelDiaryDTO.getDescription());
-       travelDiary.setIsPrivate(updateTravelDiaryDTO.getIsPrivate());
-       travelDiary.setIsPublished(updateTravelDiaryDTO.getIsPublished());
-       travelDiary.setStatus(updateTravelDiaryDTO.getStatus());
-       travelDiary.setCanComment(updateTravelDiaryDTO.getCanComment());
-       travelDiary.setLatitude(updateTravelDiaryDTO.getLatitude());
-       travelDiary.setLongitude(updateTravelDiaryDTO.getLongitude());
-       travelDiary.setUpdatedAt(LocalDateTime.now());
-
-       if (updateTravelDiaryDTO.getUser() != null) {
-           User user = userRepository.findById(updateTravelDiaryDTO.getUser()).orElseThrow(() -> new EntityNotFoundException("Utilisateur non trouvé"));
-           travelDiary.setUser(user);
-       } else{
-           throw new IllegalArgumentException("L'utilisateur est obligatoire pour un carnet de voyage");
+       if (updateTravelDiaryResponse.getTitle() != null && !updateTravelDiaryResponse.getTitle().equals(travelDiary.getTitle())) {
+           travelDiary.setTitle(updateTravelDiaryResponse.getTitle());
        }
 
-       if(updateTravelDiaryDTO.getMedia()!=null){
-           Media media = mediaRepository.findById(updateTravelDiaryDTO.getMedia()).orElseThrow(()-> new EntityNotFoundException("Média non trouvé"));
+       if (updateTravelDiaryResponse.getDescription() != null && !updateTravelDiaryResponse.getDescription().equals(travelDiary.getDescription())) {
+           travelDiary.setDescription(updateTravelDiaryResponse.getDescription());
+       }
+
+       if (updateTravelDiaryResponse.getIsPrivate() != null && !updateTravelDiaryResponse.getIsPrivate().equals(travelDiary.getIsPrivate())) {
+           travelDiary.setIsPrivate(updateTravelDiaryResponse.getIsPrivate());
+       }
+
+       if (updateTravelDiaryResponse.getIsPublished() != null && !updateTravelDiaryResponse.getIsPublished().equals(travelDiary.getIsPublished())) {
+           travelDiary.setIsPublished(updateTravelDiaryResponse.getIsPublished());
+       }
+
+       if (updateTravelDiaryResponse.getStatus() != null && !updateTravelDiaryResponse.getStatus().equals(travelDiary.getStatus())) {
+           travelDiary.setStatus(updateTravelDiaryResponse.getStatus());
+       }
+
+       if (updateTravelDiaryResponse.getCanComment() != null && !updateTravelDiaryResponse.getCanComment().equals(travelDiary.getCanComment())) {
+           travelDiary.setCanComment(updateTravelDiaryResponse.getCanComment());
+       }
+
+       if (updateTravelDiaryResponse.getLatitude() != null && !updateTravelDiaryResponse.getLatitude().equals(travelDiary.getLatitude())) {
+           travelDiary.setLatitude(updateTravelDiaryResponse.getLatitude());
+       }
+
+       if (updateTravelDiaryResponse.getLongitude() != null && !updateTravelDiaryResponse.getLongitude().equals(travelDiary.getLongitude())) {
+           travelDiary.setLongitude(updateTravelDiaryResponse.getLongitude());
+       }
+       travelDiary.setUpdatedAt(LocalDateTime.now());
+
+       if (updateTravelDiaryResponse.getUser() != null) {
+           User user = userRepository.findById(updateTravelDiaryResponse.getUser()).orElseThrow(() -> new EntityNotFoundException("Utilisateur non trouvé"));
+           travelDiary.setUser(user);
+       }
+
+       if(updateTravelDiaryResponse.getMedia()!=null){
+           Media media = mediaRepository.findById(updateTravelDiaryResponse.getMedia()).orElseThrow(()-> new EntityNotFoundException("Média non trouvé"));
            travelDiary.setMedia(media);
        } else {
            travelDiary.setMedia(null);
        }
 
-       if(updateTravelDiaryDTO.getSteps()!=null && !updateTravelDiaryDTO.getSteps().isEmpty()){
-            List<Step>steps=stepRepository.findAllById(updateTravelDiaryDTO.getSteps());
-                if(steps.size()!=updateTravelDiaryDTO.getSteps().size()){
+       if(updateTravelDiaryResponse.getSteps()!=null && !updateTravelDiaryResponse.getSteps().isEmpty()){
+            List<Step>steps=stepRepository.findAllById(updateTravelDiaryResponse.getSteps());
+                if(steps.size()!=updateTravelDiaryResponse.getSteps().size()){
                     throw new EntityNotFoundException("Quelques étapes n'ont pas été trouvé");
                 }
                 travelDiary.setSteps(steps);

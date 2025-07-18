@@ -32,8 +32,8 @@ public class TravelDiaryController {
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<TravelDiary> getTravelDiaryById(@PathVariable Long id){
-        TravelDiary travelDiary = travelDiaryService.getTravelDiaryById(id);
+    public ResponseEntity<TravelDiaryDTO> getTravelDiaryById(@PathVariable Long id){
+        TravelDiaryDTO travelDiary = travelDiaryService.getTravelDiaryById(id);
         if(travelDiary==null){
             return ResponseEntity.notFound().build();
         }
