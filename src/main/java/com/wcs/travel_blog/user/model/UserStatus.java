@@ -15,4 +15,8 @@ public enum UserStatus {
         this.label = label;
     }
 
+    public String getValue() {
+        return label;
+    }
+
 }
