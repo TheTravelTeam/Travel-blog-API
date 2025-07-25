@@ -33,7 +33,6 @@ public class User implements UserDetails {
 
     private String avatar;
 
-    @NotBlank
     @Column(length = 50)
     private String username;
 
@@ -44,7 +43,7 @@ public class User implements UserDetails {
 
     @NotBlank
     @Size(min = 8)
-    @Column(nullable = false, length = 40)
+    @Column(nullable = false)
     private String password;
 
 //    @Column(nullable = false)
@@ -65,10 +64,11 @@ public class User implements UserDetails {
     @ElementCollection(fetch = FetchType.EAGER)
     private Set<String> roles = new HashSet<>();
 
-    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
+    //Orphanremoval permet de supprimer les carnets orphelin après suppression d'un user
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<TravelDiary> travel_diaries;
 
-    @OneToMany(mappedBy = "user")
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Article> articles;
 
     @OneToMany(mappedBy = "user",  cascade = CascadeType.ALL)

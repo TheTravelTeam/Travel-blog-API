@@ -4,10 +4,12 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.wcs.travel_blog.exception.ResourceNotFoundException;
 import com.wcs.travel_blog.user.dto.UpsertUserDTO;
 import com.wcs.travel_blog.user.dto.UserDTO;
+import com.wcs.travel_blog.user.dto.UserWithDiariesDTO;
 import com.wcs.travel_blog.user.service.UserService;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
@@ -17,11 +19,11 @@ import java.util.List;
 import static org.mockito.Mockito.when;
 import static org.springframework.http.MediaType.APPLICATION_JSON;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 //Test d'intégration user
 @WebMvcTest(UserController.class)
+@AutoConfigureMockMvc(addFilters = false) // <-- indispensable ici
 public class UserControllerTest {
 
     @Autowired
@@ -57,7 +59,7 @@ public class UserControllerTest {
     @Test
     void getUserById_shouldReturnExistingUser() throws Exception {
         //Arrange
-        UserDTO userDTO1 = new UserDTO();
+        UserWithDiariesDTO userDTO1 = new UserWithDiariesDTO();
         userDTO1.setId(1L);
         userDTO1.setUsername("user1");
 
@@ -72,26 +74,26 @@ public class UserControllerTest {
 
     @Test
     void getUserByUsername_shouldReturnUser() throws Exception {
-        UserDTO dto = new UserDTO();
+        UserWithDiariesDTO dto = new UserWithDiariesDTO();
         dto.setId(1L);
         dto.setUsername("user1");
 
         when(userService.getUserByUsername("user1")).thenReturn(dto);
 
-        mockMvc.perform(get("/users/username/user1"))
+        mockMvc.perform(get("/users/username?username=user1"))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.username").value("user1"));
     }
 
     @Test
     void getUserByEmail_shouldReturnUser() throws Exception {
-        UserDTO dto = new UserDTO();
+        UserWithDiariesDTO dto = new UserWithDiariesDTO();
         dto.setId(2L);
         dto.setEmail("user1@gmail.com");
 
         when(userService.getUserByEmail("user1@gmail.com")).thenReturn(dto);
 
-        mockMvc.perform(get("/users/email/user1@gmail.com"))
+        mockMvc.perform(get("/users/email?email=user1@gmail.com"))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.email").value("user1@gmail.com"));
     }
@@ -102,7 +104,7 @@ public class UserControllerTest {
         updateDTO.setUsername("updatedUser");
         updateDTO.setEmail("updated@gmail.com");
         updateDTO.setBiography("new bio");
-        updateDTO.setAvatar("avatar.png");
+        updateDTO.setAvatar("https://avatar.png");
         updateDTO.setPassword("newPassword123");
 
         UserDTO updatedDTO = new UserDTO();
@@ -110,7 +112,7 @@ public class UserControllerTest {
         updatedDTO.setUsername("updatedUser");
         updatedDTO.setEmail("updated@gmail.com");
         updatedDTO.setBiography("new bio");
-        updatedDTO.setAvatar("avatar.png");
+        updatedDTO.setAvatar("https://avatar.png");
 
         when(userService.updateUser(Mockito.eq(1L), Mockito.any(UpsertUserDTO.class)))
                 .thenReturn(updatedDTO);
@@ -137,7 +139,8 @@ public class UserControllerTest {
     @Test
     void deleteUserById_shouldReturnNoContent() throws Exception {
         mockMvc.perform(delete("/users/1"))
-                .andExpect(status().isNoContent());
+                .andExpect(status().isOk())
+                .andExpect(content().string("Utilisateur supprimé avec succès."));
 
         Mockito.verify(userService).deleteUserById(1L);
     }

@@ -47,14 +47,14 @@ public class TravelDiary {
 
     private Double longitude;
 
-    @OneToMany(mappedBy = "travelDiary")
+    @OneToMany(mappedBy = "travelDiary", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Step> steps;
 
     @ManyToOne
     @JoinColumn(name = "user_id")
     private User user;
 
-    @OneToOne(mappedBy = "travelDiary")
+    @OneToOne(mappedBy = "travelDiary", cascade = CascadeType.ALL, orphanRemoval = true)
     private Media media;
 
 }

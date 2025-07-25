@@ -3,6 +3,7 @@ package com.wcs.travel_blog.user.service;
 import com.wcs.travel_blog.exception.ResourceNotFoundException;
 import com.wcs.travel_blog.user.dto.UpsertUserDTO;
 import com.wcs.travel_blog.user.dto.UserDTO;
+import com.wcs.travel_blog.user.dto.UserWithDiariesDTO;
 import com.wcs.travel_blog.user.mapper.UserMapper;
 import com.wcs.travel_blog.user.model.User;
 import com.wcs.travel_blog.user.repository.UserRepository;
@@ -119,7 +120,7 @@ public class UserServiceTest {
         when(userMapper.converToDto(user)).thenReturn(userDTO);
 
         //Act
-        UserDTO result = userService.getUserById(1L);
+        UserWithDiariesDTO result = userService.getUserById(1L);
 
         //Assert
         assertThat(result.getUsername()).isEqualTo("user1");
@@ -144,7 +145,7 @@ public class UserServiceTest {
         when(userRepository.findByEmail("user1@gmail.com")).thenReturn(Optional.of(user));
         when(userMapper.converToDto(user)).thenReturn(userDTO);
 
-        UserDTO result = userService.getUserByEmail("user1@gmail.com");
+        UserWithDiariesDTO result = userService.getUserByEmail("user1@gmail.com");
         assertThat(result.getEmail()).isEqualTo("user1@gmail.com");
     }
 
@@ -156,7 +157,7 @@ public class UserServiceTest {
         when(userRepository.findByUsername("user1")).thenReturn(Optional.of(user));
         when(userMapper.converToDto(user)).thenReturn(userDTO);
 
-        UserDTO result = userService.getUserByUsername("user1");
+        UserWithDiariesDTO result = userService.getUserByUsername("user1");
         assertThat(result.getUsername()).isEqualTo("user1");
 
     }
