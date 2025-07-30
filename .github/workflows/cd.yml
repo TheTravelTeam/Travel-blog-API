@@ -1,0 +1,77 @@
+name: CD - Deploy Backend
+
+on:
+  workflow_run:
+    workflows: ["CI - Build and Test Application"]
+    types:
+      - completed
+
+jobs:
+  deploy:
+    if: ${{ github.event.workflow_run.conclusion == 'success' && github.event.workflow_run.head_branch == 'main' }}
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Add SSH private key
+        run: |
+          mkdir -p ~/.ssh
+          echo "${{ secrets.SSH_PRIVATE_KEY }}" > ~/.ssh/id_ed25519_travelblog-back
+          chmod 600 ~/.ssh/id_ed25519_travelblog-back
+          ssh-keyscan -H github.com >> ~/.ssh/known_hosts
+
+      - name: Test SSH connection
+        run: ssh -i ~/.ssh/id_ed25519_travelblog-back -o StrictHostKeyChecking=no ${{ secrets.SERVER_USER }}@${{ secrets.SERVER_IP }} "echo 'SSH connection successful!'"
+
+      - name: Clone or update project on server
+        run: |
+          ssh -i ~/.ssh/id_ed25519_travelblog-back -o StrictHostKeyChecking=no ${{ secrets.SERVER_USER }}@${{ secrets.SERVER_IP }} "
+          if [ -d /home/${{ secrets.SERVER_USER }}/${{ secrets.PROJECT_NAME }} ]; then
+            if [ -d /home/${{ secrets.SERVER_USER }}/${{ secrets.PROJECT_NAME }}/.git ]; then
+              echo 'Repository already exists. Pulling latest changes...';
+              cd /home/${{ secrets.SERVER_USER }}/${{ secrets.PROJECT_NAME }};
+              git reset --hard;
+              git pull origin main;
+            else
+              echo 'Invalid directory exists. Cleaning up and cloning again...';
+              rm -rf /home/${{ secrets.SERVER_USER }}/${{ secrets.PROJECT_NAME }};
+              git clone git@github.com:${{ secrets.REPOSITORY_NAME }} /home/${{ secrets.SERVER_USER }}/${{ secrets.PROJECT_NAME }};
+            fi
+          else
+            echo 'Cloning repository...';
+            git clone git@${{ secrets.REPOSITORY_NAME }} /home/${{ secrets.SERVER_USER }}/${{ secrets.PROJECT_NAME }};
+          fi
+          "
+
+      - name: Generate .env file on server
+        run: |
+          ssh -i ~/.ssh/id_ed25519_travelblog-back -o StrictHostKeyChecking=no ${{ secrets.SERVER_USER }}@${{ secrets.SERVER_IP }} "
+          DB_VOLUME_PATH=\"/var/lib/docker/volumes/travel-blog-api_db-data/_data\"
+          
+          if [ -z \"\$(ls -A \$DB_VOLUME_PATH 2>/dev/null)\" ]; then
+          echo '🔄 Volume vide : DDL = create'
+          DDL_VALUE=create
+          else
+          echo '📦 Volume déjà initialisé : DDL = update'
+          DDL_VALUE=update
+          fi
+          
+          echo 'SPRING_PROFILES_ACTIVE=prod' > /home/${{ secrets.SERVER_USER }}/${{ secrets.PROJECT_NAME }}/.env.prod &&
+          echo 'DB_NAME=${{ secrets.DB_NAME }}' >> /home/${{ secrets.SERVER_USER }}/${{ secrets.PROJECT_NAME }}/.env.prod &&
+          echo 'SPRING_DATASOURCE_URL=${{ secrets.SPRING_DATASOURCE_URL }}' >> /home/${{ secrets.SERVER_USER }}/${{ secrets.PROJECT_NAME }}/.env.prod &&
+          echo 'DATABASE_USER=${{ secrets.DATABASE_USER }}' >> /home/${{ secrets.SERVER_USER }}/${{ secrets.PROJECT_NAME }}/.env.prod &&
+          echo 'DATABASE_USER_PASSWORD=${{ secrets.DATABASE_USER_PASSWORD }}' >> /home/${{ secrets.SERVER_USER }}/${{ secrets.PROJECT_NAME }}/.env.prod &&
+          echo \"SPRING_JPA_HIBERNATE_DDL_AUTO=\$DDL_VALUE\" >> /home/${{ secrets.SERVER_USER }}/${{ secrets.PROJECT_NAME }}/.env.prod
+          echo 'DATABASE_ROOT_PASSWORD=${{ secrets.DATABASE_ROOT_PASSWORD }}' >> /home/${{ secrets.SERVER_USER }}/${{ secrets.PROJECT_NAME }}/.env.prod &&
+          chmod 600 /home/${{ secrets.SERVER_USER }}/${{ secrets.PROJECT_NAME }}/.env.prod
+          "
+
+      - name: Build Docker image and deploy
+        run: |
+          ssh -i ~/.ssh/id_ed25519_travelblog-back -o StrictHostKeyChecking=no ${{ secrets.SERVER_USER }}@${{ secrets.SERVER_IP }} "
+          cd /home/${{ secrets.SERVER_USER }}/${{ secrets.PROJECT_NAME }} &&
+          docker compose down &&
+          docker compose --env-file .env.prod up -d --build
+          "
