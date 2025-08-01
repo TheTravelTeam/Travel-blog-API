@@ -1,5 +1,6 @@
 package com.wcs.travel_blog.travel_diary.dto;
 
+import com.wcs.travel_blog.step.dto.StepDTo;
 import com.wcs.travel_blog.travel_diary.model.TravelStatus;
 import lombok.Getter;
 import lombok.Setter;
@@ -13,6 +14,8 @@ import java.util.List;
 
 @Component
 public class TravelDiaryDTO {
+    private Long id;
+
     private String title;
 
     private String description;
@@ -33,7 +36,7 @@ public class TravelDiaryDTO {
 
     private Double longitude;
 
-    private List<Long> steps;
+    private List<StepDTo> steps;
 
     private Long user;
 

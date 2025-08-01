@@ -1,5 +1,6 @@
 package com.wcs.travel_blog.step.dto;
 
+import com.wcs.travel_blog.comment.dto.CommentDTO;
 import com.wcs.travel_blog.theme.dto.ThemeDTO;
 import com.wcs.travel_blog.travel_diary.model.TravelStatus;
 import jakarta.validation.constraints.NotBlank;
@@ -15,6 +16,8 @@ import java.util.List;
 @Getter
 @Setter
 public class StepDTo {
+
+    private Long id;
 
     @NotBlank(message = "Le titre ne doit pas être vide")
     @Size(min = 2, max = 50, message = "Le titre doit contenir entre 2 et 50 caractères")
@@ -47,4 +50,6 @@ public class StepDTo {
     private Long travelDiaryId;
 
     private List<ThemeDTO> themes;
+
+    private List<CommentDTO> comments;
 }

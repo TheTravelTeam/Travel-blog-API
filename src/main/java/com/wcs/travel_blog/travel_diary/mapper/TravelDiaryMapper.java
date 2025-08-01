@@ -1,11 +1,9 @@
 package com.wcs.travel_blog.travel_diary.mapper;
 
-import com.wcs.travel_blog.step.model.Step;
+import com.wcs.travel_blog.step.mapper.StepMapper;
 import com.wcs.travel_blog.travel_diary.dto.CreateTravelDiaryDTO;
 import com.wcs.travel_blog.travel_diary.dto.TravelDiaryDTO;
-import com.wcs.travel_blog.travel_diary.dto.UpdateTravelDiaryDTO;
 import com.wcs.travel_blog.travel_diary.model.TravelDiary;
-import com.wcs.travel_blog.user.model.User;
 import org.springframework.stereotype.Component;
 
 import java.time.LocalDateTime;
@@ -14,6 +12,12 @@ import java.util.stream.Collectors;
 
 @Component
 public class TravelDiaryMapper {
+
+    private final StepMapper stepMapper;
+
+    public TravelDiaryMapper(StepMapper stepMapper) {
+        this.stepMapper = stepMapper;
+    }
 
     public TravelDiaryDTO toDto(TravelDiary travelDiary){
         TravelDiaryDTO dto = new TravelDiaryDTO();
@@ -27,12 +31,13 @@ public class TravelDiaryMapper {
         dto.setCanComment(travelDiary.getCanComment());
         dto.setLatitude(travelDiary.getLatitude());
         dto.setLongitude(travelDiary.getLongitude());
+        dto.setId(travelDiary.getId());
 
         dto.setUser(travelDiary.getUser() != null ? travelDiary.getUser().getId() : null);
         dto.setMedia(travelDiary.getMedia() != null ? travelDiary.getMedia().getId() : null);
         if (travelDiary.getSteps() != null) {
             dto.setSteps(travelDiary.getSteps().stream()
-                    .map(Step::getId)
+                    .map(stepMapper::toDto)
                     .collect(Collectors.toList()));
         } else {
             dto.setSteps(List.of());

@@ -3,7 +3,6 @@ package com.wcs.travel_blog.travel_diary.controller;
 import com.wcs.travel_blog.travel_diary.dto.CreateTravelDiaryDTO;
 import com.wcs.travel_blog.travel_diary.dto.TravelDiaryDTO;
 import com.wcs.travel_blog.travel_diary.dto.UpdateTravelDiaryDTO;
-import com.wcs.travel_blog.travel_diary.model.TravelDiary;
 import com.wcs.travel_blog.travel_diary.service.TravelDiaryService;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
@@ -13,7 +12,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
-@RequestMapping("/travelDiary")
+@RequestMapping("/travel-diaries")
 public class TravelDiaryController {
 
     private final TravelDiaryService travelDiaryService;

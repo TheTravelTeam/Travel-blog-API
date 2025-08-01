@@ -6,7 +6,6 @@ import com.wcs.travel_blog.user.dto.UserDTO;
 import com.wcs.travel_blog.user.dto.UserWithDiariesDTO;
 import com.wcs.travel_blog.user.mapper.UserMapper;
 import com.wcs.travel_blog.user.model.User;
-import com.wcs.travel_blog.user.model.UserStatus;
 import com.wcs.travel_blog.user.repository.UserRepository;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -29,9 +28,6 @@ public class UserService {
 
     public List<UserDTO> getAllUsers(){
         List<User> users = userRepository.findAll();
-        if(users.isEmpty()){
-            throw new ResourceNotFoundException("Aucun utilisateur trouvé");
-        }
         return users.stream().map(userMapper::converToDto).collect(Collectors.toList());
     }
 
