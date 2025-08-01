@@ -73,5 +73,6 @@ jobs:
           ssh -i ~/.ssh/id_ed25519_travelblog-back -o StrictHostKeyChecking=no ${{ secrets.SERVER_USER }}@${{ secrets.SERVER_IP }} "
           cd /home/${{ secrets.SERVER_USER }}/${{ secrets.PROJECT_NAME }} &&
           docker compose down &&
-          docker compose --env-file .env.prod up -d --build
+          docker compose --env-file .env.prod pull &&
+          docker compose --env-file .env.prod up -d
           "
