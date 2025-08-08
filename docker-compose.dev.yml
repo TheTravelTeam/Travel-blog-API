@@ -1,0 +1,42 @@
+version: "3.8"
+
+services:
+  db:
+    image: mysql:8
+    container_name: travel-blog-mysql-dev
+    restart: always
+    ports:
+      - "3307:3306"
+    environment:
+      MYSQL_ROOT_PASSWORD: ${DATABASE_ROOT_PASSWORD}
+      MYSQL_DATABASE: ${DB_NAME}
+      MYSQL_USER: ${DATABASE_USER}
+      MYSQL_PASSWORD: ${DATABASE_USER_PASSWORD}
+    volumes:
+      - db-data-dev:/var/lib/mysql
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
+      interval: 10s
+      timeout: 5s
+      retries: 60
+
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: travel-blog-api-dev
+    ports:
+      - "8080:8080"
+    environment:
+      SPRING_PROFILES_ACTIVE: ${PROFILES_ACTIVE}
+      SPRING_DATASOURCE_URL: ${SPRING_DATASOURCE_URL}
+      SPRING_DATASOURCE_USERNAME: ${DATABASE_USER}
+      SPRING_DATASOURCE_PASSWORD: ${DATABASE_USER_PASSWORD}
+      SPRING_JPA_HIBERNATE_DDL_AUTO: ${SPRING_JPA_HIBERNATE_DDL_AUTO}
+      CORS_ALLOWED_ORIGIN: ${CORS_ALLOWED_ORIGIN}
+    depends_on:
+      db:
+        condition: service_healthy
+
+volumes:
+  db-data-dev:
