@@ -13,6 +13,17 @@ services:
     depends_on:
       db:
         condition: service_healthy
+    networks:
+      - traefik         # pour que Traefik voie le service
+      - backend         # réseau privé app <-> db
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.travelblog-api.rule=Host(`api.travel-blog.cloud`)"
+      - "traefik.http.routers.travelblog-api.entrypoints=websecure"
+      - "traefik.http.routers.travelblog-api.tls.certresolver=letsencrypt"
+      - "traefik.http.services.travelblog-api.loadbalancer.server.port=8080"
+      - "traefik.docker.network=traefik"
+
 
   db:
     image: mysql:8
@@ -31,6 +42,14 @@ services:
       interval: 10s
       timeout: 5s
       retries: 60
+    networks:
+      - backend
+
+networks:
+  traefik:
+    external: true
+  backend:
+    driver: bridge
 
 volumes:
   db-data:
