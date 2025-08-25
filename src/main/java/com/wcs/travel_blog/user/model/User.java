@@ -4,11 +4,9 @@ import com.wcs.travel_blog.article.model.Article;
 import com.wcs.travel_blog.comment.model.Comment;
 import com.wcs.travel_blog.travel_diary.model.TravelDiary;
 import jakarta.persistence.*;
-
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
-
 import lombok.Getter;
 import lombok.Setter;
 
@@ -23,7 +21,6 @@ import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
-
 @Setter
 @Getter
 @Entity
@@ -37,7 +34,6 @@ public class User implements UserDetails {
 
     private String avatar;
 
-    @NotBlank
     @Column(length = 50)
     private String username;
 
@@ -48,8 +44,7 @@ public class User implements UserDetails {
 
     @NotBlank
     @Size(min = 8)
-    @Column(nullable = false, length = 40)
-
+    @Column(nullable = false)
     private String password;
 
 //    @Column(nullable = false)
@@ -70,10 +65,11 @@ public class User implements UserDetails {
     @ElementCollection(fetch = FetchType.EAGER)
     private Set<String> roles = new HashSet<>();
 
-    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
+    //Orphanremoval permet de supprimer les carnets orphelin après suppression d'un user
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<TravelDiary> travel_diaries;
 
-    @OneToMany(mappedBy = "user")
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Article> articles;
 
     @OneToMany(mappedBy = "user",  cascade = CascadeType.ALL)

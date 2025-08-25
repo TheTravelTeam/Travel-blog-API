@@ -3,8 +3,10 @@ package com.wcs.travel_blog.user.service;
 import com.wcs.travel_blog.exception.ResourceNotFoundException;
 import com.wcs.travel_blog.user.dto.UpsertUserDTO;
 import com.wcs.travel_blog.user.dto.UserDTO;
+import com.wcs.travel_blog.user.dto.UserWithDiariesDTO;
 import com.wcs.travel_blog.user.mapper.UserMapper;
 import com.wcs.travel_blog.user.model.User;
+import com.wcs.travel_blog.user.model.UserStatus;
 import com.wcs.travel_blog.user.repository.UserRepository;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -33,19 +35,19 @@ public class UserService {
         return users.stream().map(userMapper::converToDto).collect(Collectors.toList());
     }
 
-    public UserDTO getUserById(Long userId){
+    public UserWithDiariesDTO getUserById(Long userId){
         User user = userRepository.findById(userId).orElseThrow(()-> new ResourceNotFoundException("user non trouvé avec l'id : " + userId));
-        return userMapper.converToDto(user);
+        return userMapper.converToDtoWithDiaries(user);
     }
 
-    public UserDTO getUserByEmail(String userEmail){
+    public UserWithDiariesDTO getUserByEmail(String userEmail){
         User user = userRepository.findByEmail(userEmail).orElseThrow(()-> new ResourceNotFoundException("user non trouvé avec l'email : " + userEmail));
-        return userMapper.converToDto(user);
+        return userMapper.converToDtoWithDiaries(user);
     }
 
-    public UserDTO getUserByUsername(String username){
+    public UserWithDiariesDTO getUserByUsername(String username){
         User user = userRepository.findByUsername(username).orElseThrow(()-> new ResourceNotFoundException("user non trouvé avec l'username : " + username));
-        return userMapper.converToDto(user);
+        return userMapper.converToDtoWithDiaries(user);
     }
 
     public UserDTO updateUser(Long userId, UpsertUserDTO upsertUserDTO){
@@ -54,9 +56,16 @@ public class UserService {
         existingUser.setUpdatedAt(LocalDateTime.now());
         existingUser.setUsername(upsertUserDTO.getUsername());
         existingUser.setEmail(upsertUserDTO.getEmail());
-        existingUser.setBiography(upsertUserDTO.getBiography());
-        existingUser.setAvatar(upsertUserDTO.getAvatar());
-        existingUser.setStatus(upsertUserDTO.getStatus());
+        if(upsertUserDTO.getBiography() != null  && !upsertUserDTO.getBiography().equals(existingUser.getBiography())){
+            existingUser.setBiography(upsertUserDTO.getBiography());
+        }
+        if(upsertUserDTO.getAvatar() != null && !upsertUserDTO.getAvatar().equals(existingUser.getAvatar())){
+            existingUser.setAvatar(upsertUserDTO.getAvatar());
+        }
+
+        if (upsertUserDTO.getStatus() != null) {
+            existingUser.setStatus(upsertUserDTO.getStatus());
+        }
         if(upsertUserDTO.getPassword() != null && !upsertUserDTO.getPassword().isBlank()){
             existingUser.setPassword(passwordEncoder.encode(upsertUserDTO.getPassword()));
         }
@@ -69,13 +78,4 @@ public class UserService {
         User user = userRepository.findById(userId).orElseThrow(() -> new ResourceNotFoundException("Aucun utilisateur trouvé avec l'id : " + userId));
         userRepository.delete(user);
     }
-
-
-
-//        User user = userMapper.converToEntity(upsertUserDTO);
-//        user.setCreatedAt(LocalDateTime.now());
-//        user.setUpdatedAt(LocalDateTime.now());
-//        user.setStatus(UserStatus.ACTIVE);
-//        user.setRoles(List.of(Role.USER));
-
 }

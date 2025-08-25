@@ -2,6 +2,8 @@ package com.wcs.travel_blog.user.controller;
 
 import com.wcs.travel_blog.user.dto.UpsertUserDTO;
 import com.wcs.travel_blog.user.dto.UserDTO;
+import com.wcs.travel_blog.user.dto.UserWithDiariesDTO;
+
 import com.wcs.travel_blog.user.service.UserService;
 import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
@@ -29,8 +31,8 @@ public class UserController {
     }
 
     @GetMapping("/{userId}")
-    public ResponseEntity<UserDTO> getUserById(@PathVariable Long userId){
-        UserDTO user = userService.getUserById(userId);
+    public ResponseEntity<UserWithDiariesDTO> getUserById(@PathVariable Long userId){
+        UserWithDiariesDTO user = userService.getUserById(userId);
         if(user == null){
             return ResponseEntity.notFound().build();
         }
@@ -38,16 +40,18 @@ public class UserController {
     }
 
     @PreAuthorize("hasRole('ROLE_ADMIN')")
-    @GetMapping("/email/{email}")
-    public ResponseEntity<UserDTO> getUserByEmail(@PathVariable String email) {
-        UserDTO user = userService.getUserByEmail(email);
+
+    @GetMapping("/email")
+    public ResponseEntity<UserWithDiariesDTO> getUserByEmail(@RequestParam  String email) {
+        UserWithDiariesDTO user = userService.getUserByEmail(email);
         return ResponseEntity.ok(user);
     }
 
     @PreAuthorize("hasRole('ROLE_ADMIN')")
-    @GetMapping("/username/{username}")
-    public ResponseEntity<UserDTO> getUserByUsername(@PathVariable String username) {
-        UserDTO user = userService.getUserByUsername(username);
+    @GetMapping("/username")
+    public ResponseEntity<UserWithDiariesDTO> getUserByUsername(@RequestParam  String username) {
+        UserWithDiariesDTO user = userService.getUserByUsername(username);
+
         return ResponseEntity.ok(user);
     }
 
@@ -58,9 +62,10 @@ public class UserController {
     }
 
     @DeleteMapping("/{userId}")
-    public ResponseEntity<Void> deleteUserById(@PathVariable Long userId){
+    public ResponseEntity<String> deleteUserById(@PathVariable Long userId){
         userService.deleteUserById(userId);
-        return ResponseEntity.noContent().build();
+        return ResponseEntity.ok("Utilisateur supprimé avec succès.");
+
     }
 
 

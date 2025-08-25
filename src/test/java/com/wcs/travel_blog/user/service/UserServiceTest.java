@@ -3,6 +3,7 @@ package com.wcs.travel_blog.user.service;
 import com.wcs.travel_blog.exception.ResourceNotFoundException;
 import com.wcs.travel_blog.user.dto.UpsertUserDTO;
 import com.wcs.travel_blog.user.dto.UserDTO;
+import com.wcs.travel_blog.user.dto.UserWithDiariesDTO;
 import com.wcs.travel_blog.user.mapper.UserMapper;
 import com.wcs.travel_blog.user.model.User;
 import com.wcs.travel_blog.user.repository.UserRepository;
@@ -85,6 +86,15 @@ public class UserServiceTest {
         return userDTO2;
     }
 
+    UserWithDiariesDTO getUserWithDiariesDTO1(){
+        UserWithDiariesDTO userWithDiariesDTO1 = new UserWithDiariesDTO();
+        userWithDiariesDTO1.setId(3L);
+        userWithDiariesDTO1.setUsername("user2");
+        userWithDiariesDTO1.setEmail("user2@gmail.com");
+        userWithDiariesDTO1.setAvatar("https://example.com/user2.png");
+        userWithDiariesDTO1.setBiography("user1 biography with a length of 100 characters");
+        return userWithDiariesDTO1;
+    }
 
     @Test
     void getAllUsers_shouldReturnListOfAllUsers() {
@@ -113,16 +123,16 @@ public class UserServiceTest {
     void  getUserById_shouldReturnUniqueUser(){
         //Arrange
         User user = getUser1();
-        UserDTO userDTO = getUserDTO1();
+        UserWithDiariesDTO userDTO = getUserWithDiariesDTO1();
 
         when(userRepository.findById(1L)).thenReturn(Optional.of(user));
-        when(userMapper.converToDto(user)).thenReturn(userDTO);
+        when(userMapper.converToDtoWithDiaries(user)).thenReturn(userDTO);
 
         //Act
-        UserDTO result = userService.getUserById(1L);
+        UserWithDiariesDTO result = userService.getUserById(1L);
 
         //Assert
-        assertThat(result.getUsername()).isEqualTo("user1");
+        assertThat(result.getUsername()).isEqualTo("user2");
     }
 
     @Test
@@ -139,26 +149,25 @@ public class UserServiceTest {
     @Test
     void findByEmail_shouldReturnUser() {
         User user = getUser1();
-        UserDTO userDTO = getUserDTO1();
+        UserWithDiariesDTO userDTO = getUserWithDiariesDTO1();
 
-        when(userRepository.findByEmail("user1@gmail.com")).thenReturn(Optional.of(user));
-        when(userMapper.converToDto(user)).thenReturn(userDTO);
+        when(userRepository.findByEmail("user2@gmail.com")).thenReturn(Optional.of(user));
+        when(userMapper.converToDtoWithDiaries(user)).thenReturn(userDTO);
 
-        UserDTO result = userService.getUserByEmail("user1@gmail.com");
-        assertThat(result.getEmail()).isEqualTo("user1@gmail.com");
+        UserWithDiariesDTO result = userService.getUserByEmail("user2@gmail.com");
+        assertThat(result.getEmail()).isEqualTo("user2@gmail.com");
     }
 
     @Test
     void findByUsername_shouldReturnUser() {
         User user = getUser1();
-        UserDTO userDTO = getUserDTO1();
+        UserWithDiariesDTO userDTO = getUserWithDiariesDTO1();
 
-        when(userRepository.findByUsername("user1")).thenReturn(Optional.of(user));
-        when(userMapper.converToDto(user)).thenReturn(userDTO);
+        when(userRepository.findByUsername("user2")).thenReturn(Optional.of(user));
+        when(userMapper.converToDtoWithDiaries(user)).thenReturn(userDTO);
 
-        UserDTO result = userService.getUserByUsername("user1");
-        assertThat(result.getUsername()).isEqualTo("user1");
-
+        UserWithDiariesDTO result = userService.getUserByUsername("user2");
+        assertThat(result.getUsername()).isEqualTo("user2");
     }
 
     @Test
