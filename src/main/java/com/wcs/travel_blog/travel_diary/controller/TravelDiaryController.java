@@ -41,6 +41,7 @@ public class TravelDiaryController {
 
     @PostMapping
     public ResponseEntity<TravelDiaryDTO> createTravelDiary(@Valid @RequestBody CreateTravelDiaryDTO createTravelDiaryRequest){
+
         TravelDiaryDTO travelDiaryResponse = travelDiaryService.createTravelDiary(createTravelDiaryRequest);
         return ResponseEntity.status(HttpStatus.CREATED).body(travelDiaryResponse);
     }

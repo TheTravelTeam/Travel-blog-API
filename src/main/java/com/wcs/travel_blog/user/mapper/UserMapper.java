@@ -105,6 +105,7 @@ public class UserMapper {
     }
 
     public User converToEntityOnUpdate(UpsertUserDTO userDTO){
+
         User user = new User();
         user.setId(userDTO.getId());
         user.setUsername(userDTO.getUsername());

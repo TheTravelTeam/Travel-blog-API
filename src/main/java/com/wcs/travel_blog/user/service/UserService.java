@@ -74,7 +74,4 @@ public class UserService {
         User user = userRepository.findById(userId).orElseThrow(() -> new ResourceNotFoundException("Aucun utilisateur trouvé avec l'id : " + userId));
         userRepository.delete(user);
     }
-
-
-
 }
