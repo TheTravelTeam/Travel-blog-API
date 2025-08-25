@@ -96,7 +96,6 @@ public class UserServiceTest {
         return userWithDiariesDTO1;
     }
 
-
     @Test
     void getAllUsers_shouldReturnListOfAllUsers() {
         // Arrange
@@ -169,7 +168,6 @@ public class UserServiceTest {
 
         UserWithDiariesDTO result = userService.getUserByUsername("user2");
         assertThat(result.getUsername()).isEqualTo("user2");
-
     }
 
     @Test
