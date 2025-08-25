@@ -4,9 +4,11 @@ import com.wcs.travel_blog.article.model.Article;
 import com.wcs.travel_blog.comment.model.Comment;
 import com.wcs.travel_blog.travel_diary.model.TravelDiary;
 import jakarta.persistence.*;
+
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
+
 import lombok.Getter;
 import lombok.Setter;
 
@@ -21,11 +23,13 @@ import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
+
 @Setter
 @Getter
 @Entity
 @Table(name = "\"user\"") // Utiliser un nom réservé en l’échappant pour utiliser H2
 public class User implements UserDetails {
+
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -45,6 +49,7 @@ public class User implements UserDetails {
     @NotBlank
     @Size(min = 8)
     @Column(nullable = false, length = 40)
+
     private String password;
 
 //    @Column(nullable = false)
