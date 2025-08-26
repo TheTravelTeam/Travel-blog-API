@@ -10,6 +10,8 @@ services:
       SPRING_DATASOURCE_PASSWORD: ${DATABASE_USER_PASSWORD}
       SPRING_JPA_HIBERNATE_DDL_AUTO: ${SPRING_JPA_HIBERNATE_DDL_AUTO}
       CORS_ALLOWED_ORIGIN: ${CORS_ALLOWED_ORIGIN}
+      JWT_SECRET: ${JWT_SECRET}
+      JWT_EXP_TIME: ${JWT_EXP_TIME}
     depends_on:
       db:
         condition: service_healthy
