@@ -2,17 +2,9 @@ name: CI - Build and Test Application
 
 on:
   push:
-    branches:
-      - main
-      - dev
-      - feat/*
-      - fix/*
+    branches: ['**']     # toutes les branches
   pull_request:
-    branches:
-      - main
-      - dev
-      - feat/**
-      - fix/**
+    branches: ['**']
 
 jobs:
   build-and-test:

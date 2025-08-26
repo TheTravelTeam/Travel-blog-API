@@ -8,8 +8,11 @@ on:
 
 jobs:
   deploy:
-    if: startsWith(github.ref, 'refs/heads/fix/')  # Déployer uniquement sur main
+    if: ${{ github.event.workflow_run.conclusion == 'success' }}
     runs-on: ubuntu-latest
+    concurrency:
+      group: deploy-backend-${{ github.event.workflow_run.head_branch }}
+      cancel-in-progress: false
 
     steps:
       - name: Checkout code
