@@ -27,7 +27,6 @@ import org.springframework.security.core.userdetails.UserDetails;
 @Table(name = "\"user\"") // Utiliser un nom réservé en l’échappant pour utiliser H2
 public class User implements UserDetails {
 
-
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;

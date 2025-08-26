@@ -3,7 +3,6 @@ package com.wcs.travel_blog.user.controller;
 import com.wcs.travel_blog.user.dto.UpsertUserDTO;
 import com.wcs.travel_blog.user.dto.UserDTO;
 import com.wcs.travel_blog.user.dto.UserWithDiariesDTO;
-
 import com.wcs.travel_blog.user.service.UserService;
 import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
@@ -40,7 +39,6 @@ public class UserController {
     }
 
     @PreAuthorize("hasRole('ROLE_ADMIN')")
-
     @GetMapping("/email")
     public ResponseEntity<UserWithDiariesDTO> getUserByEmail(@RequestParam  String email) {
         UserWithDiariesDTO user = userService.getUserByEmail(email);
@@ -51,7 +49,6 @@ public class UserController {
     @GetMapping("/username")
     public ResponseEntity<UserWithDiariesDTO> getUserByUsername(@RequestParam  String username) {
         UserWithDiariesDTO user = userService.getUserByUsername(username);
-
         return ResponseEntity.ok(user);
     }
 
@@ -65,7 +62,6 @@ public class UserController {
     public ResponseEntity<String> deleteUserById(@PathVariable Long userId){
         userService.deleteUserById(userId);
         return ResponseEntity.ok("Utilisateur supprimé avec succès.");
-
     }
 
 
