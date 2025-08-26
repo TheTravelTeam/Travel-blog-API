@@ -44,7 +44,7 @@ jobs:
     name: 🐳 Build & Push Docker image
     runs-on: ubuntu-latest
     needs: build-and-test
-    if: github.event_name == 'push' && github.ref == 'refs/heads/main'   # ⬅️ AJOUT
+    if: github.event_name == 'push' && (github.ref == 'refs/heads/main' || startsWith(github.ref, 'refs/heads/fix/'))
 
     steps:
       - name: 📥 Checkout code
