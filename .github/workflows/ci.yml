@@ -2,9 +2,17 @@ name: CI - Build and Test Application
 
 on:
   push:
-    branches: ['**']     # toutes les branches
+    branches:
+      - main
+      - dev
+      - feat/*
+      - fix/*
   pull_request:
-    branches: ['**']
+    branches:
+      - main
+      - dev
+      - feat/**
+      - fix/**
 
 jobs:
   build-and-test:
@@ -36,7 +44,7 @@ jobs:
     name: 🐳 Build & Push Docker image
     runs-on: ubuntu-latest
     needs: build-and-test
-    if: github.event_name == 'push' && (github.ref == 'refs/heads/main' || startsWith(github.ref, 'refs/heads/fix/'))
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main'   # ⬅️ AJOUT
 
     steps:
       - name: 📥 Checkout code

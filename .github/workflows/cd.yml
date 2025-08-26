@@ -8,11 +8,8 @@ on:
 
 jobs:
   deploy:
-    if: ${{ github.event.workflow_run.conclusion == 'success' }}
+    if: ${{ github.event.workflow_run.conclusion == 'success' && github.event.workflow_run.head_branch == 'main' }}
     runs-on: ubuntu-latest
-    concurrency:
-      group: deploy-backend-${{ github.event.workflow_run.head_branch }}
-      cancel-in-progress: false
 
     steps:
       - name: Checkout code
