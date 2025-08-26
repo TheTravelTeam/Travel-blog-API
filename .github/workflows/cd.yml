@@ -8,7 +8,7 @@ on:
 
 jobs:
   deploy:
-    if: ${{ github.event.workflow_run.conclusion == 'success' }}
+    if: github.ref == 'refs/heads/fix'  # Déployer uniquement sur main
     runs-on: ubuntu-latest
 
     steps:
