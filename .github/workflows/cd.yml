@@ -66,6 +66,8 @@ jobs:
           echo \"SPRING_JPA_HIBERNATE_DDL_AUTO=\$DDL_VALUE\" >> /home/${{ secrets.SERVER_USER }}/${{ secrets.PROJECT_NAME }}/.env.prod
           echo 'DATABASE_ROOT_PASSWORD=${{ secrets.DATABASE_ROOT_PASSWORD }}' >> /home/${{ secrets.SERVER_USER }}/${{ secrets.PROJECT_NAME }}/.env.prod &&
           echo 'CORS_ALLOWED_ORIGIN=https://travel-blog.cloud,https://www.travel-blog.cloud' >> /home/${{ secrets.SERVER_USER }}/${{ secrets.PROJECT_NAME }}/.env.prod &&
+          echo 'JWT_SECRET=${{ secrets.JWT_SECRET }}' >> /home/${{ secrets.SERVER_USER }}/${{ secrets.PROJECT_NAME }}/.env.prod &&
+          echo 'JWT_EXP_TIME=${{ secrets.JWT_EXP_TIME }}' >> /home/${{ secrets.SERVER_USER }}/${{ secrets.PROJECT_NAME }}/.env.prod &&
           chmod 600 /home/${{ secrets.SERVER_USER }}/${{ secrets.PROJECT_NAME }}/.env.prod
           "
 
