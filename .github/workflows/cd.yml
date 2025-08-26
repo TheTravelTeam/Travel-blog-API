@@ -8,7 +8,7 @@ on:
 
 jobs:
   deploy:
-    if: github.ref == 'refs/heads/fix'  # Déployer uniquement sur main
+    if: startsWith(github.ref, 'refs/heads/fix/')  # Déployer uniquement sur main
     runs-on: ubuntu-latest
 
     steps:
