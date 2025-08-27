@@ -1,7 +1,6 @@
 package com.wcs.travel_blog.security;
 
 import com.wcs.travel_blog.user.repository.UserRepository;
-import com.wcs.travel_blog.user.service.UserService;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
