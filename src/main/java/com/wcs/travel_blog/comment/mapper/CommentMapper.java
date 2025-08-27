@@ -14,7 +14,7 @@ public class CommentMapper {
         this.userMapper = userMapper;
     }
 
-    public CommentDTO converToDto(Comment comment){
+    public CommentDTO toDto (Comment comment){
         CommentDTO commentDTO = new CommentDTO();
         commentDTO.setId(comment.getId());
         commentDTO.setContent(comment.getContent());
