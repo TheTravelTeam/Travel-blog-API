@@ -36,6 +36,7 @@ mvn -s /home/antop/travels-blog/.m2/settings.xml \
 ou 
 
 mvn -Dspring-boot.run.profiles=local spring-boot:run
+./mvnw -Dspring-boot.run.profiles=local spring-boot:run
 (config classique)
 
 BDD : MySQL sur localhost
