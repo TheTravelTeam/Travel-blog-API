@@ -1,6 +1,7 @@
 package com.wcs.travel_blog.step.dto;
 
 import com.wcs.travel_blog.comment.dto.CommentDTO;
+import com.wcs.travel_blog.media.dto.MediaDTO;
 import com.wcs.travel_blog.theme.dto.ThemeDTO;
 import com.wcs.travel_blog.travel_diary.model.TravelStatus;
 import jakarta.validation.constraints.NotBlank;
@@ -15,7 +16,7 @@ import java.util.List;
 
 @Getter
 @Setter
-public class StepDTo {
+public class StepDTO {
 
     private Long id;
 
@@ -52,4 +53,6 @@ public class StepDTo {
     private List<ThemeDTO> themes;
 
     private List<CommentDTO> comments;
+
+    private List<MediaDTO> media;
 }

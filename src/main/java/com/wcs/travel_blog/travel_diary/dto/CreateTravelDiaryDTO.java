@@ -1,5 +1,6 @@
 package com.wcs.travel_blog.travel_diary.dto;
 
+import com.wcs.travel_blog.media.dto.CreateMediaDTO;
 import com.wcs.travel_blog.travel_diary.model.TravelStatus;
 
 import lombok.Getter;
@@ -35,5 +36,5 @@ public class CreateTravelDiaryDTO {
 
     private Long user;
 
-    private Long media;
+    private CreateMediaDTO media;
 }
