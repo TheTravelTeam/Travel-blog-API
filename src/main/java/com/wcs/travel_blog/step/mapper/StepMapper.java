@@ -36,7 +36,7 @@ public class StepMapper {
         stepDto.setCity(step.getCity());
         stepDto.setCountry(step.getCountry());
         stepDto.setContinent(step.getContinent());
-        stepDto.setComments(step.getComments().stream().map(comment -> commentMapper.converToDto(comment))
+        stepDto.setComments(step.getComments().stream().map(comment -> commentMapper.toDto(comment))
                 .collect(Collectors.toList()));
 
         if (step.getTravelDiary().getId() != null) {
