@@ -4,7 +4,6 @@ import com.wcs.travel_blog.auth.dto.UserRegistrationDTO;
 import com.wcs.travel_blog.media.dto.MediaDTO;
 import com.wcs.travel_blog.step.dto.SummaryStepDTO;
 import com.wcs.travel_blog.travel_diary.dto.SummaryTravelDiaryDTO;
-import com.wcs.travel_blog.travel_diary.dto.TravelDiaryDTO;
 import com.wcs.travel_blog.user.dto.UpsertUserDTO;
 import com.wcs.travel_blog.user.dto.UserDTO;
 import com.wcs.travel_blog.user.dto.UserWithDiariesDTO;
@@ -15,7 +14,6 @@ import org.springframework.stereotype.Component;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Set;
-import java.util.stream.Collectors;
 
 @Component
 public class UserMapper {
@@ -89,7 +87,7 @@ public class UserMapper {
                         MediaDTO mediaDTO = new MediaDTO();
                         mediaDTO.setId(diary.getMedia().getId());
                         mediaDTO.setFileUrl(diary.getMedia().getFileUrl());
-                        mediaDTO.setMediaType(diary.getMedia().getMediaType().name());
+                        mediaDTO.setMediaType(diary.getMedia().getMediaType());
                         mediaDTO.setIsVisible(diary.getMedia().getIsVisible());
                         mediaDTO.setCreatedAt(diary.getMedia().getCreatedAt());
                         mediaDTO.setUpdatedAt(diary.getMedia().getUpdatedAt());

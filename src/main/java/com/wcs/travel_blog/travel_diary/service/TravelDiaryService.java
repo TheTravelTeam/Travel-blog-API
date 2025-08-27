@@ -129,8 +129,8 @@ public class TravelDiaryService {
        }
 
        if(updateTravelDiaryResponse.getSteps()!=null && !updateTravelDiaryResponse.getSteps().isEmpty()){
-            List<Step>steps=stepRepository.findAllById(updateTravelDiaryResponse.getSteps());
-                if(steps.size()!=updateTravelDiaryResponse.getSteps().size()){
+            List<Step> steps = stepRepository.findAllById(updateTravelDiaryResponse.getSteps());
+                if(steps.size() != updateTravelDiaryResponse.getSteps().size()){
                     throw new EntityNotFoundException("Quelques étapes n'ont pas été trouvé");
                 }
                 travelDiary.setSteps(steps);
