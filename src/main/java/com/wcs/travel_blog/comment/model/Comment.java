@@ -1,8 +1,5 @@
 package com.wcs.travel_blog.comment.model;
 
-import com.fasterxml.jackson.annotation.JsonCreator;
-import com.fasterxml.jackson.annotation.JsonValue;
-import com.wcs.travel_blog.media.model.MediaType;
 import com.wcs.travel_blog.step.model.Step;
 import com.wcs.travel_blog.user.model.User;
 import jakarta.persistence.Entity;
@@ -33,11 +30,7 @@ public class Comment {
     private LocalDateTime updatedAt;
 
     @Enumerated(EnumType.STRING)
-    private commentStatus status;
-
-    public enum commentStatus {
-        APPROVED, PENDING, REJECTED;
-    }
+    private CommentStatus status;
 
     @ManyToOne
     @JoinColumn(name = "user_id")
