@@ -5,6 +5,7 @@ import com.wcs.travel_blog.media.mapper.MediaMapper;
 import com.wcs.travel_blog.step.dto.StepDTO;
 import com.wcs.travel_blog.step.model.Step;
 import com.wcs.travel_blog.theme.mapper.ThemeMapper;
+import com.wcs.travel_blog.travel_diary.model.TravelDiary;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
@@ -40,15 +41,8 @@ public class StepMapper {
         stepDTO.setCountry(step.getCountry());
         stepDTO.setContinent(step.getContinent());
 
-        if (step.getComments() != null && !step.getComments().isEmpty()) {
-            stepDTO.setComments(
-                    step.getComments()
-                            .stream()
-                            .map(commentMapper::toDto)
-                            .collect(Collectors.toList())
-            );
-        } else {
-            stepDTO.setComments(List.of());
+        if (step.getTravelDiary().getId() != null) {
+            stepDTO.setTravelDiaryId(step.getTravelDiary().getId());
         }
 
         if (step.getMedias() != null && !step.getMedias().isEmpty()) {
@@ -62,23 +56,53 @@ public class StepMapper {
             stepDTO.setMedia(List.of());
         }
 
-        if (step.getTravelDiary() != null && step.getTravelDiary().getId() != null) {
-            stepDTO.setTravelDiaryId(step.getTravelDiary().getId());
-        } else {
-            stepDTO.setTravelDiaryId(null);
-        }
+        stepDTO.setComments(step.getComments() != null
+                ? step.getComments().stream()
+                .map(commentMapper::toDto)
+                .collect(Collectors.toList())
+                : List.of());
 
-        if (step.getThemes() != null && !step.getThemes().isEmpty()) {
-            stepDTO.setThemes(
-                    step.getThemes()
-                            .stream()
-                            .map(themeMapper::toDto)
-                            .collect(Collectors.toList())
-            );
-        } else {
-            stepDTO.setThemes(List.of());
-        }
-
+        stepDTO.setThemes(step.getThemes() != null
+                ? step.getThemes().stream()
+                .map(themeMapper::toDto)
+                .collect(Collectors.toList())
+                : List.of());
         return stepDTO;
+    }
+
+    public Step toEntity(StepDTO stepDto) {
+        if (stepDto == null) {
+            return null;
+        }
+
+        Step step = new Step();
+        step.setId(stepDto.getId());
+        step.setTitle(stepDto.getTitle());
+        step.setDescription(stepDto.getDescription());
+        step.setCreatedAt(stepDto.getCreatedAt() != null ? stepDto.getCreatedAt() : step.getCreatedAt());
+        step.setUpdatedAt(stepDto.getUpdatedAt() != null ? stepDto.getUpdatedAt() : step.getUpdatedAt());
+        step.setStartDate(stepDto.getStartDate());
+        step.setEndDate(stepDto.getEndDate());
+        step.setStatus(stepDto.getStatus());
+        step.setLatitude(stepDto.getLatitude());
+        step.setLongitude(stepDto.getLongitude());
+        step.setCity(stepDto.getCity());
+        step.setCountry(stepDto.getCountry());
+        step.setContinent(stepDto.getContinent());
+
+        if (stepDto.getTravelDiaryId() != null) {
+            TravelDiary td = new TravelDiary();
+            td.setId(stepDto.getTravelDiaryId());
+            step.setTravelDiary(td);
+        }
+
+        // Themes
+        if (stepDto.getThemes() != null) {
+            step.setThemes(stepDto.getThemes().stream()
+                    .map(themeMapper::toEntity)
+                    .collect(Collectors.toList()));
+        }
+
+        return step;
     }
 }
