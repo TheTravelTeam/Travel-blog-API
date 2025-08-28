@@ -1,13 +1,16 @@
 package com.wcs.travel_blog.media.repository;
 
+
 import com.wcs.travel_blog.media.model.Media;
 import com.wcs.travel_blog.media.model.MediaType;
+import com.wcs.travel_blog.security.JWTAuthenticationFilter;
 import com.wcs.travel_blog.step.model.Step;
 import com.wcs.travel_blog.step.repository.StepRepository;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
-
+import org.springframework.test.context.ActiveProfiles;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import java.util.List;
 import java.util.Optional;
 
@@ -16,13 +19,13 @@ import static com.wcs.travel_blog.media.model.MediaType.VIDEO;
 import static org.assertj.core.api.Assertions.assertThat;
 
 @DataJpaTest(properties = "spring.sql.init.mode=never")
+@ActiveProfiles("test")
 class MediaRepositoryTest {
 
     @Autowired
     private MediaRepository mediaRepository;
     @Autowired
     private StepRepository stepRepository;
-
 
     private Step createStep() {
         Step step = new Step();

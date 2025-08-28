@@ -10,7 +10,7 @@ import java.util.Set;
 @Setter
 public class UserDTO {
     private Long id;
-    private String username;
+    private String pseudo;
     private String avatar;
     private String email;
     private String biography;

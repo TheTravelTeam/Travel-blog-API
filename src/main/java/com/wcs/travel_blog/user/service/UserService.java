@@ -41,8 +41,8 @@ public class UserService {
         return userMapper.converToDtoWithDiaries(user);
     }
 
-    public UserWithDiariesDTO getUserByUsername(String username){
-        User user = userRepository.findByUsername(username).orElseThrow(()-> new ResourceNotFoundException("user non trouvé avec l'username : " + username));
+    public UserWithDiariesDTO getUserByPseudo(String username){
+        User user = userRepository.findByPseudo(username).orElseThrow(()-> new ResourceNotFoundException("user non trouvé avec l'username : " + username));
         return userMapper.converToDtoWithDiaries(user);
     }
 
@@ -50,7 +50,7 @@ public class UserService {
         User existingUser = userRepository.findById(userId).orElseThrow(() -> new ResourceNotFoundException("user non trouvé avec l'id : " + userId));
 
         existingUser.setUpdatedAt(LocalDateTime.now());
-        existingUser.setUsername(upsertUserDTO.getUsername());
+        existingUser.setPseudo(upsertUserDTO.getPseudo());
         existingUser.setEmail(upsertUserDTO.getEmail());
         if(upsertUserDTO.getBiography() != null  && !upsertUserDTO.getBiography().equals(existingUser.getBiography())){
             existingUser.setBiography(upsertUserDTO.getBiography());

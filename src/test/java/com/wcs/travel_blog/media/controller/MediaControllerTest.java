@@ -6,11 +6,13 @@ import com.wcs.travel_blog.media.dto.MediaDTO;
 import com.wcs.travel_blog.media.dto.CreateMediaDTO;
 import com.wcs.travel_blog.media.dto.UpdateMediaDTO;
 import com.wcs.travel_blog.media.service.MediaService;
+import com.wcs.travel_blog.security.JWTAuthenticationFilter;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
+import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
 
@@ -23,6 +25,7 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 // Tests d'intégration Web MVC pour Media
+@ActiveProfiles("test")
 @WebMvcTest(MediaController.class)
 @AutoConfigureMockMvc(addFilters = false)
 class MediaControllerTest {
@@ -35,6 +38,9 @@ class MediaControllerTest {
 
     @Autowired
     private ObjectMapper objectMapper;
+
+    @MockitoBean
+    private JWTAuthenticationFilter jwtAuthenticationFilter;
 
     private MediaDTO media1() {
         MediaDTO media = new MediaDTO();
