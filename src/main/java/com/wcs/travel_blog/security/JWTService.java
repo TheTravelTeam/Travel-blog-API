@@ -1,5 +1,6 @@
 package com.wcs.travel_blog.security;
 
+import com.wcs.travel_blog.user.model.User;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.JwtException;
 import io.jsonwebtoken.Jwts;
@@ -19,9 +20,14 @@ public class JWTService {
     private long jwtExpiration;
 
     public String generateToken(UserDetails userDetails) {
+        Long uid = null;
+        if (userDetails instanceof User u) {
+            uid = u.getId(); // récupère l'id de l'entité
+        }
         return Jwts.builder()
                 .setSubject(userDetails.getUsername())
                 .claim("roles", userDetails.getAuthorities())
+                .claim("uid", uid)
                 .setIssuedAt(new Date())
                 .setExpiration(new Date(System.currentTimeMillis() + jwtExpiration))
                 .signWith(SignatureAlgorithm.HS256, secretKey)
