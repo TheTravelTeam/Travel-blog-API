@@ -1,20 +1,19 @@
 package com.wcs.travel_blog.media.dto;
 
 import com.wcs.travel_blog.media.model.MediaType;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 import lombok.Getter;
 import lombok.Setter;
 
-import java.time.LocalDateTime;
-
 @Getter
 @Setter
-public class MediaDTO {
-    private Long id;
+public class CreateMediaDTO {
+    @NotBlank
     private String fileUrl;
+    @NotNull
     private MediaType mediaType;
-    private Boolean isVisible;
     private Long stepId;
-    private Long travelDiaryId;
-    private LocalDateTime createdAt;
-    private LocalDateTime updatedAt;
+    private Long TravelDiaryId;
+    private Boolean isVisible;
 }

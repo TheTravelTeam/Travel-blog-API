@@ -23,7 +23,7 @@ public class TravelDiaryController {
 
     @GetMapping
     public ResponseEntity<List<TravelDiaryDTO>> getAllTravelDiaries(){
-        List<TravelDiaryDTO> travelDiaries=travelDiaryService.getAllTravelDiaries();
+        List<TravelDiaryDTO> travelDiaries = travelDiaryService.getAllTravelDiaries();
         if(travelDiaries.isEmpty()){
             return ResponseEntity.noContent().build();
         }
