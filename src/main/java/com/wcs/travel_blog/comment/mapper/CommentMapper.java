@@ -43,8 +43,4 @@ public class CommentMapper {
         return comment;
     }
 
-    /** Update auteur/admin : on autorise l’édition du contenu uniquement */
-    public void applyUpdate(Comment existing, UpsertCommentDTO input) {
-        existing.setContent(input.getContent());
-    }
 }

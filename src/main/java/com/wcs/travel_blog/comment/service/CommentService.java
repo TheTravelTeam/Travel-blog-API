@@ -76,7 +76,7 @@ public class CommentService {
         if (!isAdmin && (existingComment.getUser() == null || !existingComment.getUser().getId().equals(requesterId))) {
             throw new SecurityException("Non autorisé à modifier ce commentaire.");
         }
-        commentMapper.applyUpdate(existingComment, upsertCommentDTO);
+        existingComment.setContent(upsertCommentDTO.getContent());
         existingComment.setUpdatedAt(LocalDateTime.now());
         return commentMapper.toDto(commentRepository.save(existingComment));
     }
