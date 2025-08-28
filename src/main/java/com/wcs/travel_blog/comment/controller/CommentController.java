@@ -41,7 +41,7 @@ public class CommentController {
     }
 
     @PostMapping
-    public ResponseEntity<CommentDTO> createComment(@AuthenticationPrincipal Long currentUserId,
+    public ResponseEntity<CommentDTO> createComment(@AuthenticationPrincipal(expression = "id") Long currentUserId,
                                              @Valid @RequestBody UpsertCommentDTO upsertCommentDTO) {
         CommentDTO commentDTO = commentService.createComment(currentUserId, upsertCommentDTO);
         return ResponseEntity.status(HttpStatus.CREATED).body(commentDTO);
@@ -50,9 +50,9 @@ public class CommentController {
     @PutMapping("/{id}")
     public ResponseEntity<CommentDTO> updateCommentById(@PathVariable Long id,
                                              @AuthenticationPrincipal(expression = "id") Long currentUserId,
-                                             @AuthenticationPrincipal(expression = "admin") Boolean isAdmin,
+                                                        @AuthenticationPrincipal(expression = "authorities.?[authority=='ROLE_ADMIN'].size() > 0") Boolean isAdmin,
                                              @Valid @RequestBody UpsertCommentDTO upsertCommentDTO) {
-        boolean admin = isAdmin != null && isAdmin;
+        boolean admin = Boolean.TRUE.equals(isAdmin);
         CommentDTO commentDTO = commentService.updateCommentById(id, currentUserId, admin, upsertCommentDTO);
         return ResponseEntity.ok(commentDTO);
     }
@@ -60,8 +60,8 @@ public class CommentController {
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteCommentById(@PathVariable Long id,
                                        @AuthenticationPrincipal(expression = "id") Long currentUserId,
-                                       @AuthenticationPrincipal(expression = "admin") Boolean isAdmin) {
-        boolean admin = isAdmin != null && isAdmin;
+                                                  @AuthenticationPrincipal(expression = "authorities.?[authority=='ROLE_ADMIN'].size() > 0") Boolean isAdmin) {
+        boolean admin = Boolean.TRUE.equals(isAdmin);
         commentService.deleteCommentById(id, currentUserId, admin);
         return ResponseEntity.noContent().build();
     }

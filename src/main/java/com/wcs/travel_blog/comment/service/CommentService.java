@@ -7,6 +7,7 @@ import com.wcs.travel_blog.comment.mapper.CommentMapper;
 import com.wcs.travel_blog.comment.model.Comment;
 import com.wcs.travel_blog.comment.model.CommentStatus;
 import com.wcs.travel_blog.comment.repository.CommentRepository;
+import com.wcs.travel_blog.exception.ForbiddenOperationException;
 import com.wcs.travel_blog.exception.ResourceNotFoundException;
 import com.wcs.travel_blog.step.model.Step;
 import com.wcs.travel_blog.step.repository.StepRepository;
@@ -74,7 +75,7 @@ public class CommentService {
                 .orElseThrow(() -> new ResourceNotFoundException("Commentaire introuvable : " + commentId));
 
         if (!isAdmin && (existingComment.getUser() == null || !existingComment.getUser().getId().equals(requesterId))) {
-            throw new SecurityException("Non autorisé à modifier ce commentaire.");
+            throw new ForbiddenOperationException("Non autorisé à modifier ce commentaire.");
         }
         existingComment.setContent(upsertCommentDTO.getContent());
         existingComment.setUpdatedAt(LocalDateTime.now());
@@ -86,7 +87,7 @@ public class CommentService {
                 .orElseThrow(() -> new ResourceNotFoundException("Commentaire introuvable : " + commentId));
 
         if (!isAdmin && (existing.getUser() == null || !existing.getUser().getId().equals(requesterId))) {
-            throw new SecurityException("Non autorisé à supprimer ce commentaire.");
+            throw new ForbiddenOperationException("Non autorisé à supprimer ce commentaire.");
         }
         commentRepository.delete(existing);
     }
