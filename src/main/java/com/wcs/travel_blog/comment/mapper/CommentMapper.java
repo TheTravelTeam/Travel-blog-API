@@ -29,7 +29,7 @@ public class CommentMapper {
 //    public UserWithDiariesDTO converToDtoWithDiaries(User user){
 //        UserWithDiariesDTO UserWithDiariesDTO = new UserWithDiariesDTO();
 //        UserWithDiariesDTO.setId(user.getId());
-//        UserWithDiariesDTO.setUsername(user.getUsername());
+//        UserWithDiariesDTO.setPseudo(user.getPseudo());
 //        UserWithDiariesDTO.setEmail(user.getEmail());
 //        UserWithDiariesDTO.setAvatar(user.getAvatar());
 //        UserWithDiariesDTO.setBiography(user.getBiography());
@@ -87,7 +87,7 @@ public class CommentMapper {
 //
 //    public User converToEntity(UserRegistrationDTO userRegistrationDTO, Set<String> roles){
 //        User user = new User();
-//        user.setUsername(userRegistrationDTO.getUsername());
+//        user.setPseudo(userRegistrationDTO.getPseudo());
 //        user.setEmail(userRegistrationDTO.getEmail());
 //        user.setPassword(userRegistrationDTO.getPassword());
 //        user.setRoles(roles);

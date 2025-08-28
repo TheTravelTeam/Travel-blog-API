@@ -2,6 +2,8 @@ package com.wcs.travel_blog.user.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.wcs.travel_blog.exception.ResourceNotFoundException;
+import com.wcs.travel_blog.security.JWTAuthenticationFilter;
+import com.wcs.travel_blog.security.JWTService;
 import com.wcs.travel_blog.user.dto.UpsertUserDTO;
 import com.wcs.travel_blog.user.dto.UserDTO;
 import com.wcs.travel_blog.user.dto.UserWithDiariesDTO;
@@ -11,6 +13,8 @@ import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
+import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
 
@@ -22,6 +26,7 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 //Test d'intégration user
+@ActiveProfiles("test")
 @WebMvcTest(UserController.class)
 @AutoConfigureMockMvc(addFilters = false) // <-- indispensable ici
 public class UserControllerTest {
@@ -32,6 +37,9 @@ public class UserControllerTest {
     @MockitoBean
     private UserService userService;
 
+    @MockitoBean
+    private JWTAuthenticationFilter jwtAuthenticationFilter;
+
     @Autowired
     private ObjectMapper objectMapper;
 
@@ -40,11 +48,11 @@ public class UserControllerTest {
         //Arrange
         UserDTO userDTO1 = new UserDTO();
         userDTO1.setId(1L);
-        userDTO1.setUsername("user1");
+        userDTO1.setPseudo("user1");
 
         UserDTO userDTO2 = new UserDTO();
         userDTO2.setId(2L);
-        userDTO2.setUsername("user2");
+        userDTO2.setPseudo("user2");
 
         when(userService.getAllUsers()).thenReturn(List.of(userDTO1, userDTO2));
 
@@ -52,8 +60,8 @@ public class UserControllerTest {
         mockMvc.perform(get("/users"))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.length()").value(2))
-                .andExpect(jsonPath("$[0].username").value("user1"))
-                .andExpect(jsonPath("$[1].username").value("user2"));
+                .andExpect(jsonPath("$[0].pseudo").value("user1"))
+                .andExpect(jsonPath("$[1].pseudo").value("user2"));
     }
 
     @Test
@@ -61,28 +69,28 @@ public class UserControllerTest {
         //Arrange
         UserWithDiariesDTO userDTO1 = new UserWithDiariesDTO();
         userDTO1.setId(1L);
-        userDTO1.setUsername("user1");
+        userDTO1.setPseudo("user1");
 
         when(userService.getUserById(1L)).thenReturn(userDTO1);
 
         // Act & assert
         mockMvc.perform(get("/users/1"))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.username").value("user1"));
+                .andExpect(jsonPath("$.pseudo").value("user1"));
     }
 
 
     @Test
-    void getUserByUsername_shouldReturnUser() throws Exception {
+    void getUserByPseudo_shouldReturnUser() throws Exception {
         UserWithDiariesDTO dto = new UserWithDiariesDTO();
         dto.setId(1L);
-        dto.setUsername("user1");
+        dto.setPseudo("user1");
 
-        when(userService.getUserByUsername("user1")).thenReturn(dto);
+        when(userService.getUserByPseudo("user1")).thenReturn(dto);
 
-        mockMvc.perform(get("/users/username?username=user1"))
+        mockMvc.perform(get("/users/pseudo?pseudo=user1"))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.username").value("user1"));
+                .andExpect(jsonPath("$.pseudo").value("user1"));
     }
 
     @Test
@@ -101,7 +109,7 @@ public class UserControllerTest {
     @Test
     void updateUser_shouldReturnUpdatedUser() throws Exception {
         UpsertUserDTO updateDTO = new UpsertUserDTO();
-        updateDTO.setUsername("updatedUser");
+        updateDTO.setPseudo("updatedUser");
         updateDTO.setEmail("updated@gmail.com");
         updateDTO.setBiography("new bio");
         updateDTO.setAvatar("https://avatar.png");
@@ -109,7 +117,7 @@ public class UserControllerTest {
 
         UserDTO updatedDTO = new UserDTO();
         updatedDTO.setId(1L);
-        updatedDTO.setUsername("updatedUser");
+        updatedDTO.setPseudo("updatedUser");
         updatedDTO.setEmail("updated@gmail.com");
         updatedDTO.setBiography("new bio");
         updatedDTO.setAvatar("https://avatar.png");
@@ -121,7 +129,7 @@ public class UserControllerTest {
                         .contentType(APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(updateDTO))) // simule l'objet java en JSON pour le test coverti le DTO en { username: "" , ...}
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.username").value("updatedUser"))
+                .andExpect(jsonPath("$.pseudo").value("updatedUser"))
                 .andExpect(jsonPath("$.email").value("updated@gmail.com"));
     }
 

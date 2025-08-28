@@ -16,7 +16,7 @@ public class UpsertUserDTO {
 
     @NotBlank(message = "Le nom d'utilisateur est obligatoire")
     @Size(max = 50)
-    private String username;
+    private String pseudo;
 
     @Size(min = 8, message = "Le mot de passe doit faire au moins 8 caractères")
     private String password;

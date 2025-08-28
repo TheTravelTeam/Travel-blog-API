@@ -5,6 +5,7 @@ import com.wcs.travel_blog.user.model.User;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
+import org.springframework.test.context.ActiveProfiles;
 
 import java.util.List;
 import java.util.Optional;
@@ -12,6 +13,7 @@ import java.util.Optional;
 import static org.assertj.core.api.Assertions.assertThat;
 
 
+@ActiveProfiles("test")
 @DataJpaTest
 public class UserRepositoryTest {
 
@@ -24,7 +26,7 @@ public class UserRepositoryTest {
 
     User getUser1(){
         User user1 = new User();
-        user1.setUsername("user1");
+        user1.setPseudo("user1");
         user1.setEmail("user1@gmail.com");
         user1.setPassword("user1PasswordWithEnoughLength&Caracters");
         user1.setAvatar("https://example.com/user1.png");
@@ -34,7 +36,7 @@ public class UserRepositoryTest {
 
     User getUser2(){
         User user2 = new User();
-        user2.setUsername("user2");
+        user2.setPseudo("user2");
         user2.setEmail("user2@gmail.com");
         user2.setPassword("user2PasswordWithEnoughLength&Caracters");
         user2.setAvatar("https://example.com/user2.png");
@@ -56,8 +58,8 @@ public class UserRepositoryTest {
 
         // Assert : vérifier que la liste retournée contient bien les users
         assertThat(users).hasSize(2);
-        assertThat(users.get(0).getUsername()).isEqualTo("user1");
-        assertThat(users.get(1).getUsername()).isEqualTo("user2");
+        assertThat(users.get(0).getPseudo()).isEqualTo("user1");
+        assertThat(users.get(1).getPseudo()).isEqualTo("user2");
     }
 
     @Test
@@ -71,7 +73,7 @@ public class UserRepositoryTest {
 
         // Assert
         assertThat(result).isPresent();
-        assertThat(result.get().getUsername()).isEqualTo("user1");
+        assertThat(result.get().getPseudo()).isEqualTo("user1");
     }
 
     @Test
@@ -90,7 +92,7 @@ public class UserRepositoryTest {
         userRepository.save(user);
 
         // Act
-        Optional<User> result = userRepository.findByUsername("user2");
+        Optional<User> result = userRepository.findByPseudo("user2");
 
         // Assert
         assertThat(result).isPresent();
@@ -100,7 +102,7 @@ public class UserRepositoryTest {
     @Test
     void testFindByUsername_shouldReturnEmpty() {
         // Act
-        Optional<User> result = userRepository.findByUsername("unknownUser");
+        Optional<User> result = userRepository.findByPseudo("unknownUser");
 
         // Assert
         assertThat(result).isEmpty();

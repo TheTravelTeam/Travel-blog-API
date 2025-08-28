@@ -27,7 +27,7 @@ public class UserMapper {
     public UserDTO converToDto(User user){
         UserDTO userDTO = new UserDTO();
         userDTO.setId(user.getId());
-        userDTO.setUsername(user.getUsername());
+        userDTO.setPseudo(user.getPseudo());
         userDTO.setEmail(user.getEmail());
         userDTO.setAvatar(user.getAvatar());
         userDTO.setBiography(user.getBiography());
@@ -46,7 +46,7 @@ public class UserMapper {
     public UserWithDiariesDTO converToDtoWithDiaries(User user){
         UserWithDiariesDTO UserWithDiariesDTO = new UserWithDiariesDTO();
         UserWithDiariesDTO.setId(user.getId());
-        UserWithDiariesDTO.setUsername(user.getUsername());
+        UserWithDiariesDTO.setPseudo(user.getPseudo());
         UserWithDiariesDTO.setEmail(user.getEmail());
         UserWithDiariesDTO.setAvatar(user.getAvatar());
         UserWithDiariesDTO.setBiography(user.getBiography());
@@ -106,7 +106,7 @@ public class UserMapper {
 
         User user = new User();
         user.setId(userDTO.getId());
-        user.setUsername(userDTO.getUsername());
+        user.setPseudo(userDTO.getPseudo());
         user.setEmail(userDTO.getEmail());
         user.setAvatar(userDTO.getAvatar());
         user.setBiography(userDTO.getBiography());
@@ -118,7 +118,7 @@ public class UserMapper {
 
     public User converToEntityOnCreate(UserRegistrationDTO userRegistrationDTO, Set<String> roles){
         User user = new User();
-        user.setUsername(userRegistrationDTO.getUsername());
+        user.setPseudo(userRegistrationDTO.getPseudo());
         user.setEmail(userRegistrationDTO.getEmail());
         user.setPassword(userRegistrationDTO.getPassword());
         user.setRoles(roles);

@@ -49,12 +49,9 @@ public class UserController {
     }
 
     @PreAuthorize("hasRole('ROLE_ADMIN')")
-    @GetMapping("/username")
-    public ResponseEntity<UserWithDiariesDTO> getUserByUsername(@RequestParam  String username) {
-        UserWithDiariesDTO user = userService.getUserByUsername(username);
-        if(user == null){
-            return ResponseEntity.notFound().build();
-        }
+    @GetMapping("/pseudo")
+    public ResponseEntity<UserWithDiariesDTO> getUserByPseudo(@RequestParam  String pseudo) {
+        UserWithDiariesDTO user = userService.getUserByPseudo(pseudo);
         return ResponseEntity.ok(user);
     }
 

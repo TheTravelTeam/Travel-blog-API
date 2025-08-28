@@ -34,7 +34,7 @@ public class User implements UserDetails {
     private String avatar;
 
     @Column(length = 50)
-    private String username;
+    private String pseudo;
 
     @NotBlank
     @Email
