@@ -28,6 +28,11 @@ public class GlobalExceptionHandler {
         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Une erreur est survenue");
     }
 
+    @ExceptionHandler(ForbiddenOperationException.class)
+    public ResponseEntity<String> handleForbiddenOperationException(ForbiddenOperationException ex){
+        return ResponseEntity.status(HttpStatus.FORBIDDEN).body(ex.getMessage());
+    }
+
     // Gere les erreurs de validations des DTOS (@NotBlank etc ...)
     @ExceptionHandler(MethodArgumentNotValidException.class)
     public ResponseEntity<Map<String, Object>> handleValidationExceptions(MethodArgumentNotValidException ex) {
