@@ -33,13 +33,12 @@ public class CommentMapper {
 
     }
 
-    /** Création : content + relations injectées par le service */
     public Comment toEntity(UpsertCommentDTO upsertData, User author, Step step) {
         Comment comment = new Comment();
         comment.setContent(upsertData.getContent());
         comment.setUser(author);
         comment.setStep(step);
-        comment.setStatus(CommentStatus.PENDING); // défaut: en attente
+        comment.setStatus(CommentStatus.APPROVED);
         return comment;
     }
 
