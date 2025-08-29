@@ -19,7 +19,7 @@ public class ArticleMapper {
         articleDTO.setSlug(article.getSlug());
         if (article.getUser() != null) {
             articleDTO.setUserId(article.getUser().getId());
-            articleDTO.setUsername(article.getUser().getUsername());
+            articleDTO.setPseudo(article.getUser().getPseudo());
         }
         return articleDTO;
     }

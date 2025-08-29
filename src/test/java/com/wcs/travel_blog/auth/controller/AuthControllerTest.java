@@ -3,13 +3,17 @@ package com.wcs.travel_blog.auth.controller;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.wcs.travel_blog.auth.dto.UserRegistrationDTO;
 import com.wcs.travel_blog.auth.service.AuthService;
+import com.wcs.travel_blog.security.JWTAuthenticationFilter;
+import com.wcs.travel_blog.security.JWTService;
 import com.wcs.travel_blog.user.dto.UserDTO;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
+import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
+import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
 
@@ -20,6 +24,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 
+@ActiveProfiles("test")
 @WebMvcTest(AuthController.class)
 @AutoConfigureMockMvc(addFilters = false) // <-- indispensable ici
 public class AuthControllerTest {
@@ -29,6 +34,9 @@ public class AuthControllerTest {
     @MockitoBean
     private AuthService authService;
 
+    @MockitoBean
+    private JWTAuthenticationFilter jwtAuthenticationFilter;
+
     @Autowired
     private ObjectMapper objectMapper;
 
@@ -37,12 +45,12 @@ public class AuthControllerTest {
         UserRegistrationDTO userRegistrationDTO = new UserRegistrationDTO();
         userRegistrationDTO.setEmail("test@example.com");
         userRegistrationDTO.setPassword("password123");
-        userRegistrationDTO.setUsername("TestUser");
+        userRegistrationDTO.setPseudo("TestUser");
 
         UserDTO responseDto = new UserDTO();
         responseDto.setId(1L);
         responseDto.setEmail("test@example.com");
-        responseDto.setUsername("TestUser");
+        responseDto.setPseudo("TestUser");
 
         // Configure le mock du service pour qu’il renvoie un UserDTO lorsqu’on appelle registerUser(...).
         // Mockito.any(...) : accepte n’importe quelle instance de UserRegistrationDTO (même si c’est une nouvelle instance).
@@ -79,7 +87,7 @@ public class AuthControllerTest {
     void shouldReturn400WhenPasswordIsTooShort() throws Exception {
         UserRegistrationDTO dto = new UserRegistrationDTO();
         dto.setEmail("test@example.com");
-        dto.setUsername("Michel");
+        dto.setPseudo("Michel");
         dto.setPassword("123"); // Trop court
 
         mockMvc.perform(post("/auth/register")
@@ -100,7 +108,7 @@ public class AuthControllerTest {
                         .content(objectMapper.writeValueAsString(dto)))
                 .andExpect(status().isBadRequest())
                 .andExpect(jsonPath("$.errors.email").exists())
-                .andExpect(jsonPath("$.errors.username").exists());
+                .andExpect(jsonPath("$.errors.pseudo").exists());
     }
 
 

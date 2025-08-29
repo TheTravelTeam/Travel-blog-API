@@ -19,8 +19,9 @@ public class ThemeController {
     }
 
     @PostMapping("/create")
-    public void create(@Valid @RequestBody ThemeDTO themeDTO) {
-        themeService.createTheme(themeDTO);
+    public ResponseEntity<ThemeDTO> create(@Valid @RequestBody ThemeDTO themeDTO) {
+        ThemeDTO savedTheme = themeService.createTheme(themeDTO);
+        return ResponseEntity.ok(savedTheme);
     }
 
     @GetMapping

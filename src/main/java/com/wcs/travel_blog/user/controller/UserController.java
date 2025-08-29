@@ -42,19 +42,25 @@ public class UserController {
     @GetMapping("/email")
     public ResponseEntity<UserWithDiariesDTO> getUserByEmail(@RequestParam  String email) {
         UserWithDiariesDTO user = userService.getUserByEmail(email);
+        if(user == null){
+            return ResponseEntity.notFound().build();
+        }
         return ResponseEntity.ok(user);
     }
 
     @PreAuthorize("hasRole('ROLE_ADMIN')")
-    @GetMapping("/username")
-    public ResponseEntity<UserWithDiariesDTO> getUserByUsername(@RequestParam  String username) {
-        UserWithDiariesDTO user = userService.getUserByUsername(username);
+    @GetMapping("/pseudo")
+    public ResponseEntity<UserWithDiariesDTO> getUserByPseudo(@RequestParam  String pseudo) {
+        UserWithDiariesDTO user = userService.getUserByPseudo(pseudo);
         return ResponseEntity.ok(user);
     }
 
     @PutMapping("/{userId}")
     public ResponseEntity<UserDTO> updateUser( @PathVariable Long userId, @Valid @RequestBody UpsertUserDTO upsertUserDTO){
        UserDTO updatedUser = userService.updateUser(userId, upsertUserDTO);
+        if(updatedUser == null){
+            return ResponseEntity.notFound().build();
+        }
        return ResponseEntity.ok(updatedUser);
     }
 

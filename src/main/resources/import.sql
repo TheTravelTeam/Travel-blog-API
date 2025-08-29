@@ -1,9 +1,9 @@
 -- 👤 Utilisateurs
-INSERT INTO user (email, password, status, username, biography, created_at, updated_at, avatar) VALUES ('alice@example.com', 'password123', 'ACTIVE', 'alice', 'Passionnée de voyage', NOW(), NOW(), './Images/avatar.jpg');
+INSERT INTO user (email, password, status, pseudo, biography, created_at, updated_at, avatar) VALUES ('alice@example.com', '$2a$10$PPZ4qb.mQcIgX6mxEmecKe.TW8kWGVZG2IPBbtlrKg32zOM5Zopve', 'ACTIVE', 'alice', 'Passionnée de voyage', NOW(), NOW(), './Images/avatar.jpg');
 
-INSERT INTO user (email, password, status, username, biography, created_at, updated_at, avatar) VALUES ('bob@example.com', 'password456', 'ACTIVE', 'bob', 'Photographe globe-trotteur', NOW(), NOW(), './Images/avatar.jpg');
+INSERT INTO user (email, password, status, pseudo, biography, created_at, updated_at, avatar) VALUES ('bob@example.com', '$2a$10$r3tmkLC6jMvtmOCdIhNutOYxDPAo0eoE17Mi.SrebwLFGK/e7NaYG', 'ACTIVE', 'bob', 'Photographe globe-trotteur', NOW(), NOW(), './Images/avatar.jpg');
 
-INSERT INTO user (email, password, status, username, biography, created_at, updated_at, avatar) VALUES ('charlie@example.com', 'password789', 'ACTIVE', 'charlie', 'Aventurier en sac à dos', NOW(), NOW(), './Images/avatar.jpg');
+INSERT INTO user (email, password, status, pseudo, biography, created_at, updated_at, avatar) VALUES ('charlie@example.com', '$2a$10$fOzCYwHbHdj3z1gznRzvsO/D4glNtva9iYN/gDvL29U7N9vhmDoDa', 'ACTIVE', 'charlie', 'Aventurier en sac à dos', NOW(), NOW(), './Images/avatar.jpg');
 
 
 -- 🔥 Rôles
