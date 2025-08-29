@@ -84,3 +84,8 @@ Les fichiers .env ne doivent pas être commités s’ils contiennent des secrets
 
 Toujours activer un profil via la commande Maven ou une variable d’environnement
 
+
+# BDD password en local
+id1 : password123
+id2: password456
+id3: password789

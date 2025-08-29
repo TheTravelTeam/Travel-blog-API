@@ -1,6 +1,6 @@
 package com.wcs.travel_blog.comment.dto;
 
-import com.wcs.travel_blog.comment.model.Comment;
+import com.wcs.travel_blog.comment.model.CommentStatus;
 import com.wcs.travel_blog.user.dto.UserDTO;
 import jakarta.persistence.*;
 import lombok.Getter;
@@ -24,12 +24,8 @@ public class CommentDTO {
     @DateTimeFormat(pattern = "dd-MM-yyyy HH:mm")
     private LocalDateTime updatedAt;
 
-    @Enumerated(EnumType.STRING)
-    private Comment.commentStatus status;
+    private CommentStatus status;
 
-    public enum commentStatus {
-        APPROVED, PENDING, REJECTED
-    }
 
     private UserDTO user;
 
