@@ -51,6 +51,7 @@ jobs:
             else
               echo "Cloning fresh..."
               rm -rf "$REPO_DIR"
+              mkdir -p "$REPO_DIR"
               git clone --branch "$BRANCH" --depth 1 "$REPO_URL" "$REPO_DIR"
             fi
           
