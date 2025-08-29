@@ -32,6 +32,7 @@ jobs:
             if [ -d /home/${{ secrets.SERVER_USER }}/${{ secrets.PROJECT_NAME }}/.git ]; then
               echo 'Repository already exists. Pulling latest changes...';
               cd /home/${{ secrets.SERVER_USER }}/${{ secrets.PROJECT_NAME }};
+              git config pull.rebase false;
               git reset --hard;
               git pull origin main;
             else
