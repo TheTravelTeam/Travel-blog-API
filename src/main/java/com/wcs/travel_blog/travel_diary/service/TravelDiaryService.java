@@ -59,9 +59,15 @@ public class TravelDiaryService {
             travelDiary.setUser(user);
         }
 
+        // Media (créé en même temps que le carnet)
         if (createTravelDto.getMedia() != null) {
-            Media media = mediaRepository.findById(createTravelDto.getMedia())
-                    .orElseThrow(() -> new EntityNotFoundException("Média non trouvé"));
+            Media media = new Media();
+            media.setFileUrl(createTravelDto.getMedia().getFileUrl());
+            media.setMediaType(createTravelDto.getMedia().getMediaType());
+            media.setIsVisible(createTravelDto.getMedia().getIsVisible() != null ? createTravelDto.getMedia().getIsVisible() : Boolean.TRUE);
+
+            // liaison bidirectionnelle
+            media.setTravelDiary(travelDiary);
             travelDiary.setMedia(media);
         }
 
@@ -129,8 +135,8 @@ public class TravelDiaryService {
        }
 
        if(updateTravelDiaryResponse.getSteps()!=null && !updateTravelDiaryResponse.getSteps().isEmpty()){
-            List<Step>steps=stepRepository.findAllById(updateTravelDiaryResponse.getSteps());
-                if(steps.size()!=updateTravelDiaryResponse.getSteps().size()){
+            List<Step> steps = stepRepository.findAllById(updateTravelDiaryResponse.getSteps());
+                if(steps.size() != updateTravelDiaryResponse.getSteps().size()){
                     throw new EntityNotFoundException("Quelques étapes n'ont pas été trouvé");
                 }
                 travelDiary.setSteps(steps);

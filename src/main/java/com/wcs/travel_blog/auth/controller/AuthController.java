@@ -1,5 +1,6 @@
 package com.wcs.travel_blog.auth.controller;
 
+import com.wcs.travel_blog.auth.dto.UserLoginDTO;
 import com.wcs.travel_blog.auth.dto.UserRegistrationDTO;
 import com.wcs.travel_blog.auth.service.AuthService;
 import com.wcs.travel_blog.user.dto.UserDTO;
@@ -17,7 +18,7 @@ import java.util.Set;
 @RequestMapping("/auth")
 public class AuthController {
 
-    private AuthService authService;
+    private final AuthService authService;
 
     public AuthController(AuthService authService){
         this.authService = authService;
@@ -29,6 +30,15 @@ public class AuthController {
                 userRegistrationDTO,
                 Set.of("ROLE_USER")); // Rôle par défaut d'un utilisateur
     return ResponseEntity.status(HttpStatus.CREATED).body(registeredUser);
+    }
+
+    @PostMapping("/login")
+    public ResponseEntity<String> authenticate(@RequestBody UserLoginDTO userLoginDTO) {
+        String token = authService.authenticate(
+                userLoginDTO.getEmail(),
+                userLoginDTO.getPassword()
+        );
+        return ResponseEntity.ok(token);
     }
 
 

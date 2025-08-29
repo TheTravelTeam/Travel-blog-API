@@ -15,5 +15,5 @@ public class ArticleDTO {
     private  LocalDateTime updatedAt;
     private String slug;
     private Long userId;
-    private String username;
+    private String pseudo;
 }

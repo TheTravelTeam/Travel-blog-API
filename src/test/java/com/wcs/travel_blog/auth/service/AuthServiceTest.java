@@ -38,7 +38,7 @@ public class AuthServiceTest {
         UserRegistrationDTO userRegistrationDTO = new UserRegistrationDTO();
         userRegistrationDTO.setEmail("test@example.com");
         userRegistrationDTO.setPassword("password123");
-        userRegistrationDTO.setUsername("TestUser");
+        userRegistrationDTO.setPseudo("TestUser");
         return userRegistrationDTO;
     }
 
@@ -46,7 +46,7 @@ public class AuthServiceTest {
         User newUserEntity = new User();
         newUserEntity.setEmail("test@example.com");
         newUserEntity.setPassword("password123");
-        newUserEntity.setUsername("TestUser");
+        newUserEntity.setPseudo("TestUser");
         newUserEntity.setRoles(Set.of("ROLE_USER"));
         return newUserEntity;
     }
@@ -55,7 +55,7 @@ public class AuthServiceTest {
         UserDTO expectedDto = new UserDTO();
         expectedDto.setId(1L);
         expectedDto.setEmail("test@example.com");
-        expectedDto.setUsername("TestUser");
+        expectedDto.setPseudo("TestUser");
         expectedDto.setRoles(Set.of("ROLE_USER"));
         expectedDto.setStatus("ACTIVE");
         expectedDto.setCreatedAt(LocalDateTime.now());
@@ -87,7 +87,7 @@ public class AuthServiceTest {
 
         // Asserts
         assertThat("test@example.com").isEqualTo(result.getEmail());
-        assertThat("TestUser").isEqualTo(result.getUsername());
+        assertThat("TestUser").isEqualTo(result.getPseudo());
         assertThat(Set.of("ROLE_USER")).isEqualTo(result.getRoles());
         assertThat(newUserEntity.getPassword()).isEqualTo("EncodedPassword");
         assertThat(1L).isEqualTo(result.getId());

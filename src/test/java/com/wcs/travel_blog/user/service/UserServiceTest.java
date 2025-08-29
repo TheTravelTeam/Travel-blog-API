@@ -13,6 +13,7 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.test.context.ActiveProfiles;
 
 import java.util.List;
 import java.util.Optional;
@@ -23,6 +24,7 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 //Test unitaires user
+@ActiveProfiles("test")
 @ExtendWith(MockitoExtension.class)
 public class UserServiceTest {
 
@@ -41,7 +43,7 @@ public class UserServiceTest {
     User getUser1(){
         User user1 = new User();
         user1.setId(1L);
-        user1.setUsername("user1");
+        user1.setPseudo("user1");
         user1.setEmail("user1@gmail.com");
         user1.setPassword("user1PasswordWithEnoughLength&Caracters");
         user1.setCreatedAt(null);
@@ -54,7 +56,7 @@ public class UserServiceTest {
     User getUser2(){
         User user2 = new User();
         user2.setId(1L);
-        user2.setUsername("user2");
+        user2.setPseudo("user2");
         user2.setEmail("user2@gmail.com");
         user2.setPassword("user2PasswordWithEnoughLength&Caracters");
         user2.setCreatedAt(null);
@@ -68,7 +70,7 @@ public class UserServiceTest {
     UserDTO getUserDTO1(){
         UserDTO userDTO1 = new UserDTO();
         userDTO1.setId(1L);
-        userDTO1.setUsername("user1");
+        userDTO1.setPseudo("user1");
         userDTO1.setEmail("user1@gmail.com");
         userDTO1.setAvatar("https://example.com/user1.png");
         userDTO1.setBiography("user1 biography with a length of 100 characters");
@@ -79,7 +81,7 @@ public class UserServiceTest {
     UserDTO getUserDTO2(){
         UserDTO userDTO2 = new UserDTO();
         userDTO2.setId(2L);
-        userDTO2.setUsername("user2");
+        userDTO2.setPseudo("user2");
         userDTO2.setEmail("user2@gmail.com");
         userDTO2.setAvatar("https://example.com/user2.png");
         userDTO2.setBiography("user1 biography with a length of 100 characters");
@@ -89,7 +91,7 @@ public class UserServiceTest {
     UserWithDiariesDTO getUserWithDiariesDTO1(){
         UserWithDiariesDTO userWithDiariesDTO1 = new UserWithDiariesDTO();
         userWithDiariesDTO1.setId(3L);
-        userWithDiariesDTO1.setUsername("user2");
+        userWithDiariesDTO1.setPseudo("user2");
         userWithDiariesDTO1.setEmail("user2@gmail.com");
         userWithDiariesDTO1.setAvatar("https://example.com/user2.png");
         userWithDiariesDTO1.setBiography("user1 biography with a length of 100 characters");
@@ -114,8 +116,8 @@ public class UserServiceTest {
 
         // Assert
         assertThat(users).hasSize(2);
-        assertThat(users.get(0).getUsername()).isEqualTo("user1");
-        assertThat(users.get(1).getUsername()).isEqualTo("user2");
+        assertThat(users.get(0).getPseudo()).isEqualTo("user1");
+        assertThat(users.get(1).getPseudo()).isEqualTo("user2");
 
     }
 
@@ -132,7 +134,7 @@ public class UserServiceTest {
         UserWithDiariesDTO result = userService.getUserById(1L);
 
         //Assert
-        assertThat(result.getUsername()).isEqualTo("user2");
+        assertThat(result.getPseudo()).isEqualTo("user2");
     }
 
     @Test
@@ -163,11 +165,11 @@ public class UserServiceTest {
         User user = getUser1();
         UserWithDiariesDTO userDTO = getUserWithDiariesDTO1();
 
-        when(userRepository.findByUsername("user2")).thenReturn(Optional.of(user));
+        when(userRepository.findByPseudo("user2")).thenReturn(Optional.of(user));
         when(userMapper.converToDtoWithDiaries(user)).thenReturn(userDTO);
 
-        UserWithDiariesDTO result = userService.getUserByUsername("user2");
-        assertThat(result.getUsername()).isEqualTo("user2");
+        UserWithDiariesDTO result = userService.getUserByPseudo("user2");
+        assertThat(result.getPseudo()).isEqualTo("user2");
     }
 
     @Test
@@ -179,7 +181,7 @@ public class UserServiceTest {
 
         // Objet entrant
         UpsertUserDTO updateData = new UpsertUserDTO();
-        updateData.setUsername("updatedUser");
+        updateData.setPseudo("updatedUser");
         updateData.setEmail("updated@gmail.com");
         updateData.setBiography("updated bio");
         updateData.setAvatar("updated-avatar.png");
@@ -187,7 +189,7 @@ public class UserServiceTest {
 
         // simuler les changements sur l'user Find
         User updatedUser = getUser1();
-        updatedUser.setUsername("updatedUser");
+        updatedUser.setPseudo("updatedUser");
         updatedUser.setEmail("updated@gmail.com");
         updatedUser.setBiography("updated bio");
         updatedUser.setAvatar("updated-avatar.png");
@@ -195,7 +197,7 @@ public class UserServiceTest {
 
         // Mapper les changements pour le retour
         UserDTO updatedDTO = getUserDTO1();
-        updatedDTO.setUsername("updatedUser");
+        updatedDTO.setPseudo("updatedUser");
         updatedDTO.setEmail("updated@gmail.com");
         updatedDTO.setBiography("updated bio");
         updatedDTO.setAvatar("updated-avatar.png");
@@ -209,7 +211,7 @@ public class UserServiceTest {
         UserDTO result = userService.updateUser(1L, updateData);
 
         // Assert
-        assertThat(result.getUsername()).isEqualTo("updatedUser");
+        assertThat(result.getPseudo()).isEqualTo("updatedUser");
         assertThat(result.getEmail()).isEqualTo("updated@gmail.com");
     }
 
