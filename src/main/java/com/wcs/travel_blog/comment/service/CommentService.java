@@ -70,11 +70,11 @@ public class CommentService {
         return commentMapper.toDto(savedComment);
     }
 
-    public CommentDTO updateCommentById(Long commentId, Long requesterId, boolean isAdmin, UpsertCommentDTO upsertCommentDTO) {
+    public CommentDTO updateCommentById(Long commentId, Long requesterId, UpsertCommentDTO upsertCommentDTO) {
         Comment existingComment = commentRepository.findById(commentId)
                 .orElseThrow(() -> new ResourceNotFoundException("Commentaire introuvable : " + commentId));
 
-        if (!isAdmin && (existingComment.getUser() == null || !existingComment.getUser().getId().equals(requesterId))) {
+        if (existingComment.getUser() == null || !existingComment.getUser().getId().equals(requesterId)) {
             throw new ForbiddenOperationException("Non autorisé à modifier ce commentaire.");
         }
         existingComment.setContent(upsertCommentDTO.getContent());
