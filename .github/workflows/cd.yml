@@ -37,7 +37,7 @@ jobs:
             ssh-keyscan -H github.com | sed "s/github\.com/github-travelblog-back/" >> ~/.ssh/known_hosts 2>/dev/null || true
           
             REPO_DIR="/home/${{ secrets.SERVER_USER }}/${{ secrets.PROJECT_NAME }}"
-            REPO_URL="git@github-travelblog-back:${{ secrets.REPOSITORY_NAME }}.git"
+            REPO_URL="git@${{ secrets.REPOSITORY_NAME }}"
             BRANCH="${DEPLOY_BRANCH:-main}"
           
             if [ -d "$REPO_DIR/.git" ]; then
