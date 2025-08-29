@@ -27,7 +27,7 @@ jobs:
 
       - name: Clone or update project on server
         env:
-          DEPLOY_BRANCH: main   # mets "dev" si tu déploies dev
+          DEPLOY_BRANCH: main
         run: |
           ssh -i ~/.ssh/id_ed25519_travelblog-back -o StrictHostKeyChecking=no ${{ secrets.SERVER_USER }}@${{ secrets.SERVER_IP }} '
             set -e
