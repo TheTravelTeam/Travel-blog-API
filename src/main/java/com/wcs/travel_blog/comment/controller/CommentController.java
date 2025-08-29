@@ -50,10 +50,8 @@ public class CommentController {
     @PutMapping("/{id}")
     public ResponseEntity<CommentDTO> updateCommentById(@PathVariable Long id,
                                              @AuthenticationPrincipal(expression = "id") Long currentUserId,
-                                                        @AuthenticationPrincipal(expression = "authorities.?[authority=='ROLE_ADMIN'].size() > 0") Boolean isAdmin,
                                              @Valid @RequestBody UpsertCommentDTO upsertCommentDTO) {
-        boolean admin = Boolean.TRUE.equals(isAdmin);
-        CommentDTO commentDTO = commentService.updateCommentById(id, currentUserId, admin, upsertCommentDTO);
+        CommentDTO commentDTO = commentService.updateCommentById(id, currentUserId, upsertCommentDTO);
         return ResponseEntity.ok(commentDTO);
     }
 
