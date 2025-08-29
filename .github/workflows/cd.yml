@@ -30,10 +30,14 @@ jobs:
           DEPLOY_BRANCH: main
         run: |
           ssh -i ~/.ssh/id_ed25519_travelblog-back -o StrictHostKeyChecking=no ${{ secrets.SERVER_USER }}@${{ secrets.SERVER_IP }} '
-            set -e
+            set -euo pipefail
+          
+            mkdir -p ~/.ssh
+            ssh-keyscan -H github.com >> ~/.ssh/known_hosts 2>/dev/null || true
+            ssh-keyscan -H github.com | sed "s/github\.com/github-travelblog-back/" >> ~/.ssh/known_hosts 2>/dev/null || true
           
             REPO_DIR="/home/${{ secrets.SERVER_USER }}/${{ secrets.PROJECT_NAME }}"
-            REPO_URL="git@github.com:${{ secrets.REPOSITORY_NAME }}.git"
+            REPO_URL="git@github-travelblog-back:${{ secrets.REPOSITORY_NAME }}.git"
             BRANCH="${DEPLOY_BRANCH:-main}"
           
             if [ -d "$REPO_DIR/.git" ]; then
@@ -41,13 +45,12 @@ jobs:
               cd "$REPO_DIR"
               git remote set-url origin "$REPO_URL" || true
               git fetch origin --prune --tags
-              git checkout -B "$BRANCH" "origin/$BRANCH"
+              git checkout -B "$BRANCH" "origin/$BRANCH" 
               git reset --hard "origin/$BRANCH"
               git clean -fdx
             else
               echo "Cloning fresh..."
               rm -rf "$REPO_DIR"
-              mkdir -p "$REPO_DIR"
               git clone --branch "$BRANCH" --depth 1 "$REPO_URL" "$REPO_DIR"
             fi
           
