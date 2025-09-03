@@ -10,6 +10,6 @@ public class UpdateMediaDTO {
     private String fileUrl;
     private MediaType mediaType;
     private Long stepId;
-    private Long TravelDiaryId;
+    private Long travelDiaryId;
     private Boolean isVisible;
 }

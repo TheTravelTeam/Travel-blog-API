@@ -12,6 +12,7 @@ import org.springframework.format.annotation.DateTimeFormat;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 
 @Setter
@@ -61,8 +62,11 @@ public class Step {
     @JoinColumn(name = "travel_diary_id")
     private TravelDiary travelDiary;
 
-    @OneToMany(mappedBy = "step", cascade = CascadeType.ALL)
-    private List<Media> medias;
+    // orphanRemoval = true => tout Media retiré de la liste sera supprimé en DB automatiquement
+    // (utile quand on “remplace” la liste côté Step).
+    // Initialisation évite les NPE
+    @OneToMany(mappedBy = "step", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<Media> medias = new ArrayList<>();;
 
     @OneToMany(mappedBy = "step", cascade = CascadeType.ALL)
     private List<Comment> comments;

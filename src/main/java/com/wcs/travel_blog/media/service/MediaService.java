@@ -46,7 +46,7 @@ public class MediaService {
     }
 
     public MediaDTO createMedia(CreateMediaDTO dto) {
-        Media media = mediaMapper.toEntity(dto);
+        Media media = mediaMapper.toEntityFromCreate(dto);
         media.setCreatedAt(LocalDateTime.now());
         media.setUpdatedAt(LocalDateTime.now());
         Media saved = mediaRepository.save(media);

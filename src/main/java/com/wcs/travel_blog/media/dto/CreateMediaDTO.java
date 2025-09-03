@@ -14,6 +14,6 @@ public class CreateMediaDTO {
     @NotNull
     private MediaType mediaType;
     private Long stepId;
-    private Long TravelDiaryId;
+    private Long travelDiaryId;
     private Boolean isVisible;
 }

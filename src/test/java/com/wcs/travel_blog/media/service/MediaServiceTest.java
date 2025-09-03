@@ -140,7 +140,7 @@ class MediaServiceTest {
         Media saved  = mediaEntity(3L, "https://new.jpg", PHOTO, 11L);
         MediaDTO out = mediaDTO(3L, "https://new.jpg", PHOTO, 11L);
 
-        when(mediaMapper.toEntity(in)).thenReturn(toSave);
+        when(mediaMapper.toEntityFromCreate(in)).thenReturn(toSave);
         when(mediaRepository.save(toSave)).thenReturn(saved);
         when(mediaMapper.toDto(saved)).thenReturn(out);
 
@@ -148,7 +148,7 @@ class MediaServiceTest {
 
         assertThat(res.getId()).isEqualTo(3L);
         assertThat(res.getMediaType()).isEqualTo(PHOTO);
-        verify(mediaMapper).toEntity(in);
+        verify(mediaMapper).toEntityFromCreate(in);
         verify(mediaRepository).save(toSave);
         verify(mediaMapper).toDto(saved);
     }
