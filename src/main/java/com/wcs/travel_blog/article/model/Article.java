@@ -1,11 +1,14 @@
 package com.wcs.travel_blog.article.model;
 
+import com.wcs.travel_blog.theme.model.Theme;
 import com.wcs.travel_blog.user.model.User;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 
 @Entity
 
@@ -32,4 +35,12 @@ public class Article {
     @ManyToOne
     @JoinColumn(name = "user_id")
     private User user;
+
+    @ManyToMany
+    @JoinTable(
+            name = "article_theme",
+            joinColumns = @JoinColumn(name = "article_id"),
+            inverseJoinColumns = @JoinColumn(name = "theme_id")
+    )
+    private List<Theme> themes = new ArrayList<>();
 }

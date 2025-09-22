@@ -66,6 +66,12 @@ INSERT INTO article (title, content, user_id, slug, created_at, updated_at) VALU
 INSERT INTO article (title, content, user_id, slug, created_at, updated_at) VALUES ('Guide street food Bangkok', 'Les meilleurs plats à tester absolument dans les rues de Bangkok.', 2, 'guide-street-food-bangkok', NOW(), NOW());
 INSERT INTO article (title, content, user_id, slug, created_at, updated_at) VALUES ('Berlin, capitale de la créativité', 'Pourquoi Berlin est un paradis pour les créateurs.', 3, 'berlin-capitale-creativite', NOW(), NOW());
 
+-- 🔗 Jointure Article-Theme
+INSERT INTO article_theme (article_id, theme_id) VALUES (1, 1);
+INSERT INTO article_theme (article_id, theme_id) VALUES (2, 2);
+INSERT INTO article_theme (article_id, theme_id) VALUES (2, 3);
+INSERT INTO article_theme (article_id, theme_id) VALUES (3, 1);
+
 -- ✅ Mise à jour des cover_media_id dans travel_diary
 UPDATE media  SET travel_diary_id  = 1 WHERE id = 3;
 UPDATE media  SET travel_diary_id  = 2 WHERE id = 7;

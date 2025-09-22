@@ -1,11 +1,13 @@
 package com.wcs.travel_blog.theme.model;
 
+import com.wcs.travel_blog.article.model.Article;
 import com.wcs.travel_blog.step.model.Step;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 
 @Getter
@@ -26,7 +28,10 @@ public class Theme {
     private LocalDateTime updatedAt;
 
     @ManyToMany(mappedBy = "themes")
-    private List<Step> steps;
+    private List<Step> steps = new ArrayList<>();
+
+    @ManyToMany(mappedBy = "themes")
+    private List<Article> articles = new ArrayList<>();
 
     /**
      * permet de mettre à jour le update automatiquement (à voir)
