@@ -26,24 +26,37 @@ jobs:
         run: ssh -i ~/.ssh/id_ed25519_travelblog-back -o StrictHostKeyChecking=no ${{ secrets.SERVER_USER }}@${{ secrets.SERVER_IP }} "echo 'SSH connection successful!'"
 
       - name: Clone or update project on server
+        env:
+          DEPLOY_BRANCH: main
         run: |
-          ssh -i ~/.ssh/id_ed25519_travelblog-back -o StrictHostKeyChecking=no ${{ secrets.SERVER_USER }}@${{ secrets.SERVER_IP }} "
-          if [ -d /home/${{ secrets.SERVER_USER }}/${{ secrets.PROJECT_NAME }} ]; then
-            if [ -d /home/${{ secrets.SERVER_USER }}/${{ secrets.PROJECT_NAME }}/.git ]; then
-              echo 'Repository already exists. Pulling latest changes...';
-              cd /home/${{ secrets.SERVER_USER }}/${{ secrets.PROJECT_NAME }};
-              git reset --hard;
-              git pull origin main;
+          ssh -i ~/.ssh/id_ed25519_travelblog-back -o StrictHostKeyChecking=no ${{ secrets.SERVER_USER }}@${{ secrets.SERVER_IP }} '
+            set -euo pipefail
+          
+            mkdir -p ~/.ssh
+            ssh-keyscan -H github.com >> ~/.ssh/known_hosts 2>/dev/null || true
+            ssh-keyscan -H github.com | sed "s/github\.com/github-travelblog-back/" >> ~/.ssh/known_hosts 2>/dev/null || true
+          
+            REPO_DIR="/home/${{ secrets.SERVER_USER }}/${{ secrets.PROJECT_NAME }}"
+            REPO_URL="git@${{ secrets.REPOSITORY_NAME }}"
+            BRANCH="${DEPLOY_BRANCH:-main}"
+          
+            if [ -d "$REPO_DIR/.git" ]; then
+              echo "Repo found. Forcing sync to origin/$BRANCH..."
+              cd "$REPO_DIR"
+              git remote set-url origin "$REPO_URL" || true
+              git fetch origin --prune --tags
+              git checkout -B "$BRANCH" "origin/$BRANCH"
+              git reset --hard "origin/$BRANCH"
+              git clean -fdx
             else
-              echo 'Invalid directory exists. Cleaning up and cloning again...';
-              rm -rf /home/${{ secrets.SERVER_USER }}/${{ secrets.PROJECT_NAME }};
-              git clone git@github.com:${{ secrets.REPOSITORY_NAME }} /home/${{ secrets.SERVER_USER }}/${{ secrets.PROJECT_NAME }};
+              echo "Cloning fresh..."
+              rm -rf "$REPO_DIR"
+              mkdir -p "$REPO_DIR"
+              git clone --branch "$BRANCH" --depth 1 "$REPO_URL" "$REPO_DIR"
             fi
-          else
-            echo 'Cloning repository...';
-            git clone git@${{ secrets.REPOSITORY_NAME }} /home/${{ secrets.SERVER_USER }}/${{ secrets.PROJECT_NAME }};
-          fi
-          "
+          
+            echo "Now at commit: $(git -C "$REPO_DIR" rev-parse --short HEAD)"
+          '
 
       - name: Generate .env file on server
         run: |
@@ -63,7 +76,7 @@ jobs:
           echo 'SPRING_DATASOURCE_URL=${{ secrets.SPRING_DATASOURCE_URL }}' >> /home/${{ secrets.SERVER_USER }}/${{ secrets.PROJECT_NAME }}/.env.prod &&
           echo 'DATABASE_USER=${{ secrets.DATABASE_USER }}' >> /home/${{ secrets.SERVER_USER }}/${{ secrets.PROJECT_NAME }}/.env.prod &&
           echo 'DATABASE_USER_PASSWORD=${{ secrets.DATABASE_USER_PASSWORD }}' >> /home/${{ secrets.SERVER_USER }}/${{ secrets.PROJECT_NAME }}/.env.prod &&
-          echo \"SPRING_JPA_HIBERNATE_DDL_AUTO=\$DDL_VALUE\" >> /home/${{ secrets.SERVER_USER }}/${{ secrets.PROJECT_NAME }}/.env.prod
+          echo \"SPRING_JPA_HIBERNATE_DDL_AUTO=\$DDL_VALUE\" >> /home/${{ secrets.SERVER_USER }}/${{ secrets.PROJECT_NAME }}/.env.prod &&
           echo 'DATABASE_ROOT_PASSWORD=${{ secrets.DATABASE_ROOT_PASSWORD }}' >> /home/${{ secrets.SERVER_USER }}/${{ secrets.PROJECT_NAME }}/.env.prod &&
           echo 'CORS_ALLOWED_ORIGIN=https://travel-blog.cloud,https://www.travel-blog.cloud' >> /home/${{ secrets.SERVER_USER }}/${{ secrets.PROJECT_NAME }}/.env.prod &&
           echo 'JWT_SECRET=${{ secrets.JWT_SECRET }}' >> /home/${{ secrets.SERVER_USER }}/${{ secrets.PROJECT_NAME }}/.env.prod &&
