@@ -19,8 +19,11 @@ INSERT INTO travel_diary (title, description, user_id, can_comment, is_private, 
 
 INSERT INTO travel_diary (title, description, user_id, can_comment, is_private, is_published, status, created_at, updated_at, latitude, longitude) VALUES ('Road trip en Europe', 'Voyage en van à travers l''Europe', 3, true, false, true, 'IN_PROGRESS', NOW(), NOW(), 20, 50);
 
+INSERT INTO travel_diary (title, description, user_id, can_comment, is_private, is_published, status, created_at, updated_at, latitude, longitude)  VALUES ('Tour du monde en solo2', 'Mon aventure autour du monde', 1, true, false, true, 'IN_PROGRESS', NOW(), NOW(), 60.48, 3.33);
+
 -- 🗺️ Étapes
 INSERT INTO step (title, description, latitude, longitude, city, country, continent, start_date, end_date, status, travel_diary_id, created_at, updated_at) VALUES ('Paris', 'Départ officiel', 48.8566, 2.3522, 'Paris', 'France', 'Europe','2020-08-12', '2020-08-12', 'COMPLETED', 1, NOW(), NOW());
+INSERT INTO step (title, description, latitude, longitude, city, country, continent, start_date, end_date, status, travel_diary_id, created_at, updated_at) VALUES ('Paris', 'Départ officiel2', 48.8566, 2.3522, 'Paris', 'France', 'Europe','2020-08-12', '2020-08-12', 'COMPLETED', 4, NOW(), NOW());
 
 INSERT INTO step (title, description, latitude, longitude, city, country, continent, start_date, end_date, status, travel_diary_id, created_at, updated_at)VALUES ('Bangkok', 'Street food et temples', 13.7563, 100.5018, 'Bangkok', 'Thaïlande', 'Asia','2020-08-12','2020-08-12','IN_PROGRESS',1,NOW(),NOW());
 

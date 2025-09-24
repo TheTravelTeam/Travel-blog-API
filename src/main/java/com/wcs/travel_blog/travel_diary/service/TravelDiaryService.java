@@ -130,20 +130,20 @@ public class TravelDiaryService {
        if(updateTravelDiaryResponse.getMedia()!=null){
            Media media = mediaRepository.findById(updateTravelDiaryResponse.getMedia()).orElseThrow(()-> new EntityNotFoundException("Média non trouvé"));
            travelDiary.setMedia(media);
-       } else {
-           travelDiary.setMedia(null);
        }
 
-       if(updateTravelDiaryResponse.getSteps()!=null && !updateTravelDiaryResponse.getSteps().isEmpty()){
-            List<Step> steps = stepRepository.findAllById(updateTravelDiaryResponse.getSteps());
-                if(steps.size() != updateTravelDiaryResponse.getSteps().size()){
-                    throw new EntityNotFoundException("Quelques étapes n'ont pas été trouvé");
-                }
-                travelDiary.setSteps(steps);
-       } else {
-           travelDiary.getSteps().clear();
+       if (updateTravelDiaryResponse.getSteps() != null) {
+           if (!updateTravelDiaryResponse.getSteps().isEmpty()) {
+               List<Step> steps = stepRepository.findAllById(updateTravelDiaryResponse.getSteps());
+               if (steps.size() != updateTravelDiaryResponse.getSteps().size()) {
+                   throw new EntityNotFoundException("Quelques étapes n'ont pas été trouvées");
+               }
+               travelDiary.setSteps(steps);
+           } else {
+               // Le client a fourni une liste vide -> intention explicite d’effacer
+               travelDiary.getSteps().clear();
+           }
        }
-
        TravelDiary updated = travelDiaryRepository.save(travelDiary);
        return travelDiaryMapper.toDto(updated);
    }

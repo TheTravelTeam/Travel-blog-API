@@ -23,6 +23,11 @@ public class GlobalExceptionHandler {
         return new ResponseEntity<>(exception.getMessage(), HttpStatus.CONFLICT);
     }
 
+    @ExceptionHandler(ExternalServiceException.class)
+    public ResponseEntity<String> handleExternalServiceException(ExternalServiceException exception) {
+        return ResponseEntity.status(HttpStatus.BAD_GATEWAY).body(exception.getMessage());
+    }
+
     @ExceptionHandler(Exception.class)
     public ResponseEntity<String> handleGlobalException(Exception ex) {
         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Une erreur est survenue");
