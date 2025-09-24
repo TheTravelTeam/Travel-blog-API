@@ -49,7 +49,7 @@ public class SecurityConfig {
                         })
                 )
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers(HttpMethod.POST,"/auth/login").permitAll()
+                        .requestMatchers(HttpMethod.POST,"/auth/**").permitAll()
                         .requestMatchers("/**").permitAll()
                         .requestMatchers(HttpMethod.GET, "/travel-diaries/**").permitAll()
                         .requestMatchers(HttpMethod.POST, "/travel-diaries/**").hasAnyRole("ADMIN","USER")

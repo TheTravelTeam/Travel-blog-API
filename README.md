@@ -39,6 +39,10 @@ mvn -Dspring-boot.run.profiles=local spring-boot:run
 ./mvnw -Dspring-boot.run.profiles=local spring-boot:run
 (config classique)
 
+Si tu es sur PowerShell (Windows) : mettre l’option entre guillemets
+
+mvn spring-boot:run "-Dspring.profiles.active=local"
+
 BDD : MySQL sur localhost
 API : Lancement direct en local, sans Docker
 
