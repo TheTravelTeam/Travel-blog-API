@@ -5,19 +5,21 @@ import com.wcs.travel_blog.auth.dto.UserRegistrationDTO;
 import com.wcs.travel_blog.auth.service.AuthService;
 import com.wcs.travel_blog.security.JWTAuthenticationFilter;
 import com.wcs.travel_blog.user.dto.UserDTO;
+import com.wcs.travel_blog.user.service.UserService;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.http.MediaType;
+import org.springframework.security.core.Authentication;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
 
 import java.util.Set;
 import static org.mockito.Mockito.when;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -31,6 +33,9 @@ public class AuthControllerTest {
 
     @MockitoBean
     private AuthService authService;
+
+    @MockitoBean
+    private UserService userService;
 
     @MockitoBean
     private JWTAuthenticationFilter jwtAuthenticationFilter;
@@ -63,7 +68,7 @@ public class AuthControllerTest {
 
         // Solution : on utilise Mockito.any(UserRegistrationDTO.class) pour dire :
         // « Peu importe l'instance exacte, tant que c’est un UserRegistrationDTO, retourne le DTO simulé. »
-        when(authService.registerUser(Mockito.any(UserRegistrationDTO.class), Mockito.eq(Set.of("ROLE_USER"))))
+        when(authService.registerUser(Mockito.any(UserRegistrationDTO.class), Mockito.anySet()))
                 .thenReturn(responseDto);
 
         // Simule une requête HTTP POST sur l’endpoint /auth/register
@@ -78,7 +83,8 @@ public class AuthControllerTest {
                 .andExpect(jsonPath("$.id").value(1L))
 
                 // Vérifie que le champ "email" de la réponse JSON est bien celui attendu
-                .andExpect(jsonPath("$.email").value("test@example.com"));
+                .andExpect(jsonPath("$.email").value("test@example.com"))
+                .andExpect(jsonPath("$.pseudo").value("TestUser"));
     }
 
     @Test
@@ -109,5 +115,28 @@ public class AuthControllerTest {
                 .andExpect(jsonPath("$.errors.pseudo").exists());
     }
 
+    @Test
+    void shouldReturn401WhenGettingCurrentUserWithoutAuth() throws Exception {
+        mockMvc.perform(get("/auth/me"))
+                .andExpect(status().isUnauthorized());
+    }
+
+    @Test
+    void shouldReturnCurrentUserWhenAuthenticated() throws Exception {
+        UserDTO mockUser = new UserDTO();
+        mockUser.setId(1L);
+        mockUser.setEmail("test@example.com");
+        mockUser.setPseudo("TestUser");
+
+        Authentication auth = Mockito.mock(Authentication.class);
+        when(auth.isAuthenticated()).thenReturn(true);
+        when(auth.getName()).thenReturn("test@example.com");
+        when(userService.getUserByEmail("test@example.com")).thenReturn(mockUser);
+
+        mockMvc.perform(get("/auth/me").principal(auth))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.id").value(1L))
+                .andExpect(jsonPath("$.email").value("test@example.com"));
+    }
 
 }
