@@ -41,12 +41,19 @@ public class UserController {
 
     @PreAuthorize("hasRole('ROLE_ADMIN')")
     @GetMapping("/email")
-    public ResponseEntity<UserWithDiariesDTO> getUserByEmail(@RequestParam  String email) {
-        UserWithDiariesDTO user = userService.getUserByEmail(email);
-        if(user == null){
-            return ResponseEntity.notFound().build();
+    public ResponseEntity<?> getUserByEmail(
+            @RequestParam  String email,
+            @RequestParam(required = false, defaultValue = "false") boolean withDiaries
+    ) {
+        if(withDiaries){
+            UserWithDiariesDTO user = userService.getUserWithDiariesByEmail(email);
+            if (user == null) return ResponseEntity.notFound().build();
+            return ResponseEntity.ok(user);
+        } else {
+            UserDTO user = userService.getUserByEmail(email);
+            if (user == null) return ResponseEntity.notFound().build();
+            return ResponseEntity.ok(user);
         }
-        return ResponseEntity.ok(user);
     }
 
     @PreAuthorize("hasRole('ROLE_ADMIN')")
