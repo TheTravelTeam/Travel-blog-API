@@ -16,6 +16,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.time.Duration;
 import java.util.Set;
+import java.util.UUID;
 
 @RestController
 @RequestMapping("/auth")
@@ -30,7 +31,9 @@ public class AuthController {
     @Value("${jwt.cookie.samesite}")
     private String sameSite;
 
+
     public AuthController(AuthService authService, UserService userService){
+
         this.authService = authService;
         this.userService = userService;
     }
