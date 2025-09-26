@@ -15,6 +15,9 @@ import org.springframework.web.filter.OncePerRequestFilter;
 import java.io.IOException;
 import java.util.Date;
 
+import io.jsonwebtoken.ExpiredJwtException;
+import io.jsonwebtoken.JwtException;
+
 
 @Component
 public class JWTAuthenticationFilter extends OncePerRequestFilter {
@@ -48,18 +51,34 @@ public class JWTAuthenticationFilter extends OncePerRequestFilter {
         }
         // Si JWT trouvé et authentification pas déjà définie
         if (jwt != null) {
-            String email = jwtService.extractClaims(jwt).getSubject();
-            if (email != null && SecurityContextHolder.getContext().getAuthentication() == null) {
-                UserDetails userDetails = userDetailsService.loadUserByUsername(email);
-                if (jwtService.extractClaims(jwt).getExpiration().after(new Date())) {
-                    UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthenticationToken(
-                            userDetails, null, userDetails.getAuthorities()
-                    );
-                    SecurityContextHolder.getContext().setAuthentication(authentication);
+            try {
+                var claims = jwtService.extractClaims(jwt);
+                String email = claims.getSubject();
+                if (email != null && SecurityContextHolder.getContext().getAuthentication() == null) {
+                    UserDetails userDetails = userDetailsService.loadUserByUsername(email);
+                    if (claims.getExpiration().after(new Date())) {
+                        UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthenticationToken(
+                                userDetails, null, userDetails.getAuthorities()
+                        );
+                        SecurityContextHolder.getContext().setAuthentication(authentication);
+                    }
                 }
+            } catch (ExpiredJwtException e) {
+                clearJwtCookie(request, response);
+            } catch (JwtException e) {
+                clearJwtCookie(request, response);
             }
         }
 
         filterChain.doFilter(request, response);
+    }
+
+    private void clearJwtCookie(HttpServletRequest request, HttpServletResponse response) {
+        Cookie cookie = new Cookie("jwt", "");
+        cookie.setMaxAge(0);
+        cookie.setPath("/");
+        cookie.setHttpOnly(true);
+        cookie.setSecure(request.isSecure());
+        response.addCookie(cookie);
     }
 }

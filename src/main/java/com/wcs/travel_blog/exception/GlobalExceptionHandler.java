@@ -43,6 +43,11 @@ public class GlobalExceptionHandler {
         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Une erreur est survenue");
     }
 
+    @ExceptionHandler(AuthenticationFailedException.class)
+    public ResponseEntity<String> handleAuthenticationFailed(AuthenticationFailedException ex) {
+        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(ex.getMessage());
+    }
+
     @ExceptionHandler(ForbiddenOperationException.class)
     public ResponseEntity<String> handleForbiddenOperationException(ForbiddenOperationException ex){
         return ResponseEntity.status(HttpStatus.FORBIDDEN).body(ex.getMessage());
