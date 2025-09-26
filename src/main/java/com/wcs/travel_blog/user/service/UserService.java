@@ -38,12 +38,18 @@ public class UserService {
         return userMapper.converToDtoWithDiaries(user);
     }
 
-    public UserWithDiariesDTO getUserByEmail(String userEmail){
+    public UserDTO getUserByEmail(String userEmail){
         User user = userRepository.findByEmail(userEmail).orElseThrow(()-> new ResourceNotFoundException("user non trouvé avec l'email : " + userEmail));
+        return userMapper.converToDto(user);
+    }
+
+    public UserWithDiariesDTO getUserWithDiariesByEmail(String userEmail) {
+        User user = userRepository.findByEmail(userEmail)
+                .orElseThrow(() -> new ResourceNotFoundException("user non trouvé avec l'email : " + userEmail));
         return userMapper.converToDtoWithDiaries(user);
     }
 
-    public UserWithDiariesDTO getUserByPseudo(String username){
+        public UserWithDiariesDTO getUserByPseudo(String username){
         User user = userRepository.findByPseudo(username).orElseThrow(()-> new ResourceNotFoundException("user non trouvé avec l'username : " + username));
         return userMapper.converToDtoWithDiaries(user);
     }

@@ -149,14 +149,26 @@ public class UserServiceTest {
     }
 
     @Test
-    void findByEmail_shouldReturnUser() {
+    void findByEmail_withoutDiaries_shouldReturnUser() {
+        User user = getUser1();
+        UserDTO userDTO = getUserDTO1();
+
+        when(userRepository.findByEmail("user1@gmail.com")).thenReturn(Optional.of(user));
+        when(userMapper.converToDto(user)).thenReturn(userDTO);
+
+        UserDTO result = userService.getUserByEmail("user1@gmail.com");
+        assertThat(result.getEmail()).isEqualTo("user1@gmail.com");
+    }
+
+    @Test
+    void findByEmail_withDiaries_shouldReturnUser() {
         User user = getUser1();
         UserWithDiariesDTO userDTO = getUserWithDiariesDTO1();
 
         when(userRepository.findByEmail("user2@gmail.com")).thenReturn(Optional.of(user));
         when(userMapper.converToDtoWithDiaries(user)).thenReturn(userDTO);
 
-        UserWithDiariesDTO result = userService.getUserByEmail("user2@gmail.com");
+        UserWithDiariesDTO result = userService.getUserWithDiariesByEmail("user2@gmail.com");
         assertThat(result.getEmail()).isEqualTo("user2@gmail.com");
     }
 
