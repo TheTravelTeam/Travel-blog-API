@@ -11,7 +11,9 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 @Service
@@ -36,12 +38,18 @@ public class UserService {
         return userMapper.converToDtoWithDiaries(user);
     }
 
-    public UserWithDiariesDTO getUserByEmail(String userEmail){
+    public UserDTO getUserByEmail(String userEmail){
         User user = userRepository.findByEmail(userEmail).orElseThrow(()-> new ResourceNotFoundException("user non trouvé avec l'email : " + userEmail));
+        return userMapper.converToDto(user);
+    }
+
+    public UserWithDiariesDTO getUserWithDiariesByEmail(String userEmail) {
+        User user = userRepository.findByEmail(userEmail)
+                .orElseThrow(() -> new ResourceNotFoundException("user non trouvé avec l'email : " + userEmail));
         return userMapper.converToDtoWithDiaries(user);
     }
 
-    public UserWithDiariesDTO getUserByPseudo(String username){
+        public UserWithDiariesDTO getUserByPseudo(String username){
         User user = userRepository.findByPseudo(username).orElseThrow(()-> new ResourceNotFoundException("user non trouvé avec l'username : " + username));
         return userMapper.converToDtoWithDiaries(user);
     }
@@ -73,5 +81,22 @@ public class UserService {
     public void deleteUserById(Long userId){
         User user = userRepository.findById(userId).orElseThrow(() -> new ResourceNotFoundException("Aucun utilisateur trouvé avec l'id : " + userId));
         userRepository.delete(user);
+    }
+
+    public UserDTO updateUserRoles(Long userId, boolean isAdmin) {
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new ResourceNotFoundException("user non trouvé avec l'id : " + userId));
+
+        Set<String> roles = new HashSet<>();
+        roles.add("ROLE_USER");
+        if (isAdmin) {
+            roles.add("ROLE_ADMIN");
+        }
+
+        user.setRoles(roles);
+        user.setUpdatedAt(LocalDateTime.now());
+
+        User savedUser = userRepository.save(user);
+        return userMapper.converToDto(savedUser);
     }
 }

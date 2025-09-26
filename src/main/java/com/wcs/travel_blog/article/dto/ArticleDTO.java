@@ -1,10 +1,11 @@
 package com.wcs.travel_blog.article.dto;
 
-import com.wcs.travel_blog.user.model.User;
+import com.wcs.travel_blog.theme.dto.ThemeDTO;
 import lombok.Getter;
 import lombok.Setter;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Getter
 @Setter
@@ -16,4 +17,5 @@ public class ArticleDTO {
     private String slug;
     private Long userId;
     private String pseudo;
+    private List<ThemeDTO> themes;
 }

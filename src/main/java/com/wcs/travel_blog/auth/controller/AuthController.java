@@ -4,14 +4,17 @@ import com.wcs.travel_blog.auth.dto.UserLoginDTO;
 import com.wcs.travel_blog.auth.dto.UserRegistrationDTO;
 import com.wcs.travel_blog.auth.service.AuthService;
 import com.wcs.travel_blog.user.dto.UserDTO;
+import com.wcs.travel_blog.user.service.UserService;
 import jakarta.validation.Valid;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseCookie;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.security.core.Authentication;
+import org.springframework.web.bind.annotation.*;
 
+import java.time.Duration;
 import java.util.Set;
 
 @RestController
@@ -19,9 +22,27 @@ import java.util.Set;
 public class AuthController {
 
     private final AuthService authService;
+    private final UserService userService;
 
-    public AuthController(AuthService authService){
+    @Value("${jwt.cookie.secure}")
+    private boolean cookieSecure;
+
+    @Value("${jwt.cookie.samesite}")
+    private String sameSite;
+
+    public AuthController(AuthService authService, UserService userService){
         this.authService = authService;
+        this.userService = userService;
+    }
+
+    @GetMapping("/me")
+    public ResponseEntity<UserDTO> getCurrentUser(Authentication authentication){
+        if (authentication == null || !authentication.isAuthenticated()){
+            return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
+        }
+        String email = authentication.getName();
+        UserDTO user = userService.getUserByEmail(email);
+        return ResponseEntity.ok(user);
     }
 
     @PostMapping("/register")
@@ -38,7 +59,30 @@ public class AuthController {
                 userLoginDTO.getEmail(),
                 userLoginDTO.getPassword()
         );
-        return ResponseEntity.ok(token);
+
+        ResponseCookie cookie = ResponseCookie.from("jwt", token)
+                .httpOnly(true)
+                .secure(cookieSecure)
+                .path("/")
+                .maxAge(Duration.ofHours(1))
+                .sameSite(sameSite)
+                .build();
+        return ResponseEntity.ok()
+                .header(HttpHeaders.SET_COOKIE, cookie.toString())
+                .body("Connexion réussie");
+    }
+
+    @PostMapping("/logout")
+    public ResponseEntity<Void> logout(){
+        ResponseCookie cookie = ResponseCookie.from("jwt", "")
+                .httpOnly(true)
+                .secure(cookieSecure)
+                .path("/")
+                .maxAge(0)
+                .build();
+        return ResponseEntity.noContent()
+                .header(HttpHeaders.SET_COOKIE, cookie.toString())
+                .build();
     }
 
 

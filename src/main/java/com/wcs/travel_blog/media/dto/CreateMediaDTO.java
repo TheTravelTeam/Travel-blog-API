@@ -11,9 +11,16 @@ import lombok.Setter;
 public class CreateMediaDTO {
     @NotBlank
     private String fileUrl;
+    private String publicId;
+    private String folder;
+    private String resourceType;
+    private String format;
+    private Long bytes;
+    private Integer width;
+    private Integer height;
     @NotNull
     private MediaType mediaType;
     private Long stepId;
-    private Long TravelDiaryId;
+    private Long travelDiaryId;
     private Boolean isVisible;
 }

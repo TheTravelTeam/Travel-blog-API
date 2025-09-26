@@ -9,7 +9,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
-@RequestMapping("/theme")
+@RequestMapping("/themes")
 public class ThemeController {
 
     private final ThemeService themeService;
@@ -18,8 +18,8 @@ public class ThemeController {
         this.themeService = themeService;
     }
 
-    @PostMapping("/create")
-    public ResponseEntity<ThemeDTO> create(@Valid @RequestBody ThemeDTO themeDTO) {
+    @PostMapping
+    public ResponseEntity<ThemeDTO> createTheme(@Valid @RequestBody ThemeDTO themeDTO) {
         ThemeDTO savedTheme = themeService.createTheme(themeDTO);
         return ResponseEntity.ok(savedTheme);
     }

@@ -35,6 +35,13 @@ public class MediaMapper {
 
         dto.setId(media.getId());
         dto.setFileUrl(media.getFileUrl());
+        dto.setPublicId(media.getPublicId());
+        dto.setFolder(media.getFolder());
+        dto.setResourceType(media.getResourceType());
+        dto.setFormat(media.getFormat());
+        dto.setBytes(media.getBytes());
+        dto.setWidth(media.getWidth());
+        dto.setHeight(media.getHeight());
         dto.setMediaType(media.getMediaType());
         dto.setIsVisible(isVisible);
         dto.setStepId(stepId);
@@ -48,6 +55,13 @@ public class MediaMapper {
         Media media = new Media();
 
         media.setFileUrl(dto.getFileUrl());
+        media.setPublicId(dto.getPublicId());
+        media.setFolder(dto.getFolder());
+        media.setResourceType(dto.getResourceType());
+        media.setFormat(dto.getFormat());
+        media.setBytes(dto.getBytes());
+        media.setWidth(dto.getWidth());
+        media.setHeight(dto.getHeight());
         media.setMediaType(dto.getMediaType());
         media.setIsVisible(dto.getIsVisible() != null ? dto.getIsVisible() : Boolean.TRUE);
 

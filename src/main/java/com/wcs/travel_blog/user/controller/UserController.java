@@ -1,5 +1,6 @@
 package com.wcs.travel_blog.user.controller;
 
+import com.wcs.travel_blog.user.dto.UpdateUserRolesDTO;
 import com.wcs.travel_blog.user.dto.UpsertUserDTO;
 import com.wcs.travel_blog.user.dto.UserDTO;
 import com.wcs.travel_blog.user.dto.UserWithDiariesDTO;
@@ -40,12 +41,19 @@ public class UserController {
 
     @PreAuthorize("hasRole('ROLE_ADMIN')")
     @GetMapping("/email")
-    public ResponseEntity<UserWithDiariesDTO> getUserByEmail(@RequestParam  String email) {
-        UserWithDiariesDTO user = userService.getUserByEmail(email);
-        if(user == null){
-            return ResponseEntity.notFound().build();
+    public ResponseEntity<?> getUserByEmail(
+            @RequestParam  String email,
+            @RequestParam(required = false, defaultValue = "false") boolean withDiaries
+    ) {
+        if(withDiaries){
+            UserWithDiariesDTO user = userService.getUserWithDiariesByEmail(email);
+            if (user == null) return ResponseEntity.notFound().build();
+            return ResponseEntity.ok(user);
+        } else {
+            UserDTO user = userService.getUserByEmail(email);
+            if (user == null) return ResponseEntity.notFound().build();
+            return ResponseEntity.ok(user);
         }
-        return ResponseEntity.ok(user);
     }
 
     @PreAuthorize("hasRole('ROLE_ADMIN')")
@@ -62,6 +70,13 @@ public class UserController {
             return ResponseEntity.notFound().build();
         }
        return ResponseEntity.ok(updatedUser);
+    }
+
+    @PreAuthorize("hasRole('ROLE_ADMIN')")
+    @PatchMapping("/{userId}/roles")
+    public ResponseEntity<UserDTO> updateUserRoles(@PathVariable Long userId, @Valid @RequestBody UpdateUserRolesDTO updateUserRolesDTO) {
+        UserDTO updatedUser = userService.updateUserRoles(userId, updateUserRolesDTO.getAdmin());
+        return ResponseEntity.ok(updatedUser);
     }
 
     @DeleteMapping("/{userId}")

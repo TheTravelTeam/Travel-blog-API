@@ -10,6 +10,7 @@ import com.wcs.travel_blog.media.model.MediaType;
 import com.wcs.travel_blog.media.repository.MediaRepository;
 import com.wcs.travel_blog.step.model.Step;
 import com.wcs.travel_blog.step.repository.StepRepository;
+import com.wcs.travel_blog.travel_diary.repository.TravelDiaryRepository;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -37,6 +38,9 @@ class MediaServiceTest {
 
     @Mock
     private StepRepository stepRepository;
+
+    @Mock
+    private TravelDiaryRepository travelDiaryRepository;
 
     @Mock
     private MediaMapper mediaMapper;
