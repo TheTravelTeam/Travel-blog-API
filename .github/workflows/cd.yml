@@ -82,7 +82,7 @@ jobs:
           echo 'JWT_SECRET=${{ secrets.JWT_SECRET }}' >> /home/${{ secrets.SERVER_USER }}/${{ secrets.PROJECT_NAME }}/.env.prod &&
           echo 'JWT_EXP_TIME=${{ secrets.JWT_EXP_TIME }}' >> /home/${{ secrets.SERVER_USER }}/${{ secrets.PROJECT_NAME }}/.env.prod &&
           echo 'JWT_COOKIE_SECURE=true' >> /home/${{ secrets.SERVER_USER }}/${{ secrets.PROJECT_NAME }}/.env.prod &&
-          echo 'JWT_COOKIE_SAMESIT=None' >> /home/${{ secrets.SERVER_USER }}/${{ secrets.PROJECT_NAME }}/.env.prod &&
+          echo 'JWT_COOKIE_SAMESITE=None' >> /home/${{ secrets.SERVER_USER }}/${{ secrets.PROJECT_NAME }}/.env.prod &&
           chmod 600 /home/${{ secrets.SERVER_USER }}/${{ secrets.PROJECT_NAME }}/.env.prod
           "
 
