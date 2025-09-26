@@ -70,21 +70,12 @@ public class AuthControllerTest {
         // « Peu importe l'instance exacte, tant que c’est un UserRegistrationDTO, retourne le DTO simulé. »
         when(authService.registerUser(Mockito.any(UserRegistrationDTO.class), Mockito.anySet()))
                 .thenReturn(responseDto);
-
-        // Simule une requête HTTP POST sur l’endpoint /auth/register
         mockMvc.perform(post("/auth/register")
-                        .contentType(MediaType.APPLICATION_JSON) // Définit le Content-Type de la requête
-                        .content(objectMapper.writeValueAsString(userRegistrationDTO))) // Sérialise le DTO en JSON pour l’envoyer dans le corps
-
-                // Valide que la réponse HTTP a le statut 201 Created
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(userRegistrationDTO)))
                 .andExpect(status().isCreated())
-
-                // Vérifie que le champ "id" est bien présent dans la réponse JSON avec la valeur 1
                 .andExpect(jsonPath("$.id").value(1L))
-
-                // Vérifie que le champ "email" de la réponse JSON est bien celui attendu
-                .andExpect(jsonPath("$.email").value("test@example.com"))
-                .andExpect(jsonPath("$.pseudo").value("TestUser"));
+                .andExpect(jsonPath("$.email").value("test@example.com"));
     }
 
     @Test

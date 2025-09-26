@@ -1,11 +1,13 @@
 package com.wcs.travel_blog.media.service;
 
+import com.wcs.travel_blog.cloudinary.dto.CloudinaryAssetRequest;
 import com.wcs.travel_blog.exception.ResourceNotFoundException;
 import com.wcs.travel_blog.media.dto.CreateMediaDTO;
 import com.wcs.travel_blog.media.dto.MediaDTO;
 import com.wcs.travel_blog.media.dto.UpdateMediaDTO;
 import com.wcs.travel_blog.media.mapper.MediaMapper;
 import com.wcs.travel_blog.media.model.Media;
+import com.wcs.travel_blog.media.model.MediaType;
 import com.wcs.travel_blog.media.repository.MediaRepository;
 import com.wcs.travel_blog.step.model.Step;
 import com.wcs.travel_blog.step.repository.StepRepository;
@@ -25,7 +27,10 @@ public class MediaService {
     private final TravelDiaryRepository travelDiaryRepository;
     private final StepRepository stepRepository;
 
-    public MediaService(MediaRepository mediaRepository, MediaMapper mediaMapper, TravelDiaryRepository travelDiaryRepository, StepRepository stepRepository) {
+    public MediaService(MediaRepository mediaRepository,
+                        MediaMapper mediaMapper,
+                        TravelDiaryRepository travelDiaryRepository,
+                        StepRepository stepRepository) {
         this.mediaRepository = mediaRepository;
         this.mediaMapper = mediaMapper;
         this.travelDiaryRepository = travelDiaryRepository;
@@ -60,6 +65,27 @@ public class MediaService {
         if (StringUtils.hasText(dto.getFileUrl()) && !dto.getFileUrl().equals(media.getFileUrl())) {
             media.setFileUrl(dto.getFileUrl());
         }
+        if (StringUtils.hasText(dto.getPublicId()) && !dto.getPublicId().equals(media.getPublicId())) {
+            media.setPublicId(dto.getPublicId());
+        }
+        if (StringUtils.hasText(dto.getFolder()) && !dto.getFolder().equals(media.getFolder())) {
+            media.setFolder(dto.getFolder());
+        }
+        if (StringUtils.hasText(dto.getResourceType()) && !dto.getResourceType().equals(media.getResourceType())) {
+            media.setResourceType(dto.getResourceType());
+        }
+        if (StringUtils.hasText(dto.getFormat()) && !dto.getFormat().equals(media.getFormat())) {
+            media.setFormat(dto.getFormat());
+        }
+        if (dto.getBytes() != null && !dto.getBytes().equals(media.getBytes())) {
+            media.setBytes(dto.getBytes());
+        }
+        if (dto.getWidth() != null && !dto.getWidth().equals(media.getWidth())) {
+            media.setWidth(dto.getWidth());
+        }
+        if (dto.getHeight() != null && !dto.getHeight().equals(media.getHeight())) {
+            media.setHeight(dto.getHeight());
+        }
         if (dto.getMediaType() != null && !dto.getMediaType().equals(media.getMediaType())) {
             media.setMediaType(dto.getMediaType());
         }
@@ -84,8 +110,61 @@ public class MediaService {
             media.setTravelDiary(null);
         }
 
+        media.setUpdatedAt(LocalDateTime.now());
+
         Media saved = mediaRepository.save(media);
         return mediaMapper.toDto(saved);
+    }
+
+    public MediaDTO saveFromCloudinary(CloudinaryAssetRequest request) {
+        Media media = mediaRepository.findByPublicId(request.getPublicId())
+            .orElseGet(Media::new);
+
+        if (media.getId() == null) {
+            media.setCreatedAt(LocalDateTime.now());
+        }
+
+        media.setFileUrl(request.getSecureUrl());
+        media.setPublicId(request.getPublicId());
+        media.setFolder(request.getFolder());
+        media.setResourceType(request.getResourceType());
+        media.setFormat(request.getFormat());
+        media.setBytes(request.getBytes());
+        media.setWidth(request.getWidth());
+        media.setHeight(request.getHeight());
+        media.setIsVisible(request.getIsVisible() != null ? request.getIsVisible() : Boolean.TRUE);
+
+        if (request.getMediaType() != null) {
+            media.setMediaType(request.getMediaType());
+        } else {
+            media.setMediaType(resolveMediaType(request.getResourceType()));
+        }
+
+        if (request.getStepId() != null) {
+            Step step = stepRepository.findById(request.getStepId())
+                .orElseThrow(() -> new ResourceNotFoundException("Étape non trouvée"));
+            media.setStep(step);
+        } else {
+            media.setStep(null);
+        }
+
+        if (request.getTravelDiaryId() != null) {
+            TravelDiary travelDiary = travelDiaryRepository.findById(request.getTravelDiaryId())
+                .orElseThrow(() -> new ResourceNotFoundException("Carnet non trouvé"));
+            media.setTravelDiary(travelDiary);
+        } else {
+            media.setTravelDiary(null);
+        }
+
+        media.setUpdatedAt(LocalDateTime.now());
+        Media saved = mediaRepository.save(media);
+        return mediaMapper.toDto(saved);
+    }
+
+    public MediaDTO getMediaByPublicId(String publicId) {
+        Media media = mediaRepository.findByPublicId(publicId)
+            .orElseThrow(() -> new ResourceNotFoundException("Aucun média trouvé pour le publicId " + publicId));
+        return mediaMapper.toDto(media);
     }
 
     public void deleteMediaById(Long id) {
@@ -104,5 +183,15 @@ public class MediaService {
         Media media =  mediaRepository.findByTravelDiary_Id(diaryId)
                 .orElseThrow(() -> new ResourceNotFoundException("Aucun média lié au carnet " + diaryId));
         return mediaMapper.toDto(media);
+    }
+
+    private MediaType resolveMediaType(String resourceType) {
+        if (!StringUtils.hasText(resourceType)) {
+            return MediaType.PHOTO;
+        }
+        return switch (resourceType.toLowerCase()) {
+            case "video" -> MediaType.VIDEO;
+            default -> MediaType.PHOTO;
+        };
     }
 }
