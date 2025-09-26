@@ -23,6 +23,21 @@ public class GlobalExceptionHandler {
         return new ResponseEntity<>(exception.getMessage(), HttpStatus.CONFLICT);
     }
 
+    @ExceptionHandler(ExternalServiceException.class)
+    public ResponseEntity<String> handleExternalServiceException(ExternalServiceException exception) {
+        return ResponseEntity.status(HttpStatus.BAD_GATEWAY).body(exception.getMessage());
+    }
+
+    @ExceptionHandler(TooManyRequestsException.class)
+    public ResponseEntity<String> handleTooManyRequestsException(TooManyRequestsException exception) {
+        return ResponseEntity.status(HttpStatus.TOO_MANY_REQUESTS).body(exception.getMessage());
+    }
+
+    @ExceptionHandler(FeatureDisabledException.class)
+    public ResponseEntity<String> handleFeatureDisabledException(FeatureDisabledException exception) {
+        return ResponseEntity.status(HttpStatus.SERVICE_UNAVAILABLE).body(exception.getMessage());
+    }
+
     @ExceptionHandler(Exception.class)
     public ResponseEntity<String> handleGlobalException(Exception ex) {
         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Une erreur est survenue");

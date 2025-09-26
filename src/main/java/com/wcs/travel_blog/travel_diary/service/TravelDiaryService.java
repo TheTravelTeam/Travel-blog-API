@@ -1,12 +1,14 @@
 package com.wcs.travel_blog.travel_diary.service;
 
 import com.wcs.travel_blog.media.model.Media;
+import com.wcs.travel_blog.media.model.MediaType;
 import com.wcs.travel_blog.media.repository.MediaRepository;
 import com.wcs.travel_blog.step.model.Step;
 import com.wcs.travel_blog.step.repository.StepRepository;
 import com.wcs.travel_blog.travel_diary.dto.CreateTravelDiaryDTO;
 import com.wcs.travel_blog.travel_diary.dto.TravelDiaryDTO;
 import com.wcs.travel_blog.travel_diary.dto.UpdateTravelDiaryDTO;
+import com.wcs.travel_blog.travel_diary.dto.UpdateTravelDiaryMediaDTO;
 import com.wcs.travel_blog.travel_diary.mapper.TravelDiaryMapper;
 import com.wcs.travel_blog.travel_diary.model.TravelDiary;
 import com.wcs.travel_blog.travel_diary.repository.TravelDiaryRepository;
@@ -14,6 +16,7 @@ import com.wcs.travel_blog.user.model.User;
 import com.wcs.travel_blog.user.repository.UserRepository;
 import jakarta.persistence.EntityNotFoundException;
 import org.springframework.stereotype.Service;
+import org.springframework.util.StringUtils;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -127,21 +130,18 @@ public class TravelDiaryService {
            travelDiary.setUser(user);
        }
 
-       if(updateTravelDiaryResponse.getMedia()!=null){
-           Media media = mediaRepository.findById(updateTravelDiaryResponse.getMedia()).orElseThrow(()-> new EntityNotFoundException("Média non trouvé"));
-           travelDiary.setMedia(media);
-       } else {
-           travelDiary.setMedia(null);
-       }
+       handleMediaUpdate(updateTravelDiaryResponse.getMedia(), travelDiary);
 
-       if(updateTravelDiaryResponse.getSteps()!=null && !updateTravelDiaryResponse.getSteps().isEmpty()){
-            List<Step> steps = stepRepository.findAllById(updateTravelDiaryResponse.getSteps());
-                if(steps.size() != updateTravelDiaryResponse.getSteps().size()){
-                    throw new EntityNotFoundException("Quelques étapes n'ont pas été trouvé");
-                }
-                travelDiary.setSteps(steps);
-       } else {
-           travelDiary.getSteps().clear();
+       if (updateTravelDiaryResponse.getSteps() != null) {
+           if (!updateTravelDiaryResponse.getSteps().isEmpty()) {
+               List<Step> steps = stepRepository.findAllById(updateTravelDiaryResponse.getSteps());
+               if (steps.size() != updateTravelDiaryResponse.getSteps().size()) {
+                   throw new EntityNotFoundException("Quelques étapes n'ont pas été trouvé");
+               }
+               travelDiary.setSteps(steps);
+           } else {
+               travelDiary.getSteps().clear();
+           }
        }
 
        TravelDiary updated = travelDiaryRepository.save(travelDiary);
@@ -151,5 +151,39 @@ public class TravelDiaryService {
    public void deleteTravelDiary(Long id){
         TravelDiary travelDiary=travelDiaryRepository.findById(id).orElseThrow(()->new EntityNotFoundException("Carnet de voyage Non trouvé"));
         travelDiaryRepository.delete(travelDiary);
+   }
+
+   private void handleMediaUpdate(UpdateTravelDiaryMediaDTO mediaDto, TravelDiary travelDiary) {
+       if (mediaDto == null) {
+           return;
+       }
+
+       if (mediaDto.getId() != null) {
+           Media existing = mediaRepository.findById(mediaDto.getId())
+                   .orElseThrow(() -> new EntityNotFoundException("Média non trouvé"));
+           travelDiary.setMedia(existing);
+           return;
+       }
+
+       if (!StringUtils.hasText(mediaDto.getFileUrl())) {
+           travelDiary.setMedia(null);
+           return;
+       }
+
+       Media media = new Media();
+       media.setFileUrl(mediaDto.getFileUrl());
+       media.setMediaType(mediaDto.getMediaType() != null ? mediaDto.getMediaType() : MediaType.PHOTO);
+       media.setIsVisible(mediaDto.getIsVisible() != null ? mediaDto.getIsVisible() : Boolean.TRUE);
+       media.setPublicId(mediaDto.getPublicId());
+       media.setFolder(mediaDto.getFolder());
+       media.setResourceType(mediaDto.getResourceType());
+       media.setFormat(mediaDto.getFormat());
+       media.setBytes(mediaDto.getBytes());
+       media.setWidth(mediaDto.getWidth());
+       media.setHeight(mediaDto.getHeight());
+       media.setTravelDiary(travelDiary);
+
+       Media saved = mediaRepository.save(media);
+       travelDiary.setMedia(saved);
    }
 }

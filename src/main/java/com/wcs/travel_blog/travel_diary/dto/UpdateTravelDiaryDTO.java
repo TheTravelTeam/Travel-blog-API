@@ -35,6 +35,5 @@ public class UpdateTravelDiaryDTO {
 
     private Long user;
 
-    private Long media;
+    private UpdateTravelDiaryMediaDTO media;
 }
-

@@ -8,8 +8,15 @@ import lombok.Setter;
 @Setter
 public class UpdateMediaDTO {
     private String fileUrl;
+    private String publicId;
+    private String folder;
+    private String resourceType;
+    private String format;
+    private Long bytes;
+    private Integer width;
+    private Integer height;
     private MediaType mediaType;
     private Long stepId;
-    private Long TravelDiaryId;
+    private Long travelDiaryId;
     private Boolean isVisible;
 }

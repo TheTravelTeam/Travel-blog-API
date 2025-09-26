@@ -16,6 +16,7 @@ import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.web.cors.CorsConfiguration;
 
+import java.util.Arrays;
 import java.util.List;
 
 
@@ -34,6 +35,15 @@ public class SecurityConfig {
         this.jwtAuthenticationFilter = jwtAuthenticationFilter;
     }
 
+    private List<String> resolveAllowedOrigins() {
+        if (allowedOrigins == null || allowedOrigins.isBlank()) {
+            return List.of("https://travel-blog.cloud");
+        }
+        return Arrays.stream(allowedOrigins.split("\\s*,\\s*"))
+                .filter(origin -> !origin.isBlank())
+                .toList();
+    }
+
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http.csrf(AbstractHttpConfigurer::disable)
@@ -41,15 +51,16 @@ public class SecurityConfig {
                 .cors(cors -> cors
                         .configurationSource(request -> {
                             CorsConfiguration config = new CorsConfiguration();
-                            config.setAllowedOrigins(List.of(allowedOrigins.split("\\s*,\\s*")));
-                            config.setAllowedMethods(List.of("GET", "POST", "PUT","PATCH", "DELETE", "OPTIONS"));
-                            config.setAllowedHeaders(List.of("*"));
+                            config.setAllowedOrigins(resolveAllowedOrigins());
+                            config.setAllowedMethods(List.of("GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"));
+                            config.setAllowedHeaders(List.of("Authorization", "Content-Type", "X-Requested-With", "Accept", "Origin"));
                             config.setAllowCredentials(true);
+                            config.setMaxAge(3600L);
                             return config;
                         })
                 )
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers(HttpMethod.POST,"/auth/login").permitAll()
+                        .requestMatchers(HttpMethod.POST,"/auth/**").permitAll()
                         .requestMatchers("/**").permitAll()
                         .requestMatchers(HttpMethod.GET, "/travel-diaries/**").permitAll()
                         .requestMatchers(HttpMethod.POST, "/travel-diaries/**").hasAnyRole("ADMIN","USER")
