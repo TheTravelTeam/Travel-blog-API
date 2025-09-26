@@ -12,6 +12,8 @@ services:
       CORS_ALLOWED_ORIGIN: ${CORS_ALLOWED_ORIGIN}
       JWT_SECRET: ${JWT_SECRET}
       JWT_EXP_TIME: ${JWT_EXP_TIME}
+      JWT_COOKIE_SECURE: ${JWT_COOKIE_SECURE}
+      JWT_COOKIE_SAMESITE: ${JWT_COOKIE_SAMESITE}
     depends_on:
       db:
         condition: service_healthy
