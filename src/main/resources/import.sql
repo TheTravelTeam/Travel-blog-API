@@ -33,16 +33,16 @@ INSERT INTO step (title, description, latitude, longitude, city, country, contin
 INSERT INTO step (title, description, latitude, longitude, city, country, continent, start_date, end_date, status, travel_diary_id, created_at, updated_at) VALUES ('Lisbonne', 'Ville lumineuse', 38.7223, -9.1393, 'Lisbonne', 'Portugal', 'Europe','2020-08-12','2020-08-12','COMPLETED',3,NOW(),NOW());
 
 -- 🎥 Médias
-INSERT INTO media (file_url, media_type, is_visible, step_id, created_at, updated_at, travel_diary_id) VALUES ('https://www.echosciences-grenobler/uploads/article/image/attachment/1005418938/xl_lens-1209823_1920.jpg', 'PHOTO', true, 1, NOW(), NOW(), NULL);
+INSERT INTO media (file_url, media_type, is_visible, step_id, created_at, updated_at, travel_diary_id) VALUES ('https://res.cloudinary.com/dfbgrwist/image/upload/v1758716053/pexels-photo-32649619_pzo1jk.jpg', 'PHOTO', true, 1, NOW(), NOW(), NULL);
 
-INSERT INTO media (file_url, media_type, is_visible, step_id, created_at, updated_at, travel_diary_id) VALUES ('https://images.pexels.com/photos/32392457/pexels-photo-32392457.jpeg', 'VIDEO', true, 2, NOW(), NOW(), NULL);
-INSERT INTO media (file_url, media_type, is_visible, step_id, created_at, updated_at, travel_diary_id) VALUES ('https://www.echosciences-grenoble.fr/uploads/article/image/attachment/1005418938/xl_lens-1209823_1920.jpg', 'PHOTO', true, NULL, NOW(), NOW(), NULL);
-INSERT INTO media (file_url, media_type, is_visible, step_id, created_at, updated_at, travel_diary_id) VALUES ('https://example.com/photo-kyoto.jpg', 'PHOTO', true, 4, NOW(), NOW(), NULL);
-INSERT INTO media (file_url, media_type, is_visible, step_id, created_at, updated_at, travel_diary_id) VALUES ('https://www.echosciences-grenoble.fr/uploads/article/image/attachment/1005418938/xl_lens-1209823_1920.jpg', 'PHOTO', true, 5, NOW(), NOW(), NULL);
-INSERT INTO media (file_url, media_type, is_visible, step_id, created_at, updated_at, travel_diary_id) VALUES ('https://example.com/photo-lisbonne.jpg', 'PHOTO', true, 6, NOW(), NOW(), NULL);
-INSERT INTO media (file_url, media_type, is_visible, step_id, created_at, updated_at, travel_diary_id) VALUES ('https://www.echosciences-grenoble.fr/uploads/article/image/attachment/1005418938/xl_lens-1209823_1920.jpg', 'PHOTO', true, NULL, NOW(), NOW(), NULL);
-INSERT INTO media (file_url, media_type, is_visible, step_id, created_at, updated_at, travel_diary_id)VALUES ('https://images.pexels.com/photos/32649619/pexels-photo-32649619.jpeg', 'PHOTO', true, NULL, NOW(), NOW(), NULL);
-INSERT INTO media (file_url, media_type, is_visible, step_id, created_at, updated_at, travel_diary_id) VALUES ('https://images.pexels.com/photos/32649619/pexels-photo-32649619.jpeg', 'PHOTO', true, 1, NOW(), NOW(), NULL);
+INSERT INTO media (file_url, media_type, is_visible, step_id, created_at, updated_at, travel_diary_id) VALUES ('https://res.cloudinary.com/dfbgrwist/image/upload/v1758716048/xl_lens-1209823_1920_mnq4az.jpg', 'VIDEO', true, 2, NOW(), NOW(), NULL);
+INSERT INTO media (file_url, media_type, is_visible, step_id, created_at, updated_at, travel_diary_id) VALUES ('https://res.cloudinary.com/dfbgrwist/image/upload/v1758716048/pexels-photo-32392457_mknv7k.jpg', 'PHOTO', true, NULL, NOW(), NOW(), NULL);
+INSERT INTO media (file_url, media_type, is_visible, step_id, created_at, updated_at, travel_diary_id) VALUES ('https://res.cloudinary.com/dfbgrwist/image/upload/v1758716053/pexels-photo-32649619_pzo1jk.jpg', 'PHOTO', true, 4, NOW(), NOW(), NULL);
+INSERT INTO media (file_url, media_type, is_visible, step_id, created_at, updated_at, travel_diary_id) VALUES ('https://res.cloudinary.com/dfbgrwist/image/upload/v1758716048/xl_lens-1209823_1920_mnq4az.jpg', 'PHOTO', true, 5, NOW(), NOW(), NULL);
+INSERT INTO media (file_url, media_type, is_visible, step_id, created_at, updated_at, travel_diary_id) VALUES ('https://res.cloudinary.com/dfbgrwist/image/upload/v1758716048/pexels-photo-32392457_mknv7k.jpg', 'PHOTO', true, 6, NOW(), NOW(), NULL);
+INSERT INTO media (file_url, media_type, is_visible, step_id, created_at, updated_at, travel_diary_id) VALUES ('https://res.cloudinary.com/dfbgrwist/image/upload/v1758716048/xl_lens-1209823_1920_mnq4az.jpg', 'PHOTO', true, NULL, NOW(), NOW(), NULL);
+INSERT INTO media (file_url, media_type, is_visible, step_id, created_at, updated_at, travel_diary_id)VALUES ('https://res.cloudinary.com/dfbgrwist/image/upload/v1758716053/pexels-photo-32649619_pzo1jk.jpg', 'PHOTO', true, NULL, NOW(), NOW(), NULL);
+INSERT INTO media (file_url, media_type, is_visible, step_id, created_at, updated_at, travel_diary_id) VALUES ('https://res.cloudinary.com/dfbgrwist/image/upload/v1758716048/pexels-photo-32392457_mknv7k.jpg', 'PHOTO', true, 1, NOW(), NOW(), NULL);
 
 -- 💬 Commentaires
 INSERT INTO comment (content, step_id, user_id, status, created_at, updated_at) VALUES ('Super début de voyage !', 1, 2, 'APPROVED', NOW(), NOW());

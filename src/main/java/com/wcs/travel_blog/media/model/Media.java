@@ -25,6 +25,24 @@ public class Media {
     @Column(length = 1024, nullable = false)
     private String fileUrl;
 
+    @Column(length = 255)
+    private String publicId;
+
+    @Column(length = 255)
+    private String folder;
+
+    @Column(length = 32)
+    private String resourceType;
+
+    @Column(length = 32)
+    private String format;
+
+    private Long bytes;
+
+    private Integer width;
+
+    private Integer height;
+
     //nullable = false : contrainte au niveau base de données (DDL).
     //→ Génère une colonne NOT NULL dans ta table.
     //@NotNull (Bean Validation – Jakarta Validation) : contrainte au niveau Java / validation.
