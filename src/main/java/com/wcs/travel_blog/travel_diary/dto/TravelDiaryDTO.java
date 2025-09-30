@@ -1,7 +1,7 @@
 package com.wcs.travel_blog.travel_diary.dto;
 
 import com.wcs.travel_blog.media.dto.MediaDTO;
-import com.wcs.travel_blog.step.dto.StepDTO;
+import com.wcs.travel_blog.step.dto.StepResponseDTO;
 import com.wcs.travel_blog.travel_diary.model.TravelStatus;
 import lombok.Getter;
 import lombok.Setter;
@@ -38,7 +38,7 @@ public class TravelDiaryDTO {
 
     private Double longitude;
 
-    private List<StepDTO> steps;
+    private List<StepResponseDTO> steps;
 
     private Long user;
 

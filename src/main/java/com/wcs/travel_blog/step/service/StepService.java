@@ -1,46 +1,59 @@
 package com.wcs.travel_blog.step.service;
 
-import com.wcs.travel_blog.step.dto.StepDTO;
+import com.wcs.travel_blog.exception.ResourceNotFoundException;
+import com.wcs.travel_blog.step.dto.StepRequestDTO;
+import com.wcs.travel_blog.step.dto.StepResponseDTO;
 import com.wcs.travel_blog.step.mapper.StepMapper;
 import com.wcs.travel_blog.step.model.Step;
 import com.wcs.travel_blog.step.repository.StepRepository;
+import com.wcs.travel_blog.theme.model.Theme;
+import com.wcs.travel_blog.theme.repository.ThemeRepository;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.LinkedHashSet;
 import java.util.List;
+import java.util.Objects;
 import java.util.stream.Collectors;
 
 @Service
 public class StepService {
     private final StepRepository stepRepository;
     private final StepMapper stepMapper;
+    private final ThemeRepository themeRepository;
 
-    public StepService(StepRepository stepRepository, StepMapper stepMapper) {
+    public StepService(StepRepository stepRepository, StepMapper stepMapper, ThemeRepository themeRepository) {
         this.stepRepository = stepRepository;
         this.stepMapper = stepMapper;
+        this.themeRepository = themeRepository;
     }
 
-    public List<StepDTO> getAllSteps() {
+    public List<StepResponseDTO> getAllSteps() {
         List<Step> steps = stepRepository.findAll();
-        return steps.stream().map(stepMapper::toDto).collect(Collectors.toList());
+        return steps.stream()
+                .map(stepMapper::toResponseDto)
+                .collect(Collectors.toList());
     }
 
-    public StepDTO getStepById(Long stepId) {
-        Step step = stepRepository.findById(stepId).orElseThrow(() -> new RuntimeException("Step not found with id: " + stepId));
-        return stepMapper.toDto(step);
+    public StepResponseDTO getStepById(Long stepId) {
+        Step step = stepRepository.findById(stepId)
+                .orElseThrow(() -> new ResourceNotFoundException("Step not found with id: " + stepId));
+        return stepMapper.toResponseDto(step);
     }
 
-    public StepDTO createStep(StepDTO stepDto) {
+    public StepResponseDTO createStep(StepRequestDTO stepDto) {
         Step step = stepMapper.toEntity(stepDto);
         step.setCreatedAt(LocalDateTime.now());
         step.setUpdatedAt(LocalDateTime.now());
+        step.setThemes(resolveThemes(stepDto.getThemeIds()));
         Step savedStep = stepRepository.save(step);
-        return stepMapper.toDto(savedStep);
+        return stepMapper.toResponseDto(savedStep);
     }
 
-    public StepDTO updateStep(Long stepId, StepDTO stepDto) {
+    public StepResponseDTO updateStep(Long stepId, StepRequestDTO stepDto) {
         Step existingStep = stepRepository.findById(stepId)
-                .orElseThrow(() -> new RuntimeException("Step not found with id: " + stepId));
+                .orElseThrow(() -> new ResourceNotFoundException("Step not found with id: " + stepId));
 
         existingStep.setTitle(stepDto.getTitle());
         existingStep.setDescription(stepDto.getDescription());
@@ -53,15 +66,39 @@ public class StepService {
         existingStep.setCountry(stepDto.getCountry());
         existingStep.setContinent(stepDto.getContinent());
         existingStep.setUpdatedAt(LocalDateTime.now());
+        existingStep.setThemes(resolveThemes(stepDto.getThemeIds()));
 
         Step updatedStep = stepRepository.save(existingStep);
-        return stepMapper.toDto(updatedStep);
+        return stepMapper.toResponseDto(updatedStep);
     }
 
     public void deleteStep(Long stepId) {
         Step existingStep = stepRepository.findById(stepId)
-                .orElseThrow(() -> new RuntimeException("Step not found with id: " + stepId));
+                .orElseThrow(() -> new ResourceNotFoundException("Step not found with id: " + stepId));
         stepRepository.delete(existingStep);
+    }
+
+    private List<Theme> resolveThemes(List<Long> themeIds) {
+        if (themeIds == null || themeIds.isEmpty()) {
+            return new ArrayList<>();
+        }
+
+        List<Long> distinctThemeIds = themeIds.stream()
+                .filter(Objects::nonNull)
+                .collect(Collectors.collectingAndThen(
+                        Collectors.toCollection(LinkedHashSet::new),
+                        ArrayList::new
+                ));
+
+        if (distinctThemeIds.isEmpty()) {
+            return new ArrayList<>();
+        }
+
+        List<Theme> themes = themeRepository.findAllById(distinctThemeIds);
+        if (themes.size() != distinctThemeIds.size()) {
+            throw new ResourceNotFoundException("Un ou plusieurs thèmes sont introuvables");
+        }
+        return new ArrayList<>(themes);
     }
 
 }
