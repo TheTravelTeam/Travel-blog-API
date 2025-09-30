@@ -45,7 +45,7 @@ public class TravelDiaryMapper {
 
         if (travelDiary.getSteps() != null) {
             dto.setSteps(travelDiary.getSteps().stream()
-                    .map(stepMapper::toDto)
+                    .map(stepMapper::toResponseDto)
                     .collect(Collectors.toList()));
         } else {
             dto.setSteps(List.of());
