@@ -5,9 +5,13 @@ import com.wcs.travel_blog.step.dto.StepRequestDTO;
 import com.wcs.travel_blog.step.dto.StepResponseDTO;
 import com.wcs.travel_blog.step.mapper.StepMapper;
 import com.wcs.travel_blog.step.model.Step;
+import com.wcs.travel_blog.step.model.StepLike;
+import com.wcs.travel_blog.step.repository.StepLikeRepository;
 import com.wcs.travel_blog.step.repository.StepRepository;
 import com.wcs.travel_blog.theme.model.Theme;
 import com.wcs.travel_blog.theme.repository.ThemeRepository;
+import com.wcs.travel_blog.user.model.User;
+import com.wcs.travel_blog.util.CurrentUserProvider;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.ArgumentCaptor;
@@ -37,6 +41,12 @@ class StepServiceTest {
     @Mock
     private ThemeRepository themeRepository;
 
+    @Mock
+    private StepLikeRepository stepLikeRepository;
+
+    @Mock
+    private CurrentUserProvider currentUserProvider;
+
     @InjectMocks
     private StepService stepService;
 
@@ -46,6 +56,7 @@ class StepServiceTest {
         input.setThemeIds(List.of(1L, 2L));
 
         Step mappedEntity = new Step();
+        mappedEntity.setLikesCount(5L);
         Theme theme1 = theme(1L);
         Theme theme2 = theme(2L);
         StepResponseDTO mappedDto = new StepResponseDTO();
@@ -62,6 +73,7 @@ class StepServiceTest {
         Step saved = captor.getValue();
 
         assertThat(saved.getThemes()).containsExactly(theme1, theme2);
+        assertThat(saved.getLikesCount()).isZero();
         assertThat(result).isSameAs(mappedDto);
     }
 
@@ -104,9 +116,88 @@ class StepServiceTest {
         verify(themeRepository).findAllById(List.of(5L, 6L));
     }
 
+    @Test
+    void updateLikes_shouldIncreaseCounter() {
+        Step persisted = new Step();
+        persisted.setLikesCount(2L);
+        StepResponseDTO mappedDto = new StepResponseDTO();
+        mappedDto.setLikesCount(3L);
+        User currentUser = user(5L);
+
+        when(stepRepository.findById(42L)).thenReturn(Optional.of(persisted));
+        when(currentUserProvider.requireCurrentUser()).thenReturn(currentUser);
+        when(stepLikeRepository.findByStepIdAndUserId(42L, 5L)).thenReturn(Optional.empty());
+        when(stepLikeRepository.countByStepId(42L)).thenReturn(3L);
+        when(stepRepository.save(persisted)).thenReturn(persisted);
+        when(stepMapper.toResponseDto(persisted)).thenReturn(mappedDto);
+
+        StepResponseDTO result = stepService.updateLikes(42L, true);
+
+        verify(stepLikeRepository).save(any(StepLike.class));
+        verify(stepLikeRepository).countByStepId(42L);
+        assertThat(persisted.getLikesCount()).isEqualTo(3L);
+        assertThat(result).isSameAs(mappedDto);
+    }
+
+    @Test
+    void updateLikes_shouldNotGoBelowZeroWhenDecrementing() {
+        Step persisted = new Step();
+        persisted.setLikesCount(0L);
+        StepResponseDTO mappedDto = new StepResponseDTO();
+        mappedDto.setLikesCount(0L);
+        User currentUser = user(7L);
+
+        when(stepRepository.findById(7L)).thenReturn(Optional.of(persisted));
+        when(currentUserProvider.requireCurrentUser()).thenReturn(currentUser);
+        when(stepLikeRepository.findByStepIdAndUserId(7L, 7L)).thenReturn(Optional.empty());
+        when(stepLikeRepository.countByStepId(7L)).thenReturn(0L);
+        when(stepRepository.save(persisted)).thenReturn(persisted);
+        when(stepMapper.toResponseDto(persisted)).thenReturn(mappedDto);
+
+        StepResponseDTO result = stepService.updateLikes(7L, false);
+
+        verify(stepLikeRepository, never()).delete(any(StepLike.class));
+        verify(stepLikeRepository).countByStepId(7L);
+        assertThat(persisted.getLikesCount()).isZero();
+        assertThat(result).isSameAs(mappedDto);
+    }
+
+    @Test
+    void updateLikes_shouldDecreaseCounterWhenUserDislikes() {
+        Step persisted = new Step();
+        persisted.setLikesCount(2L);
+        StepResponseDTO mappedDto = new StepResponseDTO();
+        mappedDto.setLikesCount(1L);
+        User currentUser = user(11L);
+        StepLike existingLike = new StepLike();
+        existingLike.setStep(persisted);
+        existingLike.setUser(currentUser);
+
+        when(stepRepository.findById(9L)).thenReturn(Optional.of(persisted));
+        when(currentUserProvider.requireCurrentUser()).thenReturn(currentUser);
+        when(stepLikeRepository.findByStepIdAndUserId(9L, 11L)).thenReturn(Optional.of(existingLike));
+        when(stepLikeRepository.countByStepId(9L)).thenReturn(1L);
+        when(stepRepository.save(persisted)).thenReturn(persisted);
+        when(stepMapper.toResponseDto(persisted)).thenReturn(mappedDto);
+
+        StepResponseDTO result = stepService.updateLikes(9L, false);
+
+        verify(stepLikeRepository).delete(existingLike);
+        verify(stepLikeRepository).countByStepId(9L);
+        assertThat(persisted.getLikesCount()).isEqualTo(1L);
+        assertThat(result).isSameAs(mappedDto);
+    }
+
     private Theme theme(Long id) {
         Theme theme = new Theme();
         theme.setId(id);
         return theme;
+    }
+
+    private User user(Long id) {
+        User user = new User();
+        user.setId(id);
+        user.setEmail("user" + id + "@mail.test");
+        return user;
     }
 }

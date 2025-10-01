@@ -1,5 +1,6 @@
 package com.wcs.travel_blog.step.controller;
 
+import com.wcs.travel_blog.step.dto.StepLikeUpdateRequestDTO;
 import com.wcs.travel_blog.step.dto.StepRequestDTO;
 import com.wcs.travel_blog.step.dto.StepResponseDTO;
 import com.wcs.travel_blog.step.service.StepService;
@@ -43,6 +44,13 @@ public class StepController {
     @PutMapping("/{stepId}")
     public ResponseEntity<StepResponseDTO> updateStep(@PathVariable Long stepId, @Valid @RequestBody StepRequestDTO stepDTo) {
         StepResponseDTO updatedStep = stepService.updateStep(stepId, stepDTo);
+        return ResponseEntity.ok(updatedStep);
+    }
+
+    @PatchMapping("/{stepId}/likes")
+    public ResponseEntity<StepResponseDTO> updateStepLikes(@PathVariable Long stepId,
+                                                           @Valid @RequestBody StepLikeUpdateRequestDTO likeUpdate) {
+        StepResponseDTO updatedStep = stepService.updateLikes(stepId, likeUpdate.getIncrement());
         return ResponseEntity.ok(updatedStep);
     }
 
