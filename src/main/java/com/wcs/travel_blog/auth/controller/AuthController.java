@@ -1,8 +1,11 @@
 package com.wcs.travel_blog.auth.controller;
 
+import com.wcs.travel_blog.auth.dto.ForgotPasswordRequestDTO;
+import com.wcs.travel_blog.auth.dto.PasswordResetRequestDTO;
 import com.wcs.travel_blog.auth.dto.UserLoginDTO;
 import com.wcs.travel_blog.auth.dto.UserRegistrationDTO;
 import com.wcs.travel_blog.auth.service.AuthService;
+import com.wcs.travel_blog.auth.service.PasswordResetService;
 import com.wcs.travel_blog.user.dto.UserDTO;
 import com.wcs.travel_blog.user.service.UserService;
 import jakarta.validation.Valid;
@@ -23,6 +26,7 @@ public class AuthController {
 
     private final AuthService authService;
     private final UserService userService;
+    private final PasswordResetService passwordResetService;
 
     @Value("${jwt.cookie.secure}")
     private boolean cookieSecure;
@@ -30,9 +34,10 @@ public class AuthController {
     @Value("${jwt.cookie.samesite}")
     private String sameSite;
 
-    public AuthController(AuthService authService, UserService userService){
+    public AuthController(AuthService authService, UserService userService, PasswordResetService passwordResetService){
         this.authService = authService;
         this.userService = userService;
+        this.passwordResetService = passwordResetService;
     }
 
     @GetMapping("/me")
@@ -85,5 +90,23 @@ public class AuthController {
                 .build();
     }
 
+
+    /**
+     * Launches the forgot password flow while always returning 204 to keep account existence private.
+     */
+    @PostMapping("/forgot-password")
+    public ResponseEntity<Void> forgotPassword(@Valid @RequestBody ForgotPasswordRequestDTO request) {
+        passwordResetService.requestPasswordReset(request.getEmail());
+        return ResponseEntity.noContent().build();
+    }
+
+    /**
+     * Confirms password reset with a valid token and updates the user's credentials.
+     */
+    @PostMapping("/reset-password")
+    public ResponseEntity<Void> resetPassword(@Valid @RequestBody PasswordResetRequestDTO request) {
+        passwordResetService.resetPassword(request.getToken(), request.getPassword());
+        return ResponseEntity.noContent().build();
+    }
 
 }
