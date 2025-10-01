@@ -38,6 +38,7 @@ public class StepMapper {
         dto.setStartDate(step.getStartDate());
         dto.setEndDate(step.getEndDate());
         dto.setStatus(step.getStatus());
+        dto.setLikesCount(step.getLikesCount() != null ? step.getLikesCount() : 0L);
         dto.setLatitude(step.getLatitude());
         dto.setLongitude(step.getLongitude());
         dto.setCity(step.getCity());

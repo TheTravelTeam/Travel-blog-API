@@ -5,17 +5,23 @@ import com.wcs.travel_blog.step.dto.StepRequestDTO;
 import com.wcs.travel_blog.step.dto.StepResponseDTO;
 import com.wcs.travel_blog.step.mapper.StepMapper;
 import com.wcs.travel_blog.step.model.Step;
+import com.wcs.travel_blog.step.model.StepLike;
+import com.wcs.travel_blog.step.repository.StepLikeRepository;
 import com.wcs.travel_blog.step.repository.StepRepository;
 import com.wcs.travel_blog.theme.model.Theme;
 import com.wcs.travel_blog.theme.repository.ThemeRepository;
+import com.wcs.travel_blog.util.CurrentUserProvider;
+import com.wcs.travel_blog.user.model.User;
 import com.wcs.travel_blog.travel_diary.model.TravelStatus;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
@@ -23,11 +29,19 @@ public class StepService {
     private final StepRepository stepRepository;
     private final StepMapper stepMapper;
     private final ThemeRepository themeRepository;
+    private final StepLikeRepository stepLikeRepository;
+    private final CurrentUserProvider currentUserProvider;
 
-    public StepService(StepRepository stepRepository, StepMapper stepMapper, ThemeRepository themeRepository) {
+    public StepService(StepRepository stepRepository,
+                       StepMapper stepMapper,
+                       ThemeRepository themeRepository,
+                       StepLikeRepository stepLikeRepository,
+                       CurrentUserProvider currentUserProvider) {
         this.stepRepository = stepRepository;
         this.stepMapper = stepMapper;
         this.themeRepository = themeRepository;
+        this.stepLikeRepository = stepLikeRepository;
+        this.currentUserProvider = currentUserProvider;
     }
 
     public List<StepResponseDTO> getAllSteps() {
@@ -45,6 +59,7 @@ public class StepService {
 
     public StepResponseDTO createStep(StepRequestDTO stepDto) {
         Step step = stepMapper.toEntity(stepDto);
+        step.setLikesCount(0L);
         step.setCreatedAt(LocalDateTime.now());
         step.setUpdatedAt(LocalDateTime.now());
         step.setThemes(resolveThemes(stepDto.getThemeIds()));
@@ -77,6 +92,33 @@ public class StepService {
         existingStep.setThemes(resolveThemes(stepDto.getThemeIds()));
 
         Step updatedStep = stepRepository.save(existingStep);
+        return stepMapper.toResponseDto(updatedStep);
+    }
+
+    @Transactional
+    public StepResponseDTO updateLikes(Long stepId, boolean increment) {
+        Step step = stepRepository.findById(stepId)
+                .orElseThrow(() -> new ResourceNotFoundException("Step not found with id: " + stepId));
+
+        User currentUser = currentUserProvider.requireCurrentUser();
+        Optional<StepLike> existingLike = stepLikeRepository.findByStepIdAndUserId(stepId, currentUser.getId());
+
+        if (increment) {
+            if (existingLike.isEmpty()) {
+                StepLike newLike = new StepLike();
+                newLike.setStep(step);
+                newLike.setUser(currentUser);
+                stepLikeRepository.save(newLike);
+            }
+        } else {
+            existingLike.ifPresent(stepLikeRepository::delete);
+        }
+
+        long updatedLikes = stepLikeRepository.countByStepId(stepId);
+        step.setLikesCount(updatedLikes);
+        step.setUpdatedAt(LocalDateTime.now());
+
+        Step updatedStep = stepRepository.save(step);
         return stepMapper.toResponseDto(updatedStep);
     }
 

@@ -31,6 +31,8 @@ public class StepResponseDTO {
 
     private TravelStatus status;
 
+    private Long likesCount = 0L;
+
     private Double latitude;
 
     private Double longitude;
