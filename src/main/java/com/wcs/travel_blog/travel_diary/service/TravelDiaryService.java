@@ -12,6 +12,7 @@ import com.wcs.travel_blog.travel_diary.dto.UpdateTravelDiaryMediaDTO;
 import com.wcs.travel_blog.travel_diary.mapper.TravelDiaryMapper;
 import com.wcs.travel_blog.travel_diary.model.TravelDiary;
 import com.wcs.travel_blog.travel_diary.repository.TravelDiaryRepository;
+import com.wcs.travel_blog.travel_diary.model.TravelStatus;
 import com.wcs.travel_blog.user.model.User;
 import com.wcs.travel_blog.user.repository.UserRepository;
 import jakarta.persistence.EntityNotFoundException;
@@ -110,6 +111,12 @@ public class TravelDiaryService {
             travelDiary.setIsPublished(Boolean.FALSE);
         }
 
+       if (travelDiary.getStatus() == null) {
+           travelDiary.setStatus(TravelStatus.IN_PROGRESS);
+       }
+
+        alignStepsWithDiaryStatus(travelDiary);
+
         TravelDiary travelDiaryToSaved= travelDiaryRepository.save(travelDiary);
 
         return travelDiaryMapper.toDto(travelDiaryToSaved);
@@ -141,6 +148,8 @@ public class TravelDiaryService {
        if (updateTravelDiaryResponse.getStatus() != null && !updateTravelDiaryResponse.getStatus().equals(travelDiary.getStatus())) {
            travelDiary.setStatus(updateTravelDiaryResponse.getStatus());
        }
+
+       alignStepsWithDiaryStatus(travelDiary);
 
        if (updateTravelDiaryResponse.getCanComment() != null && !updateTravelDiaryResponse.getCanComment().equals(travelDiary.getCanComment())) {
            travelDiary.setCanComment(updateTravelDiaryResponse.getCanComment());
@@ -177,6 +186,9 @@ public class TravelDiaryService {
        if (CollectionUtils.isEmpty(travelDiary.getSteps()) || travelDiary.getIsPublished() == null) {
            travelDiary.setIsPublished(Boolean.FALSE);
        }
+
+
+
 
        TravelDiary updated = travelDiaryRepository.save(travelDiary);
        return travelDiaryMapper.toDto(updated);
@@ -219,6 +231,14 @@ public class TravelDiaryService {
 
        Media saved = mediaRepository.save(media);
        travelDiary.setMedia(saved);
+   }
+
+   private void alignStepsWithDiaryStatus(TravelDiary travelDiary) {
+       if (travelDiary.getStatus() != TravelStatus.DISABLED || CollectionUtils.isEmpty(travelDiary.getSteps())) {
+           return;
+       }
+
+       travelDiary.getSteps().forEach(step -> step.setStatus(TravelStatus.DISABLED));
    }
 
 }

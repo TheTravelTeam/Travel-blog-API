@@ -5,6 +5,7 @@ import com.wcs.travel_blog.media.dto.MediaDTO;
 import com.wcs.travel_blog.step.dto.SummaryStepDTO;
 import com.wcs.travel_blog.travel_diary.dto.SummaryTravelDiaryDTO;
 import com.wcs.travel_blog.travel_diary.model.TravelDiary;
+import com.wcs.travel_blog.travel_diary.model.TravelStatus;
 import com.wcs.travel_blog.user.dto.UpsertUserDTO;
 import com.wcs.travel_blog.user.dto.UserDTO;
 import com.wcs.travel_blog.user.dto.UserWithDiariesDTO;
@@ -113,6 +114,7 @@ public class UserMapper {
     private boolean shouldExposeDiary(TravelDiary diary) {
         return Boolean.TRUE.equals(diary.getIsPublished())
                 && Boolean.FALSE.equals(diary.getIsPrivate())
+                && diary.getStatus() != TravelStatus.DISABLED
                 && diary.getSteps() != null
                 && !diary.getSteps().isEmpty();
     }

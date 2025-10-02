@@ -13,7 +13,7 @@ INSERT INTO user_roles (user_id, roles) VALUES (2, 'ROLE_USER');
 INSERT INTO user_roles (user_id, roles) VALUES (3, 'ROLE_USER');
 
 -- 📘 Carnets de voyage (sans cover_media_id pour l'instant)
-INSERT INTO travel_diary (title, description, user_id, can_comment, is_private, is_published, status, created_at, updated_at, latitude, longitude)  VALUES ('Tour du monde en solo', 'Mon aventure autour du monde', 1, true, false, true, 'IN_PROGRESS', NOW(), NOW(), 50.48, 3.33);
+INSERT INTO travel_diary (title, description, user_id, can_comment, is_private, is_published, status, created_at, updated_at, latitude, longitude)  VALUES ('Tour du monde en solo', 'Mon aventure autour du monde', 1, true, false, true, 'DISABLED', NOW(), NOW(), 50.48, 3.33);
 
 INSERT INTO travel_diary (title, description, user_id, can_comment, is_private, is_published, status, created_at, updated_at, latitude, longitude) VALUES ('Escapade en Asie', 'Découverte des saveurs et cultures d''Asie', 2, true, false, true, 'COMPLETED', NOW(), NOW(), 30, 18);
 

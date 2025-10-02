@@ -8,6 +8,7 @@ import com.wcs.travel_blog.travel_diary.dto.UpdateTravelDiaryDTO;
 import com.wcs.travel_blog.travel_diary.mapper.TravelDiaryMapper;
 import com.wcs.travel_blog.travel_diary.model.TravelDiary;
 import com.wcs.travel_blog.travel_diary.repository.TravelDiaryRepository;
+import com.wcs.travel_blog.travel_diary.model.TravelStatus;
 import com.wcs.travel_blog.user.repository.UserRepository;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -107,6 +108,38 @@ class TravelDiaryServiceTest {
     }
 
     @Test
+    @DisplayName("createTravelDiary passe toutes les étapes en disabled quand le carnet est désactivé")
+    void shouldDisableStepsWhenCreatingDisabledDiary() {
+        CreateTravelDiaryDTO request = new CreateTravelDiaryDTO();
+        request.setIsPublished(Boolean.TRUE);
+        request.setSteps(List.of(1L));
+
+        TravelDiary mappedEntity = new TravelDiary();
+        mappedEntity.setStatus(TravelStatus.DISABLED);
+        mappedEntity.setIsPublished(Boolean.TRUE);
+        mappedEntity.setCreatedAt(LocalDateTime.now());
+        mappedEntity.setUpdatedAt(LocalDateTime.now());
+
+        com.wcs.travel_blog.step.model.Step step = new com.wcs.travel_blog.step.model.Step();
+        step.setId(1L);
+        step.setTitle("Step");
+        step.setCity("City");
+        step.setCountry("Country");
+        step.setContinent("Continent");
+        step.setStatus(TravelStatus.COMPLETED);
+        step.setTravelDiary(mappedEntity);
+
+        when(travelDiaryMapper.toEntity(request)).thenReturn(mappedEntity);
+        when(stepRepository.findAllById(request.getSteps())).thenReturn(List.of(step));
+        when(travelDiaryRepository.save(mappedEntity)).thenReturn(mappedEntity);
+        when(travelDiaryMapper.toDto(mappedEntity)).thenReturn(new TravelDiaryDTO());
+
+        travelDiaryService.createTravelDiary(request);
+
+        assertThat(step.getStatus()).isEqualTo(TravelStatus.DISABLED);
+    }
+
+    @Test
     @DisplayName("updateTravelDiary remet isPublished à false lorsque toutes les étapes sont supprimées")
     void shouldForceIsPublishedFalseWhenStepsAreClearedOnUpdate() {
         UpdateTravelDiaryDTO request = new UpdateTravelDiaryDTO();
@@ -136,6 +169,36 @@ class TravelDiaryServiceTest {
         assertThat(existing.getIsPublished()).isFalse();
         assertThat(existing.getSteps()).isEmpty();
         assertThat(existing.getIsPrivate()).isFalse();
+    }
+
+    @Test
+    @DisplayName("updateTravelDiary passe toutes les étapes en disabled lorsque le carnet est désactivé")
+    void shouldDisableStepsWhenDiaryStatusBecomesDisabled() {
+        UpdateTravelDiaryDTO request = new UpdateTravelDiaryDTO();
+        request.setStatus(TravelStatus.DISABLED);
+
+        TravelDiary existing = new TravelDiary();
+        existing.setId(1L);
+        existing.setStatus(TravelStatus.IN_PROGRESS);
+        existing.setCreatedAt(LocalDateTime.now());
+        existing.setUpdatedAt(LocalDateTime.now());
+
+        com.wcs.travel_blog.step.model.Step step = new com.wcs.travel_blog.step.model.Step();
+        step.setTitle("Existing step");
+        step.setCity("City");
+        step.setCountry("Country");
+        step.setContinent("Continent");
+        step.setStatus(TravelStatus.COMPLETED);
+        existing.setSteps(new ArrayList<>(List.of(step)));
+
+        when(travelDiaryRepository.findById(1L)).thenReturn(Optional.of(existing));
+        when(travelDiaryRepository.save(existing)).thenReturn(existing);
+        when(travelDiaryMapper.toDto(existing)).thenReturn(new TravelDiaryDTO());
+
+        travelDiaryService.updateTravelDiary(1L, request);
+
+        assertThat(existing.getStatus()).isEqualTo(TravelStatus.DISABLED);
+        assertThat(step.getStatus()).isEqualTo(TravelStatus.DISABLED);
     }
 
     @Test

@@ -3,6 +3,7 @@ package com.wcs.travel_blog.travel_diary.repository;
 import com.wcs.travel_blog.step.model.Step;
 import com.wcs.travel_blog.step.repository.StepRepository;
 import com.wcs.travel_blog.travel_diary.model.TravelDiary;
+import com.wcs.travel_blog.travel_diary.model.TravelStatus;
 import com.wcs.travel_blog.user.model.User;
 import com.wcs.travel_blog.user.repository.UserRepository;
 import org.junit.jupiter.api.DisplayName;
@@ -75,6 +76,28 @@ class TravelDiaryRepositoryTest {
                 .first()
                 .extracting(TravelDiary::getTitle)
                 .isEqualTo("Owner public");
+    }
+
+    @Test
+    @DisplayName("findAllPublishedPublicWithSteps exclut les carnets désactivés")
+    void shouldExcludeDisabledDiariesFromPublicListings() {
+        TravelDiary visibleDiary = buildDiary(false, true, "Visible diary");
+        travelDiaryRepository.save(visibleDiary);
+
+        TravelDiary disabledDiary = buildDiary(false, true, "Disabled diary");
+        disabledDiary.setStatus(TravelStatus.DISABLED);
+        travelDiaryRepository.save(disabledDiary);
+
+        createStep(visibleDiary, "Paris");
+        createStep(disabledDiary, "Lyon");
+
+        List<TravelDiary> visibleDiaries = travelDiaryRepository.findAllPublishedPublicWithSteps();
+
+        assertThat(visibleDiaries)
+                .hasSize(1)
+                .first()
+                .extracting(TravelDiary::getTitle)
+                .isEqualTo("Visible diary");
     }
 
     @Test
@@ -151,6 +174,7 @@ class TravelDiaryRepositoryTest {
         diary.setUpdatedAt(LocalDateTime.now());
         diary.setIsPrivate(isPrivate);
         diary.setIsPublished(isPublished);
+        diary.setStatus(TravelStatus.COMPLETED);
         return diary;
     }
 

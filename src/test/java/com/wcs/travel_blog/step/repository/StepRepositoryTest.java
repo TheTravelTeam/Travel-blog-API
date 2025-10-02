@@ -3,6 +3,7 @@ package com.wcs.travel_blog.step.repository;
 import com.wcs.travel_blog.step.model.Step;
 import com.wcs.travel_blog.travel_diary.model.TravelDiary;
 import com.wcs.travel_blog.travel_diary.repository.TravelDiaryRepository;
+import com.wcs.travel_blog.travel_diary.model.TravelStatus;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -40,6 +41,12 @@ class StepRepositoryTest {
         Step draftStep = buildStep(draftDiary, "Adventure step");
         stepRepository.save(draftStep);
 
+        TravelDiary disabledDiary = buildDiary(false, true, "Disabled diary");
+        disabledDiary.setStatus(TravelStatus.DISABLED);
+        travelDiaryRepository.save(disabledDiary);
+        Step disabledStep = buildStep(disabledDiary, "Adventure step");
+        stepRepository.save(disabledStep);
+
         List<Step> results = stepRepository.searchVisibleSteps("adventure");
 
         assertThat(results)
@@ -57,6 +64,7 @@ class StepRepositoryTest {
         diary.setUpdatedAt(LocalDateTime.now());
         diary.setIsPrivate(isPrivate);
         diary.setIsPublished(isPublished);
+        diary.setStatus(TravelStatus.COMPLETED);
         return diary;
     }
 
