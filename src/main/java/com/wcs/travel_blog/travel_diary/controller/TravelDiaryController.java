@@ -7,6 +7,9 @@ import com.wcs.travel_blog.travel_diary.service.TravelDiaryService;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import com.wcs.travel_blog.user.model.User;
+import org.springframework.security.authentication.AnonymousAuthenticationToken;
+import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -25,6 +28,32 @@ public class TravelDiaryController {
     public ResponseEntity<List<TravelDiaryDTO>> getAllTravelDiaries(){
         List<TravelDiaryDTO> travelDiaries = travelDiaryService.getAllTravelDiaries();
         if(travelDiaries.isEmpty()){
+            return ResponseEntity.noContent().build();
+        }
+        return ResponseEntity.ok(travelDiaries);
+    }
+
+//    @GetMapping("/users/{userId}")
+    /**
+     * REST entrypoint dedicated to a user's diaries. Consumers retrieve the profile via {@code /users/{id}} and call
+     * this endpoint for the diary collection. Ownership/admin privileges are derived from the Spring Security
+     * {@link Authentication}: owners or admins (ROLE_ADMIN) see every diary, visitors only the public/published ones.
+     *
+     * <p>We inspect {@link Authentication#getPrincipal()} directly instead of relying on
+     * {@code @AuthenticationPrincipal(expression = "id")}. When the principal is a simple {@link String} (e.g.
+     * "anonymousUser"), the SpEL expression would throw. Manual inspection keeps the endpoint accessible to anonymous
+     * visitors while still resolving the ID for authenticated users.</p>
+     */
+    @GetMapping("/users/{userId}")
+    public ResponseEntity<List<TravelDiaryDTO>> getTravelDiariesByUser(
+            @PathVariable Long userId,
+            Authentication authentication
+    ) {
+        Long currentUserId = resolveUserId(authentication);
+        boolean isAdmin = isAdmin(authentication);
+
+        List<TravelDiaryDTO> travelDiaries = travelDiaryService.getTravelDiariesForUser(userId, currentUserId, isAdmin);
+        if (travelDiaries.isEmpty()) {
             return ResponseEntity.noContent().build();
         }
         return ResponseEntity.ok(travelDiaries);
@@ -59,6 +88,27 @@ public class TravelDiaryController {
     public ResponseEntity<String> deleteTravelDiary(@PathVariable Long id){
         travelDiaryService.deleteTravelDiary(id);
         return ResponseEntity.ok("Carnet de voyage supprimé avec succès");
+    }
+
+    private Long resolveUserId(Authentication authentication) {
+        if (authentication == null || !authentication.isAuthenticated() || authentication instanceof AnonymousAuthenticationToken) {
+            return null;
+        }
+
+        Object principal = authentication.getPrincipal();
+        if (principal instanceof User user) {
+            return user.getId();
+        }
+
+        return null;
+    }
+
+    private boolean isAdmin(Authentication authentication) {
+        return authentication != null
+                && authentication.isAuthenticated()
+                && !(authentication instanceof AnonymousAuthenticationToken)
+                && authentication.getAuthorities().stream()
+                .anyMatch(authority -> "ROLE_ADMIN".equals(authority.getAuthority()));
     }
 
 
