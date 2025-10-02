@@ -23,6 +23,7 @@ public interface StepRepository extends JpaRepository<Step, Long> {
             )
             AND td.isPublished = TRUE
             AND COALESCE(td.isPrivate, FALSE) = FALSE
+            AND (td.status IS NULL OR td.status <> com.wcs.travel_blog.travel_diary.model.TravelStatus.DISABLED)
             ORDER BY step.updatedAt DESC
             """)
     List<Step> searchVisibleSteps(@Param("query") String query);

@@ -32,6 +32,7 @@ public interface TravelDiaryRepository extends JpaRepository<TravelDiary, Long> 
             AND COALESCE(td.isPrivate, FALSE) = FALSE
             AND td.isPublished = TRUE
             AND SIZE(td.steps) > 0
+            AND (td.status IS NULL OR td.status <> com.wcs.travel_blog.travel_diary.model.TravelStatus.DISABLED)
             ORDER BY td.updatedAt DESC
             """)
     List<TravelDiary> searchVisibleDiaries(@Param("query") String query);
@@ -42,6 +43,7 @@ public interface TravelDiaryRepository extends JpaRepository<TravelDiary, Long> 
             WHERE td.isPrivate = FALSE
               AND td.isPublished = TRUE
               AND SIZE(td.steps) > 0
+              AND (td.status IS NULL OR td.status <> com.wcs.travel_blog.travel_diary.model.TravelStatus.DISABLED)
             ORDER BY td.updatedAt DESC
             """)
     List<TravelDiary> findAllPublishedPublicWithSteps();
@@ -56,6 +58,7 @@ public interface TravelDiaryRepository extends JpaRepository<TravelDiary, Long> 
               AND td.isPrivate = FALSE
               AND td.isPublished = TRUE
               AND SIZE(td.steps) > 0
+              AND (td.status IS NULL OR td.status <> com.wcs.travel_blog.travel_diary.model.TravelStatus.DISABLED)
             ORDER BY td.updatedAt DESC
             """)
     List<TravelDiary> findPublishedPublicByUserId(@Param("userId") Long userId);
