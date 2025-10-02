@@ -43,6 +43,11 @@ INSERT INTO travel_diary (title, description, user_id, can_comment, is_private, 
 INSERT INTO travel_diary (title, description, user_id, can_comment, is_private, is_published, status, created_at, updated_at, latitude, longitude, start_date, end_date) VALUES ('Saveurs du Maghreb', 'Circuit culinaire en Afrique du Nord.', 6, true, false, true, 'IN_PROGRESS', NOW(), NOW(), 34.0209, -6.8416, '2024-03-10', '2024-03-24');
 
 
+INSERT INTO travel_diary (title, description, user_id, can_comment, is_private, is_published, status, created_at, updated_at, latitude, longitude) VALUES ('Road trip en Europe2', 'Voyage en van à travers l''Europe', 3, true, false, true, 'IN_PROGRESS', NOW(), NOW(), 30, 50);
+
+INSERT INTO travel_diary (title, description, user_id, can_comment, is_private, is_published, status, created_at, updated_at, latitude, longitude) VALUES ('Road trip en Europe3', 'Voyage en van à travers l''Europe', 3, true, true, true, 'IN_PROGRESS', NOW(), NOW(), 40, 50);
+
+
 -- 🗺️ Étapes
 INSERT INTO step (title, description, latitude, longitude, city, country, continent, start_date, end_date, status, travel_diary_id, created_at, updated_at, likes_count) VALUES ('Paris', 'Départ officiel', 48.8566, 2.3522, 'Paris', 'France', 'Europe','2020-08-12', '2020-08-12', 'COMPLETED', 1, NOW(), NOW(), 0);
 
@@ -87,6 +92,9 @@ INSERT INTO step (title, description, latitude, longitude, city, country, contin
 INSERT INTO step (title, description, latitude, longitude, city, country, continent, start_date, end_date, status, travel_diary_id, created_at, updated_at, likes_count) VALUES ('Marrakech', 'Marchés et épices', 31.6295, -7.9811, 'Marrakech', 'Maroc', 'Africa','2024-03-11','2024-03-15','COMPLETED',10,NOW(),NOW(),0);
 
 INSERT INTO step (title, description, latitude, longitude, city, country, continent, start_date, end_date, status, travel_diary_id, created_at, updated_at, likes_count) VALUES ('Fès', 'Ateliers culinaires traditionnels', 34.0331, -5.0003, 'Fès', 'Maroc', 'Africa','2024-03-16','2024-03-20','IN_PROGRESS',10,NOW(),NOW(),0);
+
+
+INSERT INTO step (title, description, latitude, longitude, city, country, continent, start_date, end_date, status, travel_diary_id, created_at, updated_at) VALUES ('Paris', 'Départ officiel', 48.8566, 2.3522, 'Paris', 'France', 'Europe','2020-08-12', '2020-08-12', 'COMPLETED', 5, NOW(), NOW());
 
 
 -- 🎥 Médias
