@@ -128,13 +128,45 @@ public class UserServiceTest {
         UserWithDiariesDTO userDTO = getUserWithDiariesDTO1();
 
         when(userRepository.findById(1L)).thenReturn(Optional.of(user));
-        when(userMapper.converToDtoWithDiaries(user)).thenReturn(userDTO);
+        when(userMapper.converToDtoWithDiaries(user, true)).thenReturn(userDTO);
 
         //Act
-        UserWithDiariesDTO result = userService.getUserById(1L);
+        UserWithDiariesDTO result = userService.getUserById(1L, 1L, false);
 
         //Assert
         assertThat(result.getPseudo()).isEqualTo("user2");
+        verify(userMapper).converToDtoWithDiaries(user, true);
+    }
+
+    @Test
+    void getUserById_shouldFilterDiariesForVisitor() {
+        // Arrange
+        User user = getUser1();
+        UserWithDiariesDTO userDTO = getUserWithDiariesDTO1();
+
+        when(userRepository.findById(1L)).thenReturn(Optional.of(user));
+        when(userMapper.converToDtoWithDiaries(user, false)).thenReturn(userDTO);
+
+        // Act
+        UserWithDiariesDTO result = userService.getUserById(1L, 5L, false);
+
+        // Assert
+        assertThat(result).isEqualTo(userDTO);
+        verify(userMapper).converToDtoWithDiaries(user, false);
+    }
+
+    @Test
+    void getUserById_shouldReturnAllDiariesForAdmin() {
+        User user = getUser1();
+        UserWithDiariesDTO userDTO = getUserWithDiariesDTO1();
+
+        when(userRepository.findById(1L)).thenReturn(Optional.of(user));
+        when(userMapper.converToDtoWithDiaries(user, true)).thenReturn(userDTO);
+
+        UserWithDiariesDTO result = userService.getUserById(1L, 5L, true);
+
+        assertThat(result).isEqualTo(userDTO);
+        verify(userMapper).converToDtoWithDiaries(user, true);
     }
 
     @Test
@@ -143,7 +175,7 @@ public class UserServiceTest {
         when(userRepository.findById(99L)).thenReturn(Optional.empty());
 
         //act & assert
-        assertThatThrownBy(() -> userService.getUserById(99L))
+        assertThatThrownBy(() -> userService.getUserById(99L, null, false))
                 .isInstanceOf(ResourceNotFoundException.class)
                 .hasMessage("user non trouvé avec l'id : 99");
     }
@@ -166,7 +198,7 @@ public class UserServiceTest {
         UserWithDiariesDTO userDTO = getUserWithDiariesDTO1();
 
         when(userRepository.findByEmail("user2@gmail.com")).thenReturn(Optional.of(user));
-        when(userMapper.converToDtoWithDiaries(user)).thenReturn(userDTO);
+        when(userMapper.converToDtoWithDiaries(user, true)).thenReturn(userDTO);
 
         UserWithDiariesDTO result = userService.getUserWithDiariesByEmail("user2@gmail.com");
         assertThat(result.getEmail()).isEqualTo("user2@gmail.com");

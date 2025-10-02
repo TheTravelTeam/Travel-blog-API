@@ -33,9 +33,15 @@ public class UserService {
         return users.stream().map(userMapper::converToDto).collect(Collectors.toList());
     }
 
-    public UserWithDiariesDTO getUserById(Long userId){
+    /**
+     * Fetches a user profile with diary summaries. Admins or the profile owner get the full diary list, while other
+     * visitors receive only public/published diaries (filter handled downstream by the mapper).
+     */
+    public UserWithDiariesDTO getUserById(Long userId, Long currentUserId, boolean isAdmin){
         User user = userRepository.findById(userId).orElseThrow(()-> new ResourceNotFoundException("user non trouvé avec l'id : " + userId));
-        return userMapper.converToDtoWithDiaries(user);
+        boolean isOwner = currentUserId != null && currentUserId.equals(userId);
+
+        return userMapper.converToDtoWithDiaries(user, isOwner || isAdmin);
     }
 
     public UserDTO getUserByEmail(String userEmail){
@@ -46,7 +52,7 @@ public class UserService {
     public UserWithDiariesDTO getUserWithDiariesByEmail(String userEmail) {
         User user = userRepository.findByEmail(userEmail)
                 .orElseThrow(() -> new ResourceNotFoundException("user non trouvé avec l'email : " + userEmail));
-        return userMapper.converToDtoWithDiaries(user);
+        return userMapper.converToDtoWithDiaries(user, true);
     }
 
         public UserWithDiariesDTO getUserByPseudo(String username){
