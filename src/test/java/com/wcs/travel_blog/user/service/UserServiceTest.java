@@ -1,11 +1,15 @@
 package com.wcs.travel_blog.user.service;
 
 import com.wcs.travel_blog.exception.ResourceNotFoundException;
+import com.wcs.travel_blog.step.model.Step;
+import com.wcs.travel_blog.travel_diary.model.TravelDiary;
+import com.wcs.travel_blog.travel_diary.model.TravelStatus;
 import com.wcs.travel_blog.user.dto.UpsertUserDTO;
 import com.wcs.travel_blog.user.dto.UserDTO;
 import com.wcs.travel_blog.user.dto.UserWithDiariesDTO;
 import com.wcs.travel_blog.user.mapper.UserMapper;
 import com.wcs.travel_blog.user.model.User;
+import com.wcs.travel_blog.user.model.UserStatus;
 import com.wcs.travel_blog.user.repository.UserRepository;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -15,6 +19,8 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.test.context.ActiveProfiles;
 
+import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -273,5 +279,76 @@ public class UserServiceTest {
         // assert & verify
         // Vérifie que la méthode delete du userRepository est bien appelé avec le bon objet user ici
         verify(userRepository).delete(user);
+    }
+
+    @Test
+    void updateUser_shouldDisableContentWhenStatusBecomesBlocked() {
+        User existingUser = getUser1();
+        existingUser.setStatus(UserStatus.ACTIVE);
+
+        TravelDiary diary = new TravelDiary();
+        diary.setStatus(TravelStatus.IN_PROGRESS);
+        Step step = new Step();
+        step.setStatus(TravelStatus.IN_PROGRESS);
+        diary.setSteps(new ArrayList<>(List.of(step)));
+        existingUser.setTravel_diaries(new ArrayList<>(List.of(diary)));
+
+        UpsertUserDTO updateData = new UpsertUserDTO();
+        updateData.setPseudo(existingUser.getPseudo());
+        updateData.setEmail(existingUser.getEmail());
+        updateData.setBiography(existingUser.getBiography());
+        updateData.setAvatar(existingUser.getAvatar());
+        updateData.setStatus(UserStatus.BLOCKED);
+
+        when(userRepository.findById(existingUser.getId())).thenReturn(Optional.of(existingUser));
+        when(userRepository.save(existingUser)).thenReturn(existingUser);
+
+        userService.updateUser(existingUser.getId(), updateData);
+
+        assertThat(diary.getStatus()).isEqualTo(TravelStatus.DISABLED);
+        assertThat(step.getStatus()).isEqualTo(TravelStatus.DISABLED);
+        verify(userRepository).save(existingUser);
+    }
+
+    @Test
+    void updateUser_shouldRestoreContentWhenStatusBecomesActive() {
+        User existingUser = getUser1();
+        existingUser.setStatus(UserStatus.BLOCKED);
+
+        TravelDiary completedDiary = new TravelDiary();
+        completedDiary.setStatus(TravelStatus.DISABLED);
+        completedDiary.setEndDate(LocalDate.now());
+        Step completedStep = new Step();
+        completedStep.setStatus(TravelStatus.DISABLED);
+        completedStep.setStartDate(LocalDate.now());
+        completedStep.setEndDate(LocalDate.now());
+        completedDiary.setSteps(new ArrayList<>(List.of(completedStep)));
+
+        TravelDiary inProgressDiary = new TravelDiary();
+        inProgressDiary.setStatus(TravelStatus.DISABLED);
+        Step inProgressStep = new Step();
+        inProgressStep.setStatus(TravelStatus.DISABLED);
+        inProgressStep.setStartDate(LocalDate.now());
+        inProgressDiary.setSteps(new ArrayList<>(List.of(inProgressStep)));
+
+        existingUser.setTravel_diaries(new ArrayList<>(List.of(completedDiary, inProgressDiary)));
+
+        UpsertUserDTO updateData = new UpsertUserDTO();
+        updateData.setPseudo(existingUser.getPseudo());
+        updateData.setEmail(existingUser.getEmail());
+        updateData.setBiography(existingUser.getBiography());
+        updateData.setAvatar(existingUser.getAvatar());
+        updateData.setStatus(UserStatus.ACTIVE);
+
+        when(userRepository.findById(existingUser.getId())).thenReturn(Optional.of(existingUser));
+        when(userRepository.save(existingUser)).thenReturn(existingUser);
+
+        userService.updateUser(existingUser.getId(), updateData);
+
+        assertThat(completedDiary.getStatus()).isEqualTo(TravelStatus.COMPLETED);
+        assertThat(completedStep.getStatus()).isEqualTo(TravelStatus.COMPLETED);
+        assertThat(inProgressDiary.getStatus()).isEqualTo(TravelStatus.IN_PROGRESS);
+        assertThat(inProgressStep.getStatus()).isEqualTo(TravelStatus.IN_PROGRESS);
+        verify(userRepository).save(existingUser);
     }
 }

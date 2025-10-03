@@ -111,9 +111,9 @@ public class TravelDiaryService {
             travelDiary.setIsPublished(Boolean.FALSE);
         }
 
-       if (travelDiary.getStatus() == null) {
-           travelDiary.setStatus(TravelStatus.IN_PROGRESS);
-       }
+        if (travelDiary.getStatus() == null) {
+            travelDiary.setStatus(resolveDiaryStatus(travelDiary));
+        }
 
         alignStepsWithDiaryStatus(travelDiary);
 
@@ -147,6 +147,18 @@ public class TravelDiaryService {
 
        if (updateTravelDiaryResponse.getStatus() != null && !updateTravelDiaryResponse.getStatus().equals(travelDiary.getStatus())) {
            travelDiary.setStatus(updateTravelDiaryResponse.getStatus());
+       }
+
+       if (updateTravelDiaryResponse.getStartDate() != null) {
+           travelDiary.setStartDate(updateTravelDiaryResponse.getStartDate());
+       }
+
+       if (updateTravelDiaryResponse.getEndDate() != null) {
+           travelDiary.setEndDate(updateTravelDiaryResponse.getEndDate());
+       }
+
+       if (updateTravelDiaryResponse.getStatus() == null && travelDiary.getStatus() != TravelStatus.DISABLED) {
+           travelDiary.setStatus(resolveDiaryStatus(travelDiary));
        }
 
        alignStepsWithDiaryStatus(travelDiary);
@@ -239,6 +251,10 @@ public class TravelDiaryService {
        }
 
        travelDiary.getSteps().forEach(step -> step.setStatus(TravelStatus.DISABLED));
+   }
+
+   private TravelStatus resolveDiaryStatus(TravelDiary travelDiary) {
+       return travelDiary.getEndDate() != null ? TravelStatus.COMPLETED : TravelStatus.IN_PROGRESS;
    }
 
 }

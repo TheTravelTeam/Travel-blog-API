@@ -3,7 +3,7 @@ INSERT INTO user (email, password, status, pseudo, biography, created_at, update
 
 INSERT INTO user (email, password, status, pseudo, biography, created_at, updated_at, avatar) VALUES ('bob@example.com', '$2a$10$r3tmkLC6jMvtmOCdIhNutOYxDPAo0eoE17Mi.SrebwLFGK/e7NaYG', 'ACTIVE', 'bob', 'Photographe globe-trotteur', NOW(), NOW(), './Images/avatar.jpg');
 
-INSERT INTO user (email, password, status, pseudo, biography, created_at, updated_at, avatar) VALUES ('charlie@example.com', '$2a$10$fOzCYwHbHdj3z1gznRzvsO/D4glNtva9iYN/gDvL29U7N9vhmDoDa', 'ACTIVE', 'charlie', 'Aventurier en sac à dos', NOW(), NOW(), './Images/avatar.jpg');
+INSERT INTO user (email, password, status, pseudo, biography, created_at, updated_at, avatar) VALUES ('charlie@example.com', '$2a$10$fOzCYwHbHdj3z1gznRzvsO/D4glNtva9iYN/gDvL29U7N9vhmDoDa', 'BLOCKED', 'charlie', 'Aventurier en sac à dos', NOW(), NOW(), './Images/avatar.jpg');
 
 
 -- 🔥 Rôles
@@ -13,15 +13,15 @@ INSERT INTO user_roles (user_id, roles) VALUES (2, 'ROLE_USER');
 INSERT INTO user_roles (user_id, roles) VALUES (3, 'ROLE_USER');
 
 -- 📘 Carnets de voyage (sans cover_media_id pour l'instant)
-INSERT INTO travel_diary (title, description, user_id, can_comment, is_private, is_published, status, created_at, updated_at, latitude, longitude)  VALUES ('Tour du monde en solo', 'Mon aventure autour du monde', 1, true, false, true, 'DISABLED', NOW(), NOW(), 50.48, 3.33);
+INSERT INTO travel_diary (title, description, user_id, can_comment, is_private, is_published, status, created_at, updated_at, latitude, longitude, start_date, end_date)  VALUES ('Tour du monde en solo', 'Mon aventure autour du monde', 1, true, false, true, 'DISABLED', NOW(), NOW(), 50.48, 3.33, CURDATE(), NULL);
 
-INSERT INTO travel_diary (title, description, user_id, can_comment, is_private, is_published, status, created_at, updated_at, latitude, longitude) VALUES ('Escapade en Asie', 'Découverte des saveurs et cultures d''Asie', 2, true, false, true, 'COMPLETED', NOW(), NOW(), 30, 18);
+INSERT INTO travel_diary (title, description, user_id, can_comment, is_private, is_published, status, created_at, updated_at, latitude, longitude, start_date, end_date) VALUES ('Escapade en Asie', 'Découverte des saveurs et cultures d''Asie', 2, true, false, true, 'COMPLETED', NOW(), NOW(), 30, 18, CURDATE(), CURDATE());
 
-INSERT INTO travel_diary (title, description, user_id, can_comment, is_private, is_published, status, created_at, updated_at, latitude, longitude) VALUES ('Road trip en Europe', 'Voyage en van à travers l''Europe', 3, true, false, true, 'IN_PROGRESS', NOW(), NOW(), 20, 50);
+INSERT INTO travel_diary (title, description, user_id, can_comment, is_private, is_published, status, created_at, updated_at, latitude, longitude, start_date, end_date) VALUES ('Road trip en Europe', 'Voyage en van à travers l''Europe', 3, true, false, true, 'IN_PROGRESS', NOW(), NOW(), 20, 50, CURDATE(), NULL);
 
-INSERT INTO travel_diary (title, description, user_id, can_comment, is_private, is_published, status, created_at, updated_at, latitude, longitude) VALUES ('Road trip en Europe2', 'Voyage en van à travers l''Europe', 3, true, false, true, 'IN_PROGRESS', NOW(), NOW(), 30, 50);
+INSERT INTO travel_diary (title, description, user_id, can_comment, is_private, is_published, status, created_at, updated_at, latitude, longitude, start_date, end_date) VALUES ('Road trip en Europe2', 'Voyage en van à travers l''Europe', 3, true, false, true, 'IN_PROGRESS', NOW(), NOW(), 30, 50, CURDATE(), NULL);
 
-INSERT INTO travel_diary (title, description, user_id, can_comment, is_private, is_published, status, created_at, updated_at, latitude, longitude) VALUES ('Road trip en Europe3', 'Voyage en van à travers l''Europe', 3, true, true, true, 'IN_PROGRESS', NOW(), NOW(), 40, 50);
+INSERT INTO travel_diary (title, description, user_id, can_comment, is_private, is_published, status, created_at, updated_at, latitude, longitude, start_date, end_date) VALUES ('Road trip en Europe3', 'Voyage en van à travers l''Europe', 3, true, true, true, 'IN_PROGRESS', NOW(), NOW(), 40, 50, CURDATE(), NULL);
 
 
 -- 🗺️ Étapes
