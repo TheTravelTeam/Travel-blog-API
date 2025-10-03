@@ -31,6 +31,8 @@ public class TravelDiaryMapper {
         dto.setIsPrivate(travelDiary.getIsPrivate());
         dto.setIsPublished(travelDiary.getIsPublished());
         dto.setStatus(travelDiary.getStatus());
+        dto.setStartDate(travelDiary.getStartDate());
+        dto.setEndDate(travelDiary.getEndDate());
         dto.setCanComment(travelDiary.getCanComment());
         dto.setLatitude(travelDiary.getLatitude());
         dto.setLongitude(travelDiary.getLongitude());
@@ -63,6 +65,8 @@ public class TravelDiaryMapper {
         travelDiary.setIsPrivate(dto.getIsPrivate());
         travelDiary.setIsPublished(dto.getIsPublished());
         travelDiary.setStatus(dto.getStatus());
+        travelDiary.setStartDate(dto.getStartDate());
+        travelDiary.setEndDate(dto.getEndDate());
         travelDiary.setCanComment(dto.getCanComment());
         travelDiary.setLatitude(dto.getLatitude());
         travelDiary.setLongitude(dto.getLongitude());

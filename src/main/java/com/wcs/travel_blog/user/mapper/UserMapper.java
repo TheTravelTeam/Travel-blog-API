@@ -77,6 +77,8 @@ public class UserMapper {
                     diaryDTO.setIsPrivate(diary.getIsPrivate());
                     diaryDTO.setIsPublished(diary.getIsPublished());
                     diaryDTO.setStatus(diary.getStatus());
+                    diaryDTO.setStartDate(diary.getStartDate());
+                    diaryDTO.setEndDate(diary.getEndDate());
                     diaryDTO.setCanComment(diary.getCanComment());
                     diaryDTO.setLatitude(diary.getLatitude());
                     diaryDTO.setLongitude(diary.getLongitude());

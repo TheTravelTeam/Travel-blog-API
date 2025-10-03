@@ -8,6 +8,7 @@ import com.wcs.travel_blog.step.model.Step;
 import com.wcs.travel_blog.step.repository.StepRepository;
 import com.wcs.travel_blog.theme.model.Theme;
 import com.wcs.travel_blog.theme.repository.ThemeRepository;
+import com.wcs.travel_blog.travel_diary.model.TravelStatus;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
@@ -47,6 +48,9 @@ public class StepService {
         step.setCreatedAt(LocalDateTime.now());
         step.setUpdatedAt(LocalDateTime.now());
         step.setThemes(resolveThemes(stepDto.getThemeIds()));
+        if (step.getStatus() == null) {
+            step.setStatus(resolveStepStatus(step));
+        }
         Step savedStep = stepRepository.save(step);
         return stepMapper.toResponseDto(savedStep);
     }
@@ -59,7 +63,11 @@ public class StepService {
         existingStep.setDescription(stepDto.getDescription());
         existingStep.setStartDate(stepDto.getStartDate());
         existingStep.setEndDate(stepDto.getEndDate());
-        existingStep.setStatus(stepDto.getStatus());
+        if (stepDto.getStatus() != null) {
+            existingStep.setStatus(stepDto.getStatus());
+        } else if (existingStep.getStatus() != TravelStatus.DISABLED) {
+            existingStep.setStatus(resolveStepStatus(existingStep));
+        }
         existingStep.setLatitude(stepDto.getLatitude());
         existingStep.setLongitude(stepDto.getLongitude());
         existingStep.setCity(stepDto.getCity());
@@ -99,6 +107,12 @@ public class StepService {
             throw new ResourceNotFoundException("Un ou plusieurs thèmes sont introuvables");
         }
         return new ArrayList<>(themes);
+    }
+
+    private TravelStatus resolveStepStatus(Step step) {
+        return step.getStartDate() != null && step.getEndDate() != null
+                ? TravelStatus.COMPLETED
+                : TravelStatus.IN_PROGRESS;
     }
 
 }

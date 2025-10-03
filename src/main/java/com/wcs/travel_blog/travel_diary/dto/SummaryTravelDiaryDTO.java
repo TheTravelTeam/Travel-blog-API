@@ -6,6 +6,7 @@ import com.wcs.travel_blog.travel_diary.model.TravelStatus;
 import lombok.Getter;
 import lombok.Setter;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -27,6 +28,10 @@ public class SummaryTravelDiaryDTO {
     private Boolean isPublished;
 
     private TravelStatus status;
+
+    private LocalDate startDate;
+
+    private LocalDate endDate;
 
     private Boolean canComment;
 
