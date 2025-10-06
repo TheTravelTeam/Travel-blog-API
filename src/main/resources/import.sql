@@ -37,7 +37,7 @@ INSERT INTO step (title, description, latitude, longitude, city, country, contin
 
 INSERT INTO step (title, description, latitude, longitude, city, country, continent, start_date, end_date, status, travel_diary_id, created_at, updated_at, likes_count) VALUES ('Lisbonne', 'Ville lumineuse', 38.7223, -9.1393, 'Lisbonne', 'Portugal', 'Europe','2020-08-12','2020-08-12','COMPLETED',3,NOW(),NOW(),0);
 
-INSERT INTO step (title, description, latitude, longitude, city, country, continent, start_date, end_date, status, travel_diary_id, created_at, updated_at) VALUES ('Paris', 'Départ officiel', 48.8566, 2.3522, 'Paris', 'France', 'Europe','2020-08-12', '2020-08-12', 'COMPLETED', 5, NOW(), NOW());
+INSERT INTO step (title, description, latitude, longitude, city, country, continent, start_date, end_date, status, travel_diary_id, created_at, updated_at, likes_count) VALUES ('Paris', 'Départ officiel', 48.8566, 2.3522, 'Paris', 'France', 'Europe','2020-08-12', '2020-08-12', 'COMPLETED', 5, NOW(), NOW(), 0);
 
 
 -- 🎥 Médias
@@ -70,9 +70,14 @@ INSERT INTO step_theme (step_id, theme_id) VALUES (2, 3);
 INSERT INTO step_theme (step_id, theme_id) VALUES (3, 1);
 
 -- 📝 Articles
-INSERT INTO article (title, content, user_id, slug, created_at, updated_at) VALUES ('Mes essentiels pour un tour du monde', 'Voici mes indispensables pour voyager léger et longtemps.', 1, 'essentiels-tour-du-monde', NOW(), NOW());
-INSERT INTO article (title, content, user_id, slug, created_at, updated_at) VALUES ('Guide street food Bangkok', 'Les meilleurs plats à tester absolument dans les rues de Bangkok.', 2, 'guide-street-food-bangkok', NOW(), NOW());
-INSERT INTO article (title, content, user_id, slug, created_at, updated_at) VALUES ('Berlin, capitale de la créativité', 'Pourquoi Berlin est un paradis pour les créateurs.', 3, 'berlin-capitale-creativite', NOW(), NOW());
+INSERT INTO article (title, content, cover_url, user_id, slug, created_at, updated_at) VALUES ('Mes essentiels pour un tour du monde', 'Voici mes indispensables pour voyager léger et longtemps.', 'https://res.cloudinary.com/demo/image/upload/v1700000000/articles/essentiels-cover.jpg', 1, 'essentiels-tour-du-monde', NOW(), NOW());
+INSERT INTO article (title, content, cover_url, user_id, slug, created_at, updated_at) VALUES ('Guide street food Bangkok', 'Les meilleurs plats à tester absolument dans les rues de Bangkok.', 'https://res.cloudinary.com/demo/image/upload/v1700000000/articles/bangkok-cover.jpg', 2, 'guide-street-food-bangkok', NOW(), NOW());
+INSERT INTO article (title, content, cover_url, user_id, slug, created_at, updated_at) VALUES ('Berlin, capitale de la créativité', 'Pourquoi Berlin est un paradis pour les créateurs.', 'https://res.cloudinary.com/demo/image/upload/v1700000000/articles/berlin-cover.jpg', 3, 'berlin-capitale-creativite', NOW(), NOW());
+
+-- 🖼️ Médias d'articles
+INSERT INTO media (file_url, media_type, is_visible, article_id, created_at, updated_at) VALUES ('https://res.cloudinary.com/demo/image/upload/v1700000000/articles/essentiels-cover.jpg', 'PHOTO', TRUE, 1, NOW(), NOW());
+INSERT INTO media (file_url, media_type, is_visible, article_id, created_at, updated_at) VALUES ('https://res.cloudinary.com/demo/image/upload/v1700000000/articles/bangkok-cover.jpg', 'PHOTO', TRUE, 2, NOW(), NOW());
+INSERT INTO media (file_url, media_type, is_visible, article_id, created_at, updated_at) VALUES ('https://res.cloudinary.com/demo/image/upload/v1700000000/articles/berlin-cover.jpg', 'PHOTO', TRUE, 3, NOW(), NOW());
 
 -- 🔗 Jointure Article-Theme
 INSERT INTO article_theme (article_id, theme_id) VALUES (1, 1);

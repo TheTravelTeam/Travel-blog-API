@@ -3,6 +3,7 @@ package com.wcs.travel_blog.article.mapper;
 import com.wcs.travel_blog.article.dto.ArticleDTO;
 import com.wcs.travel_blog.article.dto.CreateArticleDTO;
 import com.wcs.travel_blog.article.model.Article;
+import com.wcs.travel_blog.media.mapper.MediaMapper;
 import com.wcs.travel_blog.theme.mapper.ThemeMapper;
 import com.wcs.travel_blog.theme.model.Theme;
 import com.wcs.travel_blog.user.model.User;
@@ -16,9 +17,11 @@ import java.util.stream.Collectors;
 public class ArticleMapper {
 
     private final ThemeMapper themeMapper;
+    private final MediaMapper mediaMapper;
 
-    public ArticleMapper(ThemeMapper themeMapper) {
+    public ArticleMapper(ThemeMapper themeMapper, MediaMapper mediaMapper) {
         this.themeMapper = themeMapper;
+        this.mediaMapper = mediaMapper;
     }
 
     // convert to DTO
@@ -27,6 +30,12 @@ public class ArticleMapper {
         articleDTO.setId(article.getId());
         articleDTO.setTitle(article.getTitle());
         articleDTO.setContent(article.getContent());
+        articleDTO.setCoverUrl(article.getCoverUrl());
+        articleDTO.setMedias(article.getMedias() != null
+                ? article.getMedias().stream()
+                .map(mediaMapper::toDto)
+                .collect(Collectors.toList())
+                : List.of());
         articleDTO.setUpdatedAt(article.getUpdatedAt());
         articleDTO.setSlug(article.getSlug());
         if (article.getUser() != null) {
@@ -44,6 +53,8 @@ public class ArticleMapper {
         Article article = new Article();
         article.setTitle(createArticleDTO.getTitle());
         article.setContent(createArticleDTO.getContent());
+        article.setCoverUrl(createArticleDTO.getCoverUrl());
+        article.setMedias(new ArrayList<>());
         article.setUser(user);
         article.setThemes(themes != null ? new ArrayList<>(themes) : new ArrayList<>());
         return article;

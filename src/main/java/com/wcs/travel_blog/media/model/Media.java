@@ -1,5 +1,6 @@
 package com.wcs.travel_blog.media.model;
 
+import com.wcs.travel_blog.article.model.Article;
 import com.wcs.travel_blog.step.model.Step;
 import com.wcs.travel_blog.travel_diary.model.TravelDiary;
 import jakarta.persistence.*;
@@ -73,5 +74,9 @@ public class Media {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "step_id")
     private Step step;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "article_id")
+    private Article article;
 
 }

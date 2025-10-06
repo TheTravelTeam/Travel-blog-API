@@ -17,6 +17,7 @@ public class UpdateMediaDTO {
     private Integer height;
     private MediaType mediaType;
     private Long stepId;
+    private Long articleId;
     private Long travelDiaryId;
     private Boolean isVisible;
 }
