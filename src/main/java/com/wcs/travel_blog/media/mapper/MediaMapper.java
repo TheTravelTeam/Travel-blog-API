@@ -1,5 +1,6 @@
 package com.wcs.travel_blog.media.mapper;
 
+import com.wcs.travel_blog.article.repository.ArticleRepository;
 import com.wcs.travel_blog.exception.ResourceNotFoundException;
 import com.wcs.travel_blog.media.dto.CreateMediaDTO;
 import com.wcs.travel_blog.media.dto.MediaDTO;
@@ -14,10 +15,14 @@ import org.springframework.stereotype.Component;
 public class MediaMapper {
     private final StepRepository stepRepository;
     private final TravelDiaryRepository travelDiaryRepository;
+    private final ArticleRepository articleRepository;
 
-    public MediaMapper(StepRepository stepRepository, TravelDiaryRepository travelDiaryRepository){
+    public MediaMapper(StepRepository stepRepository,
+                       TravelDiaryRepository travelDiaryRepository,
+                       ArticleRepository articleRepository){
         this.stepRepository = stepRepository;
         this.travelDiaryRepository = travelDiaryRepository;
+        this.articleRepository = articleRepository;
     }
 
     public MediaDTO toDto (Media media){
@@ -28,6 +33,9 @@ public class MediaMapper {
                 ? media.getIsVisible() : Boolean.TRUE;
         Long stepId = media.getStep() != null
                 ? media.getStep().getId()
+                : null;
+        Long articleId = media.getArticle() != null
+                ? media.getArticle().getId()
                 : null;
         Long diaryId = media.getTravelDiary() != null
                 ? media.getTravelDiary().getId()
@@ -45,6 +53,7 @@ public class MediaMapper {
         dto.setMediaType(media.getMediaType());
         dto.setIsVisible(isVisible);
         dto.setStepId(stepId);
+        dto.setArticleId(articleId);
         dto.setTravelDiaryId(diaryId);
         dto.setCreatedAt(media.getCreatedAt());
         dto.setUpdatedAt(media.getUpdatedAt());
@@ -75,6 +84,11 @@ public class MediaMapper {
             TravelDiary travelDiary =
                     travelDiaryRepository.findById(dto.getTravelDiaryId()).orElseThrow(() -> new ResourceNotFoundException("Carnet non trouvé"));
             media.setTravelDiary(travelDiary);
+        }
+
+        if (dto.getArticleId() != null) {
+            media.setArticle(articleRepository.findById(dto.getArticleId())
+                    .orElseThrow(() -> new ResourceNotFoundException("Article non trouvé")));
         }
 
         return media;

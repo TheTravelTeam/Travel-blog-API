@@ -21,6 +21,7 @@ public class MediaDTO {
     private MediaType mediaType;
     private Boolean isVisible;
     private Long stepId;
+    private Long articleId;
     private Long travelDiaryId;
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;

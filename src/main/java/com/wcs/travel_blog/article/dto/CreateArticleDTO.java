@@ -14,6 +14,8 @@ public class CreateArticleDTO {
     @NotBlank
     private String title;
     private String content;
+    private String coverUrl;
+    private List<Long> mediaIds;
     private Long userId;
     private List<Long> themeIds;
 }

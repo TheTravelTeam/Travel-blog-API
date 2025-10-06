@@ -48,6 +48,7 @@ class MediaControllerTest {
         media.setFileUrl("https://cdn/img1.jpg");
         media.setMediaType(PHOTO);
         media.setStepId(10L);
+        media.setArticleId(4L);
         return media;
     }
 
@@ -57,6 +58,7 @@ class MediaControllerTest {
         media.setFileUrl("https://cdn/vid1.mp4");
         media.setMediaType(VIDEO);
         media.setStepId(10L);
+        media.setArticleId(4L);
         return media;
     }
 
@@ -99,17 +101,29 @@ class MediaControllerTest {
     }
 
     @Test
+    void getMediaByArticle_shouldReturnListForArticle() throws Exception {
+        when(mediaService.getMediaByArticle(4L)).thenReturn(List.of(media1(), media2()));
+
+        mockMvc.perform(get("/medias/article/4"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.length()").value(2))
+                .andExpect(jsonPath("$[0].articleId").value(4));
+    }
+
+    @Test
     void createMedia_shouldReturnCreatedMedia() throws Exception {
         CreateMediaDTO createMediaDTO = new CreateMediaDTO();
         createMediaDTO.setFileUrl("https://cdn/new.jpg");
         createMediaDTO.setMediaType(PHOTO);
         createMediaDTO.setStepId(11L);
+        createMediaDTO.setArticleId(4L);
 
         MediaDTO mediaDTO = new MediaDTO();
         mediaDTO.setId(3L);
         mediaDTO.setFileUrl("https://cdn/new.jpg");
         mediaDTO.setMediaType(PHOTO);
         mediaDTO.setStepId(11L);
+        mediaDTO.setArticleId(4L);
 
         when(mediaService.createMedia(Mockito.any(CreateMediaDTO.class))).thenReturn(mediaDTO);
 
@@ -126,6 +140,7 @@ class MediaControllerTest {
         updateMediaDTO.setFileUrl("https://cdn/updated.jpg");
         updateMediaDTO.setMediaType(PHOTO);
         updateMediaDTO.setStepId(10L);
+        updateMediaDTO.setArticleId(4L);
 
         MediaDTO mediaDTO = media1();
         mediaDTO.setFileUrl("https://cdn/updated.jpg");

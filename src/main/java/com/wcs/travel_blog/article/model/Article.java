@@ -1,5 +1,6 @@
 package com.wcs.travel_blog.article.model;
 
+import com.wcs.travel_blog.media.model.Media;
 import com.wcs.travel_blog.theme.model.Theme;
 import com.wcs.travel_blog.user.model.User;
 import jakarta.persistence.*;
@@ -26,11 +27,17 @@ public class Article {
     @Column(columnDefinition = "TEXT")
     private String content;
 
+    @Column(length = 1024)
+    private String coverUrl;
+
     private LocalDateTime createdAt = LocalDateTime.now();
 
     private LocalDateTime updatedAt = LocalDateTime.now();
 
     private String slug;
+
+    @OneToMany(mappedBy = "article", cascade = CascadeType.ALL)
+    private List<Media> medias = new ArrayList<>();
 
     @ManyToOne
     @JoinColumn(name = "user_id")
