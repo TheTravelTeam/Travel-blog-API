@@ -15,18 +15,6 @@ public class CloudinaryAssetRequest {
     @NotBlank
     private String secureUrl;
 
-    private String folder;
-
-    private String resourceType;
-
-    private String format;
-
-    private Long bytes;
-
-    private Integer width;
-
-    private Integer height;
-
     private Boolean isVisible;
 
     private MediaType mediaType;

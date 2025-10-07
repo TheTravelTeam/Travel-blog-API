@@ -52,7 +52,7 @@ public class CloudinaryController {
     public ResponseEntity<CloudinarySignatureResponse> generateSignature(@Valid @RequestBody CloudinarySignatureRequest request,
                                                                           @AuthenticationPrincipal(expression = "id") Long currentUserId) {
         enforceRateLimit(SIGNATURE_KEY_PREFIX + currentUserId, 10, Duration.ofMinutes(1));
-        LOGGER.info("Signature Cloudinary demandée par l'utilisateur {} pour le dossier {}", currentUserId, request.getFolder());
+        LOGGER.info("Signature Cloudinary demandée par l'utilisateur {} pour le publicId {}", currentUserId, request.getPublicId());
         CloudinarySignatureResponse response = requireCloudinaryService().generateSignature(request);
         return ResponseEntity.ok(response);
     }

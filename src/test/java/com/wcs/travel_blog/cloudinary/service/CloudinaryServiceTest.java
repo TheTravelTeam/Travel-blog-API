@@ -40,9 +40,9 @@ class CloudinaryServiceTest {
     }
 
     @Test
-    void shouldGenerateSignatureWithProvidedFolder() {
+    void shouldGenerateSignatureWithOptionalPublicId() {
         CloudinarySignatureRequest request = new CloudinarySignatureRequest();
-        request.setFolder("travel-diaries/covers");
+        request.setPublicId("travel-diaries/covers/sample");
 
         CloudinarySignatureResponse response = cloudinaryService.generateSignature(request);
 
@@ -50,10 +50,12 @@ class CloudinaryServiceTest {
         assertThat(response.getCloudName()).isEqualTo(properties.getCloudName());
         assertThat(response.getSignature()).isNotBlank();
 
-        String expected = cloudinary.apiSignRequest(Map.of(
-            "folder", request.getFolder(),
+        Map<String, Object> expectedParams = Map.of(
+            "public_id", request.getPublicId(),
             "timestamp", response.getTimestamp()
-        ), properties.getApiSecret());
+        );
+
+        String expected = cloudinary.apiSignRequest(expectedParams, properties.getApiSecret());
 
         assertThat(response.getSignature()).isEqualTo(expected);
     }

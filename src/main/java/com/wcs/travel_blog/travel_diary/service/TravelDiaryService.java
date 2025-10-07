@@ -233,12 +233,6 @@ public class TravelDiaryService {
        media.setMediaType(mediaDto.getMediaType() != null ? mediaDto.getMediaType() : MediaType.PHOTO);
        media.setIsVisible(mediaDto.getIsVisible() != null ? mediaDto.getIsVisible() : Boolean.TRUE);
        media.setPublicId(mediaDto.getPublicId());
-       media.setFolder(mediaDto.getFolder());
-       media.setResourceType(mediaDto.getResourceType());
-       media.setFormat(mediaDto.getFormat());
-       media.setBytes(mediaDto.getBytes());
-       media.setWidth(mediaDto.getWidth());
-       media.setHeight(mediaDto.getHeight());
        media.setTravelDiary(travelDiary);
 
        Media saved = mediaRepository.save(media);

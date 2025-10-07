@@ -1,7 +1,6 @@
 package com.wcs.travel_blog.article.dto;
 
 import com.wcs.travel_blog.media.dto.MediaDTO;
-import com.wcs.travel_blog.theme.dto.ThemeDTO;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -20,5 +19,4 @@ public class ArticleDTO {
     private String slug;
     private Long userId;
     private String pseudo;
-    private List<ThemeDTO> themes;
 }

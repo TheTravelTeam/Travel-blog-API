@@ -5,6 +5,9 @@ import com.wcs.travel_blog.auth.repository.PasswordResetTokenRepository;
 import com.wcs.travel_blog.notification.service.MailService;
 import com.wcs.travel_blog.exception.ExpiredPasswordResetTokenException;
 import com.wcs.travel_blog.exception.InvalidPasswordResetTokenException;
+import com.wcs.travel_blog.exception.InvalidPasswordResetRequestException;
+import com.wcs.travel_blog.exception.ResourceNotFoundException;
+import com.wcs.travel_blog.exception.ExternalServiceException;
 import com.wcs.travel_blog.user.model.User;
 import com.wcs.travel_blog.user.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
@@ -17,7 +20,6 @@ import org.springframework.util.StringUtils;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
 import java.time.LocalDateTime;
-import java.util.Optional;
 import java.util.UUID;
 
 @Service
@@ -45,17 +47,11 @@ public class PasswordResetService {
     public void requestPasswordReset(String rawEmail) {
         final String email = normalizeEmail(rawEmail);
         if (!StringUtils.hasText(email)) {
-            log.warn("Password reset requested with empty email payload");
-            return;
+            throw new InvalidPasswordResetRequestException("Une adresse e-mail est requise pour réinitialiser un mot de passe");
         }
 
-        Optional<User> userOptional = userRepository.findByEmail(email);
-        if (userOptional.isEmpty()) {
-            log.debug("Password reset requested for unknown email");
-            return;
-        }
-
-        User user = userOptional.get();
+        User user = userRepository.findByEmail(email)
+                .orElseThrow(() -> new ResourceNotFoundException("Aucun utilisateur trouvé pour cet email"));
         String token = UUID.randomUUID().toString();
         LocalDateTime createdAt = LocalDateTime.now();
         LocalDateTime expiresAt = createdAt.plusMinutes(getPositiveTtlMinutes());
@@ -71,7 +67,7 @@ public class PasswordResetService {
             mailService.send(user.getEmail(), SUBJECT, emailBody);
             log.info("Password reset email sent for user {}", user.getId());
         } catch (MailException exception) {
-            log.error("Failed to send password reset email for user {}: {}", user.getId(), exception.getMessage(), exception);
+            throw new ExternalServiceException("L'envoi de l'email de réinitialisation a échoué", exception);
         }
     }
 

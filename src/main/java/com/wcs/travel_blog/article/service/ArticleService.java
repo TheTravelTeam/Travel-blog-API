@@ -8,8 +8,6 @@ import com.wcs.travel_blog.article.model.Article;
 import com.wcs.travel_blog.article.repository.ArticleRepository;
 import com.wcs.travel_blog.media.model.Media;
 import com.wcs.travel_blog.media.repository.MediaRepository;
-import com.wcs.travel_blog.theme.model.Theme;
-import com.wcs.travel_blog.theme.repository.ThemeRepository;
 import com.wcs.travel_blog.user.model.User;
 import com.wcs.travel_blog.user.repository.UserRepository;
 import com.wcs.travel_blog.util.SlugUtil;
@@ -30,18 +28,15 @@ public class ArticleService {
     private final ArticleRepository articleRepository;
     private final ArticleMapper articleMapper;
     private final UserRepository userRepository;
-    private final ThemeRepository themeRepository;
     private final MediaRepository mediaRepository;
 
     public ArticleService(ArticleRepository articleRepository,
                           ArticleMapper articleMapper,
                           UserRepository userRepository,
-                          ThemeRepository themeRepository,
                           MediaRepository mediaRepository) {
         this.articleRepository = articleRepository;
         this.articleMapper = articleMapper;
         this.userRepository = userRepository;
-        this.themeRepository = themeRepository;
         this.mediaRepository = mediaRepository;
     }
 
@@ -65,9 +60,7 @@ public class ArticleService {
         User user= userRepository.findById(createArticleDTO.getUserId())
                 .orElseThrow(() -> new EntityNotFoundException("utilisateur non trouvé"));
 
-        List<Theme> themes = resolveThemes(createArticleDTO.getThemeIds());
-
-        Article article= articleMapper.convertToEntity(createArticleDTO, user, themes);
+        Article article= articleMapper.convertToEntity(createArticleDTO, user);
 
         article.setCreatedAt(LocalDateTime.now());
         article.setUpdatedAt(LocalDateTime.now());
@@ -124,11 +117,6 @@ public class ArticleService {
             article.setUser(user);
         }
 
-        if (updArticleDTO.getThemeIds() != null) {
-            List<Theme> themes = resolveThemes(updArticleDTO.getThemeIds());
-            article.setThemes(new java.util.ArrayList<>(themes));
-        }
-
         //automatic LocalDateTime update
         article.setUpdatedAt(LocalDateTime.now());
 
@@ -144,18 +132,6 @@ public class ArticleService {
                 .orElseThrow(() -> new EntityNotFoundException("Article non trouvé"));
 
         articleRepository.delete(article);
-    }
-
-    private List<Theme> resolveThemes(List<Long> themeIds) {
-        if (themeIds == null || themeIds.isEmpty()) {
-            return List.of();
-        }
-
-        List<Theme> themes = themeRepository.findAllById(themeIds);
-        if (themes.size() != themeIds.size()) {
-            throw new EntityNotFoundException("Un ou plusieurs thèmes sont introuvables");
-        }
-        return themes;
     }
 
     private List<Media> resolveMedias(List<Long> mediaIds) {
