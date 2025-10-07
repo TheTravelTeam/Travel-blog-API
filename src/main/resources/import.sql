@@ -79,12 +79,6 @@ INSERT INTO media (file_url, media_type, is_visible, article_id, created_at, upd
 INSERT INTO media (file_url, media_type, is_visible, article_id, created_at, updated_at) VALUES ('https://res.cloudinary.com/demo/image/upload/v1700000000/articles/bangkok-cover.jpg', 'PHOTO', TRUE, 2, NOW(), NOW());
 INSERT INTO media (file_url, media_type, is_visible, article_id, created_at, updated_at) VALUES ('https://res.cloudinary.com/demo/image/upload/v1700000000/articles/berlin-cover.jpg', 'PHOTO', TRUE, 3, NOW(), NOW());
 
--- 🔗 Jointure Article-Theme
-INSERT INTO article_theme (article_id, theme_id) VALUES (1, 1);
-INSERT INTO article_theme (article_id, theme_id) VALUES (2, 2);
-INSERT INTO article_theme (article_id, theme_id) VALUES (2, 3);
-INSERT INTO article_theme (article_id, theme_id) VALUES (3, 1);
-
 -- ✅ Mise à jour des cover_media_id dans travel_diary
 UPDATE media  SET travel_diary_id  = 1 WHERE id = 3;
 UPDATE media  SET travel_diary_id  = 2 WHERE id = 7;

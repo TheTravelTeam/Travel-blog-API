@@ -53,7 +53,7 @@ public class GlobalExceptionHandler {
         return ResponseEntity.status(HttpStatus.FORBIDDEN).body(ex.getMessage());
     }
 
-    @ExceptionHandler({InvalidPasswordResetTokenException.class, ExpiredPasswordResetTokenException.class})
+    @ExceptionHandler({InvalidPasswordResetTokenException.class, ExpiredPasswordResetTokenException.class, InvalidPasswordResetRequestException.class})
     public ResponseEntity<String> handlePasswordResetTokenExceptions(RuntimeException ex) {
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(ex.getMessage());
     }

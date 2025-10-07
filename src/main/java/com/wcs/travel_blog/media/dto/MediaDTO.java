@@ -12,12 +12,6 @@ public class MediaDTO {
     private Long id;
     private String fileUrl;
     private String publicId;
-    private String folder;
-    private String resourceType;
-    private String format;
-    private Long bytes;
-    private Integer width;
-    private Integer height;
     private MediaType mediaType;
     private Boolean isVisible;
     private Long stepId;

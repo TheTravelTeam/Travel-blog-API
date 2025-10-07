@@ -37,10 +37,6 @@ public class CloudinaryService {
         Map<String, Object> paramsToSign = new HashMap<>();
         paramsToSign.put("timestamp", timestamp);
 
-        if (StringUtils.hasText(request.getFolder())) {
-            paramsToSign.put("folder", request.getFolder());
-        }
-
         if (StringUtils.hasText(request.getPublicId())) {
             paramsToSign.put("public_id", request.getPublicId());
         }
@@ -54,7 +50,7 @@ public class CloudinaryService {
         }
 
         String signature = cloudinary.apiSignRequest(paramsToSign, properties.getApiSecret());
-        LOGGER.debug("Signature Cloudinary générée pour le dossier {} et publicId {}", request.getFolder(), request.getPublicId());
+        LOGGER.debug("Signature Cloudinary générée pour le publicId {}", request.getPublicId());
 
         return CloudinarySignatureResponse.builder()
             .timestamp(timestamp)

@@ -81,24 +81,37 @@ class PasswordResetServiceTest {
     }
 
     @Test
-    void shouldIgnoreRequestWhenUserDoesNotExist() {
+    void shouldRejectRequestWhenEmailBlank() {
+        assertThatThrownBy(() -> passwordResetService.requestPasswordReset("   "))
+                .isInstanceOf(com.wcs.travel_blog.exception.InvalidPasswordResetRequestException.class)
+                .hasMessage("Une adresse e-mail est requise pour réinitialiser un mot de passe");
+
+        verifyNoInteractions(userRepository, passwordResetTokenRepository, mailService);
+    }
+
+    @Test
+    void shouldThrowWhenUserDoesNotExist() {
         when(userRepository.findByEmail("unknown@example.com")).thenReturn(Optional.empty());
 
-        passwordResetService.requestPasswordReset("unknown@example.com");
+        assertThatThrownBy(() -> passwordResetService.requestPasswordReset("unknown@example.com"))
+                .isInstanceOf(com.wcs.travel_blog.exception.ResourceNotFoundException.class)
+                .hasMessage("Aucun utilisateur trouvé pour cet email");
 
         verify(passwordResetTokenRepository, never()).save(any());
         verify(mailService, never()).send(anyString(), anyString(), anyString());
     }
 
     @Test
-    void shouldLogErrorAndContinueWhenMailFails() {
+    void shouldWrapMailFailureIntoExternalServiceException() {
         User user = new User();
         user.setId(7L);
         user.setEmail("bob@example.com");
         when(userRepository.findByEmail("bob@example.com")).thenReturn(Optional.of(user));
         doThrow(new MailSendException("SMTP down")).when(mailService).send(anyString(), anyString(), anyString());
 
-        passwordResetService.requestPasswordReset("bob@example.com");
+        assertThatThrownBy(() -> passwordResetService.requestPasswordReset("bob@example.com"))
+                .isInstanceOf(com.wcs.travel_blog.exception.ExternalServiceException.class)
+                .hasMessage("L'envoi de l'email de réinitialisation a échoué");
 
         verify(passwordResetTokenRepository).save(any(PasswordResetToken.class));
         verify(mailService).send(eq("bob@example.com"), anyString(), anyString());

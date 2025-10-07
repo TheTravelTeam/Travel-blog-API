@@ -1,6 +1,5 @@
 package com.wcs.travel_blog.theme.model;
 
-import com.wcs.travel_blog.article.model.Article;
 import com.wcs.travel_blog.step.model.Step;
 import jakarta.persistence.*;
 import lombok.Getter;
@@ -29,9 +28,6 @@ public class Theme {
 
     @ManyToMany(mappedBy = "themes")
     private List<Step> steps = new ArrayList<>();
-
-    @ManyToMany(mappedBy = "themes")
-    private List<Article> articles = new ArrayList<>();
 
     /**
      * permet de mettre à jour le update automatiquement (à voir)
