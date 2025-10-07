@@ -70,9 +70,9 @@ INSERT INTO step_theme (step_id, theme_id) VALUES (2, 3);
 INSERT INTO step_theme (step_id, theme_id) VALUES (3, 1);
 
 -- 📝 Articles
-INSERT INTO article (title, content, cover_url, user_id, slug, created_at, updated_at) VALUES ('Mes essentiels pour un tour du monde', 'Voici mes indispensables pour voyager léger et longtemps.', 'https://res.cloudinary.com/demo/image/upload/v1700000000/articles/essentiels-cover.jpg', 1, 'essentiels-tour-du-monde', NOW(), NOW());
-INSERT INTO article (title, content, cover_url, user_id, slug, created_at, updated_at) VALUES ('Guide street food Bangkok', 'Les meilleurs plats à tester absolument dans les rues de Bangkok.', 'https://res.cloudinary.com/demo/image/upload/v1700000000/articles/bangkok-cover.jpg', 2, 'guide-street-food-bangkok', NOW(), NOW());
-INSERT INTO article (title, content, cover_url, user_id, slug, created_at, updated_at) VALUES ('Berlin, capitale de la créativité', 'Pourquoi Berlin est un paradis pour les créateurs.', 'https://res.cloudinary.com/demo/image/upload/v1700000000/articles/berlin-cover.jpg', 3, 'berlin-capitale-creativite', NOW(), NOW());
+INSERT INTO article (title, content, cover_url, user_id, slug, created_at, updated_at) VALUES ('Mes essentiels pour un tour du monde', 'Voici mes indispensables pour voyager léger et longtemps.', 'https://res.cloudinary.com/dfbgrwist/image/upload/v1758656484/samples/landscapes/landscape-panorama.jpg', 1, 'essentiels-tour-du-monde', NOW(), NOW());
+INSERT INTO article (title, content, cover_url, user_id, slug, created_at, updated_at) VALUES ('Guide street food Bangkok', 'Les meilleurs plats à tester absolument dans les rues de Bangkok.', 'https://res.cloudinary.com/dfbgrwist/image/upload/v1758656483/samples/landscapes/beach-boat.jpg', 2, 'guide-street-food-bangkok', NOW(), NOW());
+INSERT INTO article (title, content, cover_url, user_id, slug, created_at, updated_at) VALUES ('Berlin, capitale de la créativité', 'Pourquoi Berlin est un paradis pour les créateurs.', 'https://res.cloudinary.com/dfbgrwist/image/upload/v1758656483/samples/landscapes/architecture-signs.jpg', 3, 'berlin-capitale-creativite', NOW(), NOW());
 
 -- 🖼️ Médias d'articles
 INSERT INTO media (file_url, media_type, is_visible, article_id, created_at, updated_at) VALUES ('https://res.cloudinary.com/demo/image/upload/v1700000000/articles/essentiels-cover.jpg', 'PHOTO', TRUE, 1, NOW(), NOW());
