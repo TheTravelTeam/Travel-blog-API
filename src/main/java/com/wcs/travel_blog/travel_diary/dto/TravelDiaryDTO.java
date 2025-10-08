@@ -3,6 +3,7 @@ package com.wcs.travel_blog.travel_diary.dto;
 import com.wcs.travel_blog.media.dto.MediaDTO;
 import com.wcs.travel_blog.step.dto.StepResponseDTO;
 import com.wcs.travel_blog.travel_diary.model.TravelStatus;
+import com.wcs.travel_blog.user.dto.UserDTO;
 import lombok.Getter;
 import lombok.Setter;
 import org.springframework.stereotype.Component;
@@ -45,7 +46,7 @@ public class TravelDiaryDTO {
 
     private List<StepResponseDTO> steps;
 
-    private Long user;
+    private UserDTO user;
 
     private MediaDTO media;
 }

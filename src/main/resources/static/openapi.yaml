@@ -1455,8 +1455,7 @@ components:
           items:
             $ref: '#/components/schemas/StepResponseDTO'
         user:
-          type: integer
-          format: int64
+          $ref: '#/components/schemas/UserDTO'
         media:
           $ref: '#/components/schemas/MediaDTO'
     StepRequestDTO:
