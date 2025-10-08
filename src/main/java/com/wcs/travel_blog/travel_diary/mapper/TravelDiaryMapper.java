@@ -5,6 +5,7 @@ import com.wcs.travel_blog.step.mapper.StepMapper;
 import com.wcs.travel_blog.travel_diary.dto.CreateTravelDiaryDTO;
 import com.wcs.travel_blog.travel_diary.dto.TravelDiaryDTO;
 import com.wcs.travel_blog.travel_diary.model.TravelDiary;
+import com.wcs.travel_blog.user.mapper.UserMapper;
 import org.springframework.stereotype.Component;
 
 import java.time.LocalDateTime;
@@ -16,10 +17,12 @@ public class TravelDiaryMapper {
 
     private final StepMapper stepMapper;
     private final MediaMapper mediaMapper;
+    private final UserMapper userMapper;
 
-    public TravelDiaryMapper(StepMapper stepMapper, MediaMapper mediaMapper) {
+    public TravelDiaryMapper(StepMapper stepMapper, MediaMapper mediaMapper, UserMapper userMapper) {
         this.stepMapper = stepMapper;
         this.mediaMapper = mediaMapper;
+        this.userMapper = userMapper;
     }
 
     public TravelDiaryDTO toDto(TravelDiary travelDiary){
@@ -38,7 +41,7 @@ public class TravelDiaryMapper {
         dto.setLongitude(travelDiary.getLongitude());
         dto.setId(travelDiary.getId());
 
-        dto.setUser(travelDiary.getUser() != null ? travelDiary.getUser().getId() : null);
+        dto.setUser(travelDiary.getUser() != null ? userMapper.converToDto(travelDiary.getUser()) : null);
         if( travelDiary.getMedia() != null){
             dto.setMedia(mediaMapper.toDto(travelDiary.getMedia()));
         } else {
