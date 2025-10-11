@@ -71,6 +71,15 @@ public class MediaController {
         return ResponseEntity.ok(medias);
     }
 
+    @GetMapping("/article/{articleId}")
+    public ResponseEntity<List<MediaDTO>> getMediasByArticle(@PathVariable Long articleId) {
+        List<MediaDTO> medias = mediaService.getMediaByArticle(articleId);
+        if (medias.isEmpty()) {
+            return ResponseEntity.noContent().build();
+        }
+        return ResponseEntity.ok(medias);
+    }
+
     @GetMapping("/travel-diary/{diaryId}")
     public ResponseEntity<MediaDTO> getMediaByTravelDiary(@PathVariable Long diaryId) {
         MediaDTO media = mediaService.getMediaByTravelDiary(diaryId);

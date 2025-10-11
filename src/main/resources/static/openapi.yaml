@@ -1,0 +1,1932 @@
+openapi: 3.0.1
+info:
+  title: OpenAPI definition
+  version: v0
+servers:
+- url: http://localhost:8080
+  description: Generated server url
+paths:
+  /users/{userId}:
+    get:
+      tags:
+      - user-controller
+      operationId: getUserById
+      parameters:
+      - name: userId
+        in: path
+        required: true
+        schema:
+          type: integer
+          format: int64
+      responses:
+        '200':
+          description: OK
+          content:
+            '*/*':
+              schema:
+                $ref: '#/components/schemas/UserWithDiariesDTO'
+      summary: Retrieve user by id
+      description: Returns the user identified by `userId`, including public profile
+        details and associated travel diaries when available. Requires the `userId`
+        path parameter.
+    put:
+      tags:
+      - user-controller
+      operationId: updateUser
+      parameters:
+      - name: userId
+        in: path
+        required: true
+        schema:
+          type: integer
+          format: int64
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpsertUserDTO'
+        required: true
+      responses:
+        '200':
+          description: OK
+          content:
+            '*/*':
+              schema:
+                $ref: '#/components/schemas/UserDTO'
+      summary: Update user profile
+      description: Replaces the profile of the user identified by `userId`. Expects
+        an `UpsertUserDTO` JSON body with at least `pseudo` and `email`, plus optional
+        password, biography, avatar, and status updates.
+    delete:
+      tags:
+      - user-controller
+      operationId: deleteUserById
+      parameters:
+      - name: userId
+        in: path
+        required: true
+        schema:
+          type: integer
+          format: int64
+      responses:
+        '200':
+          description: OK
+          content:
+            '*/*':
+              schema:
+                type: string
+      summary: Delete user
+      description: Removes the user identified by `userId` and all dependent resources.
+        Only requires the `userId` path parameter.
+  /travel-diaries/{id}:
+    get:
+      tags:
+      - travel-diary-controller
+      operationId: getTravelDiaryById
+      parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: integer
+          format: int64
+      responses:
+        '200':
+          description: OK
+          content:
+            '*/*':
+              schema:
+                $ref: '#/components/schemas/TravelDiaryDTO'
+      summary: Retrieve travel diary
+      description: Returns a travel diary by id with metadata, owner information,
+        and publication flags. Requires the `id` path parameter.
+    put:
+      tags:
+      - travel-diary-controller
+      operationId: updateTravelDiary
+      parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: integer
+          format: int64
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdateTravelDiaryDTO'
+        required: true
+      responses:
+        '200':
+          description: OK
+          content:
+            '*/*':
+              schema:
+                $ref: '#/components/schemas/TravelDiaryDTO'
+      summary: Update travel diary
+      description: Updates the travel diary identified by `id`. Expects an `UpdateTravelDiaryDTO`
+        payload with title, description, privacy flags, status, and schedule fields
+        to adjust the diary.
+    delete:
+      tags:
+      - travel-diary-controller
+      operationId: deleteTravelDiary
+      parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: integer
+          format: int64
+      responses:
+        '200':
+          description: OK
+          content:
+            '*/*':
+              schema:
+                type: string
+      summary: Delete travel diary
+      description: Deletes the travel diary identified by `id`, including its steps
+        and media links. Requires only the `id` path parameter.
+  /themes/update/{id}:
+    put:
+      tags:
+      - theme-controller
+      operationId: updateTheme
+      parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: integer
+          format: int64
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ThemeDTO'
+        required: true
+      responses:
+        '200':
+          description: OK
+          content:
+            '*/*':
+              schema:
+                $ref: '#/components/schemas/ThemeDTO'
+      summary: Update theme
+      description: Updates the theme identified by `id`. Expects a `ThemeDTO` JSON
+        body with the new name and auditing dates if applicable.
+  /steps/{stepId}:
+    get:
+      tags:
+      - step-controller
+      operationId: getStepById
+      parameters:
+      - name: stepId
+        in: path
+        required: true
+        schema:
+          type: integer
+          format: int64
+      responses:
+        '200':
+          description: OK
+          content:
+            '*/*':
+              schema:
+                $ref: '#/components/schemas/StepResponseDTO'
+      summary: Retrieve step
+      description: Returns the travel step identified by `stepId`, including localisation,
+        scheduling, and statistics. Requires the `stepId` path parameter.
+    put:
+      tags:
+      - step-controller
+      operationId: updateStep
+      parameters:
+      - name: stepId
+        in: path
+        required: true
+        schema:
+          type: integer
+          format: int64
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/StepRequestDTO'
+        required: true
+      responses:
+        '200':
+          description: OK
+          content:
+            '*/*':
+              schema:
+                $ref: '#/components/schemas/StepResponseDTO'
+      summary: Update step
+      description: Updates a travel step by `stepId`. Expects a `StepRequestDTO` payload
+        describing the title, description, location (city/country/coordinates), dates,
+        and status.
+    delete:
+      tags:
+      - step-controller
+      operationId: deleteStep
+      parameters:
+      - name: stepId
+        in: path
+        required: true
+        schema:
+          type: integer
+          format: int64
+      responses:
+        '200':
+          description: OK
+      summary: Delete step
+      description: Deletes the step identified by `stepId` from its parent travel
+        diary. Only requires the `stepId` path parameter.
+  /medias/{id}:
+    get:
+      tags:
+      - media-controller
+      operationId: getMediaById
+      parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: integer
+          format: int64
+      responses:
+        '200':
+          description: OK
+          content:
+            '*/*':
+              schema:
+                $ref: '#/components/schemas/MediaDTO'
+      summary: Retrieve media asset
+      description: Returns metadata for the media item identified by `id`, including
+        storage URLs and associations. Requires the `id` path parameter.
+    put:
+      tags:
+      - media-controller
+      operationId: updateMedia
+      parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: integer
+          format: int64
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdateMediaDTO'
+        required: true
+      responses:
+        '200':
+          description: OK
+          content:
+            '*/*':
+              schema:
+                $ref: '#/components/schemas/MediaDTO'
+      summary: Update media asset
+      description: Updates the media item identified by `id`. Expects an `UpdateMediaDTO`
+        JSON body with file URL, media type, and links to steps, articles, or diaries.
+    delete:
+      tags:
+      - media-controller
+      operationId: deleteMedia
+      parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: integer
+          format: int64
+      responses:
+        '200':
+          description: OK
+          content:
+            '*/*':
+              schema:
+                type: string
+      summary: Delete media asset
+      description: Deletes the media record identified by `id`. Requires only the
+        `id` path parameter; associated content is unlinked.
+  /comments/{id}:
+    get:
+      tags:
+      - comment-controller
+      operationId: getCommentById
+      parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: integer
+          format: int64
+      responses:
+        '200':
+          description: OK
+          content:
+            '*/*':
+              schema:
+                $ref: '#/components/schemas/CommentDTO'
+      summary: Retrieve comment
+      description: Returns the comment identified by `id`, including author, target
+        step, content, and status. Requires the `id` path parameter.
+    put:
+      tags:
+      - comment-controller
+      operationId: updateCommentById
+      parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: integer
+          format: int64
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpsertCommentDTO'
+        required: true
+      responses:
+        '200':
+          description: OK
+          content:
+            '*/*':
+              schema:
+                $ref: '#/components/schemas/CommentDTO'
+      summary: Update comment
+      description: Updates the content or metadata of the comment identified by `id`.
+        Expects an `UpsertCommentDTO` body with the updated message and status.
+    delete:
+      tags:
+      - comment-controller
+      operationId: deleteCommentById
+      parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: integer
+          format: int64
+      responses:
+        '200':
+          description: OK
+      summary: Delete comment
+      description: Deletes the comment identified by `id` from its target step. Requires
+        only the `id` path parameter.
+  /articles/{articleId}:
+    get:
+      tags:
+      - article-controller
+      operationId: getArticleById
+      parameters:
+      - name: articleId
+        in: path
+        required: true
+        schema:
+          type: integer
+          format: int64
+      responses:
+        '200':
+          description: OK
+          content:
+            '*/*':
+              schema:
+                $ref: '#/components/schemas/ArticleDTO'
+      summary: Retrieve article
+      description: Returns the article identified by `articleId`, including author,
+        content, and cover metadata. Requires the `articleId` path parameter.
+    put:
+      tags:
+      - article-controller
+      operationId: updateArticle
+      parameters:
+      - name: articleId
+        in: path
+        required: true
+        schema:
+          type: integer
+          format: int64
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdateArticleDTO'
+        required: true
+      responses:
+        '200':
+          description: OK
+          content:
+            '*/*':
+              schema:
+                $ref: '#/components/schemas/ArticleDTO'
+      summary: Update article
+      description: Updates the article identified by `articleId`. Expects an `UpdateArticleDTO`
+        payload with title, slug, cover URL, and body content.
+    delete:
+      tags:
+      - article-controller
+      operationId: deleteArticle
+      parameters:
+      - name: articleId
+        in: path
+        required: true
+        schema:
+          type: integer
+          format: int64
+      responses:
+        '200':
+          description: OK
+      summary: Delete article
+      description: Deletes the article identified by `articleId` along with its media
+        links. Requires only the `articleId` path parameter.
+  /travel-diaries:
+    get:
+      tags:
+      - travel-diary-controller
+      operationId: getAllTravelDiaries
+      responses:
+        '200':
+          description: OK
+          content:
+            '*/*':
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/TravelDiaryDTO'
+      summary: List travel diaries
+      description: Returns all travel diaries visible to the caller, including publication
+        status and ownership metadata. No parameters required.
+    post:
+      tags:
+      - travel-diary-controller
+      operationId: createTravelDiary
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateTravelDiaryDTO'
+        required: true
+      responses:
+        '200':
+          description: OK
+          content:
+            '*/*':
+              schema:
+                $ref: '#/components/schemas/TravelDiaryDTO'
+      summary: Create travel diary
+      description: Creates a new travel diary for the authenticated user. Expects
+        a `CreateTravelDiaryDTO` payload with title, description, travel window, location,
+        privacy, and comment settings.
+  /themes:
+    get:
+      tags:
+      - theme-controller
+      operationId: getAllTheme
+      responses:
+        '200':
+          description: OK
+          content:
+            '*/*':
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/ThemeDTO'
+      summary: List themes
+      description: Returns the catalogue of available themes that can tag steps or
+        travel diaries. No parameters required.
+    post:
+      tags:
+      - theme-controller
+      operationId: createTheme
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ThemeDTO'
+        required: true
+      responses:
+        '200':
+          description: OK
+          content:
+            '*/*':
+              schema:
+                $ref: '#/components/schemas/ThemeDTO'
+      summary: Create theme
+      description: Creates a new theme entry. Expects a `ThemeDTO` payload with the
+        theme name and optional auditing metadata.
+  /steps:
+    get:
+      tags:
+      - step-controller
+      operationId: getAllSteps
+      responses:
+        '200':
+          description: OK
+          content:
+            '*/*':
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/StepResponseDTO'
+      summary: List steps
+      description: Returns all recorded travel steps with location, timing, and status
+        information. No parameters required.
+    post:
+      tags:
+      - step-controller
+      operationId: createStep
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/StepRequestDTO'
+        required: true
+      responses:
+        '200':
+          description: OK
+          content:
+            '*/*':
+              schema:
+                $ref: '#/components/schemas/StepResponseDTO'
+      summary: Create step
+      description: Creates a new step within a travel diary. Expects a `StepRequestDTO`
+        payload providing the diary id, title, description, place, coordinates, status,
+        and date range.
+  /medias:
+    get:
+      tags:
+      - media-controller
+      operationId: getAllMedias
+      responses:
+        '200':
+          description: OK
+          content:
+            '*/*':
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/MediaDTO'
+      summary: List media assets
+      description: Returns all media items (photos/videos) with their associations
+        and visibility flags. No parameters required.
+    post:
+      tags:
+      - media-controller
+      operationId: createMedia
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateMediaDTO'
+        required: true
+      responses:
+        '200':
+          description: OK
+          content:
+            '*/*':
+              schema:
+                $ref: '#/components/schemas/MediaDTO'
+      summary: Create media asset
+      description: Creates a new media record. Expects a `CreateMediaDTO` payload
+        with file URL, media type, and optional links to a step, article, or diary.
+  /comments:
+    get:
+      tags:
+      - comment-controller
+      operationId: getAllComments
+      parameters:
+      - name: stepId
+        in: query
+        required: false
+        schema:
+          type: integer
+          format: int64
+      - name: userId
+        in: query
+        required: false
+        schema:
+          type: integer
+          format: int64
+      responses:
+        '200':
+          description: OK
+          content:
+            '*/*':
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/CommentDTO'
+      summary: List comments
+      description: Returns all comments visible to the caller with author and status
+        information. Optional `stepId` and `userId` query parameters can filter the
+        collection.
+    post:
+      tags:
+      - comment-controller
+      operationId: createComment
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpsertCommentDTO'
+        required: true
+      responses:
+        '200':
+          description: OK
+          content:
+            '*/*':
+              schema:
+                $ref: '#/components/schemas/CommentDTO'
+      summary: Create comment
+      description: Creates a comment on a travel step. Expects an `UpsertCommentDTO`
+        payload with the target step id, message text, and optional status.
+  /cloudinary/signature:
+    post:
+      tags:
+      - cloudinary-controller
+      operationId: generateSignature
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CloudinarySignatureRequest'
+        required: true
+      responses:
+        '200':
+          description: OK
+          content:
+            '*/*':
+              schema:
+                $ref: '#/components/schemas/CloudinarySignatureResponse'
+      summary: Generate Cloudinary signature
+      description: Returns a signed payload to authorise direct uploads to Cloudinary.
+        Expects a `CloudinarySignatureRequest` body describing folder, public id,
+        timestamp, and resource type.
+  /cloudinary/media:
+    post:
+      tags:
+      - cloudinary-controller
+      operationId: registerAsset
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CloudinaryAssetRequest'
+        required: true
+      responses:
+        '200':
+          description: OK
+          content:
+            '*/*':
+              schema:
+                $ref: '#/components/schemas/MediaDTO'
+      summary: Upload media via API
+      description: Registers a media asset uploaded to Cloudinary. Expects a `CloudinaryAssetRequest`
+        JSON body referencing the Cloudinary public id, resource type, and linkage
+        metadata.
+  /auth/reset-password:
+    post:
+      tags:
+      - auth-controller
+      operationId: resetPassword
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PasswordResetRequestDTO'
+        required: true
+      responses:
+        '200':
+          description: OK
+      summary: Reset password
+      description: Completes a password reset flow. Expects a `PasswordResetRequestDTO`
+        JSON body containing the emailed token and the new password to apply.
+  /auth/register:
+    post:
+      tags:
+      - auth-controller
+      operationId: registerUser
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UserRegistrationDTO'
+        required: true
+      responses:
+        '200':
+          description: OK
+          content:
+            '*/*':
+              schema:
+                $ref: '#/components/schemas/UserDTO'
+      summary: Register new user
+      description: Creates a new user account. Expects a `UserRegistrationDTO` payload
+        with email, password, pseudo, and optional biography or avatar.
+  /auth/logout:
+    post:
+      tags:
+      - auth-controller
+      operationId: logout
+      responses:
+        '200':
+          description: OK
+      summary: Logout current user
+      description: Invalidates the JWT cookie for the authenticated user. No body
+        required; relies on the authentication context.
+  /auth/login:
+    post:
+      tags:
+      - auth-controller
+      operationId: authenticate
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UserLoginDTO'
+        required: true
+      responses:
+        '200':
+          description: OK
+          content:
+            '*/*':
+              schema:
+                type: string
+      summary: Authenticate user
+      description: Authenticates credentials and issues a JWT cookie. Expects a `UserLoginDTO`
+        payload with email and password.
+  /auth/forgot-password:
+    post:
+      tags:
+      - auth-controller
+      operationId: forgotPassword
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ForgotPasswordRequestDTO'
+        required: true
+      responses:
+        '200':
+          description: OK
+      summary: Request password reset
+      description: Starts the password reset flow. Expects a `ForgotPasswordRequestDTO`
+        body with the account email to receive a reset link.
+  /articles:
+    get:
+      tags:
+      - article-controller
+      operationId: getAllArticles
+      responses:
+        '200':
+          description: OK
+          content:
+            '*/*':
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/ArticleDTO'
+      summary: List articles
+      description: Returns all published or draft articles with author and metadata
+        information. No parameters required.
+    post:
+      tags:
+      - article-controller
+      operationId: createArticle
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateArticleDTO'
+        required: true
+      responses:
+        '200':
+          description: OK
+          content:
+            '*/*':
+              schema:
+                $ref: '#/components/schemas/ArticleDTO'
+      summary: Create article
+      description: Creates a new editorial article. Expects a `CreateArticleDTO` payload
+        with title, content, slug, and optional cover media information.
+  /users/{userId}/roles:
+    patch:
+      tags:
+      - user-controller
+      operationId: updateUserRoles
+      parameters:
+      - name: userId
+        in: path
+        required: true
+        schema:
+          type: integer
+          format: int64
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdateUserRolesDTO'
+        required: true
+      responses:
+        '200':
+          description: OK
+          content:
+            '*/*':
+              schema:
+                $ref: '#/components/schemas/UserDTO'
+      summary: Update user roles
+      description: Replaces the role set for the user identified by `userId`. Expects
+        an `UpdateUserRolesDTO` payload listing the roles to assign.
+  /steps/{stepId}/likes:
+    patch:
+      tags:
+      - step-controller
+      operationId: updateStepLikes
+      parameters:
+      - name: stepId
+        in: path
+        required: true
+        schema:
+          type: integer
+          format: int64
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/StepLikeUpdateRequestDTO'
+        required: true
+      responses:
+        '200':
+          description: OK
+          content:
+            '*/*':
+              schema:
+                $ref: '#/components/schemas/StepResponseDTO'
+      summary: Update step like state
+      description: Adds or removes a like on the step identified by `stepId`. Expects
+        a `StepLikeUpdateRequestDTO` body specifying whether the current user likes
+        the step.
+  /comments/{id}/status:
+    patch:
+      tags:
+      - comment-controller
+      operationId: moderateCommentById
+      parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: integer
+          format: int64
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ModerateCommentDTO'
+        required: true
+      responses:
+        '200':
+          description: OK
+          content:
+            '*/*':
+              schema:
+                $ref: '#/components/schemas/CommentDTO'
+      summary: Moderate comment
+      description: Updates the moderation status of the comment identified by `id`.
+        Expects a `ModerateCommentDTO` payload with the target status value.
+  /users:
+    get:
+      tags:
+      - user-controller
+      operationId: getAllUsers
+      responses:
+        '200':
+          description: OK
+          content:
+            '*/*':
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/UserDTO'
+      summary: List users
+      description: Returns all user profiles with public information for directory
+        or admin use. No parameters required.
+  /users/pseudo:
+    get:
+      tags:
+      - user-controller
+      operationId: getUserByPseudo
+      parameters:
+      - name: pseudo
+        in: query
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          description: OK
+          content:
+            '*/*':
+              schema:
+                $ref: '#/components/schemas/UserWithDiariesDTO'
+      summary: Find user by pseudo
+      description: Looks up a user profile by pseudo (username). Requires the `pseudo`
+        query parameter.
+  /users/email:
+    get:
+      tags:
+      - user-controller
+      operationId: getUserByEmail
+      parameters:
+      - name: email
+        in: query
+        required: true
+        schema:
+          type: string
+      - name: withDiaries
+        in: query
+        required: false
+        schema:
+          type: boolean
+          default: false
+      responses:
+        '200':
+          description: OK
+          content:
+            '*/*':
+              schema:
+                type: object
+      summary: Find user by email
+      description: Looks up a user by email address. Requires the `email` query parameter
+        and accepts optional `withDiaries` to include owned travel diaries.
+  /travel-diaries/users/{userId}:
+    get:
+      tags:
+      - travel-diary-controller
+      operationId: getTravelDiariesByUser
+      parameters:
+      - name: userId
+        in: path
+        required: true
+        schema:
+          type: integer
+          format: int64
+      responses:
+        '200':
+          description: OK
+          content:
+            '*/*':
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/TravelDiaryDTO'
+      summary: List user travel diaries
+      description: Returns the travel diaries owned by the user identified by `userId`.
+        Requires the `userId` path parameter.
+  /themes/{id}:
+    get:
+      tags:
+      - theme-controller
+      operationId: getTheme
+      parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: integer
+          format: int64
+      responses:
+        '200':
+          description: OK
+          content:
+            '*/*':
+              schema:
+                $ref: '#/components/schemas/ThemeDTO'
+      summary: Retrieve theme
+      description: Returns the theme identified by `id`, including its label and auditing
+        timestamps. Requires the `id` path parameter.
+    delete:
+      tags:
+      - theme-controller
+      operationId: deleteTheme
+      parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: integer
+          format: int64
+      responses:
+        '200':
+          description: OK
+      summary: Delete theme
+      description: Deletes the theme identified by `id`. Requires only the `id` path
+        parameter; associated tags must be cleaned up separately.
+  /search:
+    get:
+      tags:
+      - search-controller
+      operationId: search
+      parameters:
+      - name: query
+        in: query
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          description: OK
+          content:
+            '*/*':
+              schema:
+                $ref: '#/components/schemas/SearchResponseDTO'
+      summary: Search content
+      description: Performs a global search across travel diaries, steps, and articles.
+        Accepts query parameters such as `q`, `type`, or pagination depending on the
+        backend implementation.
+  /medias/travel-diary/{diaryId}:
+    get:
+      tags:
+      - media-controller
+      operationId: getMediaByTravelDiary
+      parameters:
+      - name: diaryId
+        in: path
+        required: true
+        schema:
+          type: integer
+          format: int64
+      responses:
+        '200':
+          description: OK
+          content:
+            '*/*':
+              schema:
+                $ref: '#/components/schemas/MediaDTO'
+      summary: List diary media
+      description: Returns media assets linked to the travel diary identified by `diaryId`.
+        Requires the `diaryId` path parameter.
+  /medias/step/{stepId}:
+    get:
+      tags:
+      - media-controller
+      operationId: getMediasByStep
+      parameters:
+      - name: stepId
+        in: path
+        required: true
+        schema:
+          type: integer
+          format: int64
+      responses:
+        '200':
+          description: OK
+          content:
+            '*/*':
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/MediaDTO'
+      summary: List step media
+      description: Returns media assets linked to the travel step identified by `stepId`.
+        Requires the `stepId` path parameter.
+  /medias/article/{articleId}:
+    get:
+      tags:
+      - media-controller
+      operationId: getMediasByArticle
+      parameters:
+      - name: articleId
+        in: path
+        required: true
+        schema:
+          type: integer
+          format: int64
+      responses:
+        '200':
+          description: OK
+          content:
+            '*/*':
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/MediaDTO'
+      summary: List article media
+      description: Returns media assets linked to the article identified by `articleId`.
+        Requires the `articleId` path parameter.
+  /cloudinary/media/{publicId}:
+    get:
+      tags:
+      - cloudinary-controller
+      operationId: resolvePublicUrl
+      parameters:
+      - name: publicId
+        in: path
+        required: true
+        schema:
+          type: string
+      - name: urlRequest
+        in: query
+        required: true
+        schema:
+          $ref: '#/components/schemas/CloudinaryUrlRequest'
+      responses:
+        '200':
+          description: OK
+          content:
+            '*/*':
+              schema:
+                $ref: '#/components/schemas/CloudinaryUrlResponse'
+      summary: Resolve Cloudinary media URL
+      description: Returns a signed Cloudinary URL for the resource identified by
+        `publicId`. Requires the `publicId` path parameter and a `urlRequest` query
+        object describing the desired transformation.
+  /auth/me:
+    get:
+      tags:
+      - auth-controller
+      operationId: getCurrentUser
+      responses:
+        '200':
+          description: OK
+          content:
+            '*/*':
+              schema:
+                $ref: '#/components/schemas/UserDTO'
+      summary: Get current user
+      description: Returns the authenticated user profile inferred from the JWT cookie.
+        Requires a valid session; no parameters or body needed.
+components:
+  schemas:
+    UpsertUserDTO:
+      required:
+      - email
+      - pseudo
+      type: object
+      properties:
+        id:
+          type: integer
+          format: int64
+        pseudo:
+          maxLength: 50
+          minLength: 0
+          type: string
+        password:
+          maxLength: 2147483647
+          minLength: 8
+          type: string
+        email:
+          type: string
+        biography:
+          type: string
+        avatar:
+          type: string
+        status:
+          type: string
+          enum:
+          - ACTIVE
+          - INACTIVE
+          - BLOCKED
+    UserDTO:
+      type: object
+      properties:
+        id:
+          type: integer
+          format: int64
+        pseudo:
+          type: string
+        avatar:
+          type: string
+        email:
+          type: string
+        biography:
+          type: string
+        status:
+          type: string
+        roles:
+          uniqueItems: true
+          type: array
+          items:
+            type: string
+        createdAt:
+          type: string
+          format: date-time
+        updatedAt:
+          type: string
+          format: date-time
+    UpdateTravelDiaryDTO:
+      type: object
+      properties:
+        title:
+          type: string
+        description:
+          type: string
+        isPrivate:
+          type: boolean
+        isPublished:
+          type: boolean
+        status:
+          type: string
+          enum:
+          - IN_PROGRESS
+          - COMPLETED
+          - DISABLED
+        startDate:
+          type: string
+          format: date
+        endDate:
+          type: string
+          format: date
+        canComment:
+          type: boolean
+        latitude:
+          type: number
+          format: double
+        longitude:
+          type: number
+          format: double
+        steps:
+          type: array
+          items:
+            type: integer
+            format: int64
+        user:
+          type: integer
+          format: int64
+        media:
+          $ref: '#/components/schemas/UpdateTravelDiaryMediaDTO'
+    UpdateTravelDiaryMediaDTO:
+      type: object
+      properties:
+        id:
+          type: integer
+          format: int64
+        fileUrl:
+          type: string
+        mediaType:
+          type: string
+          enum:
+          - PHOTO
+          - VIDEO
+        isVisible:
+          type: boolean
+        publicId:
+          type: string
+    CommentDTO:
+      type: object
+      properties:
+        id:
+          type: integer
+          format: int64
+        content:
+          type: string
+        createdAt:
+          type: string
+          format: date-time
+        updatedAt:
+          type: string
+          format: date-time
+        status:
+          type: string
+          enum:
+          - APPROVED
+          - PENDING
+          - REJECTED
+        user:
+          $ref: '#/components/schemas/UserDTO'
+    MediaDTO:
+      type: object
+      properties:
+        id:
+          type: integer
+          format: int64
+        fileUrl:
+          type: string
+        publicId:
+          type: string
+        mediaType:
+          type: string
+          enum:
+          - PHOTO
+          - VIDEO
+        isVisible:
+          type: boolean
+        stepId:
+          type: integer
+          format: int64
+        articleId:
+          type: integer
+          format: int64
+        travelDiaryId:
+          type: integer
+          format: int64
+        createdAt:
+          type: string
+          format: date-time
+        updatedAt:
+          type: string
+          format: date-time
+    StepResponseDTO:
+      type: object
+      properties:
+        id:
+          type: integer
+          format: int64
+        title:
+          type: string
+        description:
+          type: string
+        createdAt:
+          type: string
+          format: date-time
+        updatedAt:
+          type: string
+          format: date-time
+        startDate:
+          type: string
+          format: date
+        endDate:
+          type: string
+          format: date
+        status:
+          type: string
+          enum:
+          - IN_PROGRESS
+          - COMPLETED
+          - DISABLED
+        likesCount:
+          type: integer
+          format: int64
+        latitude:
+          type: number
+          format: double
+        longitude:
+          type: number
+          format: double
+        city:
+          type: string
+        country:
+          type: string
+        continent:
+          type: string
+        travelDiaryId:
+          type: integer
+          format: int64
+        themeIds:
+          type: array
+          items:
+            type: integer
+            format: int64
+        themes:
+          type: array
+          items:
+            $ref: '#/components/schemas/ThemeDTO'
+        comments:
+          type: array
+          items:
+            $ref: '#/components/schemas/CommentDTO'
+        media:
+          type: array
+          items:
+            $ref: '#/components/schemas/MediaDTO'
+    ThemeDTO:
+      required:
+      - name
+      type: object
+      properties:
+        id:
+          type: integer
+          format: int64
+        name:
+          maxLength: 100
+          minLength: 2
+          type: string
+        updatedAt:
+          type: string
+          format: date-time
+    TravelDiaryDTO:
+      type: object
+      properties:
+        id:
+          type: integer
+          format: int64
+        title:
+          type: string
+        description:
+          type: string
+        createdAt:
+          type: string
+          format: date-time
+        updatedAt:
+          type: string
+          format: date-time
+        isPrivate:
+          type: boolean
+        isPublished:
+          type: boolean
+        status:
+          type: string
+          enum:
+          - IN_PROGRESS
+          - COMPLETED
+          - DISABLED
+        startDate:
+          type: string
+          format: date
+        endDate:
+          type: string
+          format: date
+        canComment:
+          type: boolean
+        latitude:
+          type: number
+          format: double
+        longitude:
+          type: number
+          format: double
+        steps:
+          type: array
+          items:
+            $ref: '#/components/schemas/StepResponseDTO'
+        user:
+          $ref: '#/components/schemas/UserDTO'
+        media:
+          $ref: '#/components/schemas/MediaDTO'
+    StepRequestDTO:
+      required:
+      - title
+      - travelDiaryId
+      type: object
+      properties:
+        title:
+          maxLength: 50
+          minLength: 2
+          type: string
+        description:
+          maxLength: 5000
+          minLength: 0
+          type: string
+        startDate:
+          type: string
+          format: date
+        endDate:
+          type: string
+          format: date
+        status:
+          type: string
+          enum:
+          - IN_PROGRESS
+          - COMPLETED
+          - DISABLED
+        latitude:
+          type: number
+          format: double
+        longitude:
+          type: number
+          format: double
+        city:
+          maxLength: 100
+          minLength: 2
+          type: string
+        country:
+          maxLength: 100
+          minLength: 2
+          type: string
+        continent:
+          maxLength: 50
+          minLength: 2
+          type: string
+        travelDiaryId:
+          type: integer
+          format: int64
+        themeIds:
+          type: array
+          items:
+            type: integer
+            format: int64
+    UpdateMediaDTO:
+      type: object
+      properties:
+        fileUrl:
+          type: string
+        publicId:
+          type: string
+        mediaType:
+          type: string
+          enum:
+          - PHOTO
+          - VIDEO
+        stepId:
+          type: integer
+          format: int64
+        articleId:
+          type: integer
+          format: int64
+        travelDiaryId:
+          type: integer
+          format: int64
+        isVisible:
+          type: boolean
+    UpsertCommentDTO:
+      required:
+      - content
+      - stepId
+      type: object
+      properties:
+        content:
+          type: string
+        stepId:
+          type: integer
+          format: int64
+    UpdateArticleDTO:
+      type: object
+      properties:
+        title:
+          type: string
+        content:
+          type: string
+        coverUrl:
+          type: string
+        mediaIds:
+          type: array
+          items:
+            type: integer
+            format: int64
+        userId:
+          type: integer
+          format: int64
+    ArticleDTO:
+      type: object
+      properties:
+        id:
+          type: integer
+          format: int64
+        title:
+          type: string
+        content:
+          type: string
+        coverUrl:
+          type: string
+        medias:
+          type: array
+          items:
+            $ref: '#/components/schemas/MediaDTO'
+        updatedAt:
+          type: string
+          format: date-time
+        slug:
+          type: string
+        userId:
+          type: integer
+          format: int64
+        pseudo:
+          type: string
+    CreateMediaDTO:
+      required:
+      - fileUrl
+      - mediaType
+      type: object
+      properties:
+        fileUrl:
+          type: string
+        publicId:
+          type: string
+        mediaType:
+          type: string
+          enum:
+          - PHOTO
+          - VIDEO
+        stepId:
+          type: integer
+          format: int64
+        articleId:
+          type: integer
+          format: int64
+        travelDiaryId:
+          type: integer
+          format: int64
+        isVisible:
+          type: boolean
+    CreateTravelDiaryDTO:
+      type: object
+      properties:
+        title:
+          type: string
+        description:
+          type: string
+        isPrivate:
+          type: boolean
+        isPublished:
+          type: boolean
+        status:
+          type: string
+          enum:
+          - IN_PROGRESS
+          - COMPLETED
+          - DISABLED
+        startDate:
+          type: string
+          format: date
+        endDate:
+          type: string
+          format: date
+        canComment:
+          type: boolean
+        latitude:
+          type: number
+          format: double
+        longitude:
+          type: number
+          format: double
+        steps:
+          type: array
+          items:
+            type: integer
+            format: int64
+        user:
+          type: integer
+          format: int64
+        media:
+          $ref: '#/components/schemas/CreateMediaDTO'
+    CloudinarySignatureRequest:
+      type: object
+      properties:
+        publicId:
+          type: string
+        uploadPreset:
+          type: string
+    CloudinarySignatureResponse:
+      type: object
+      properties:
+        timestamp:
+          type: integer
+          format: int64
+        signature:
+          type: string
+        apiKey:
+          type: string
+        cloudName:
+          type: string
+        uploadPreset:
+          type: string
+    CloudinaryAssetRequest:
+      required:
+      - publicId
+      - secureUrl
+      type: object
+      properties:
+        publicId:
+          type: string
+        secureUrl:
+          type: string
+        isVisible:
+          type: boolean
+        mediaType:
+          type: string
+          enum:
+          - PHOTO
+          - VIDEO
+        stepId:
+          type: integer
+          format: int64
+        travelDiaryId:
+          type: integer
+          format: int64
+        articleId:
+          type: integer
+          format: int64
+    PasswordResetRequestDTO:
+      required:
+      - password
+      - token
+      type: object
+      properties:
+        token:
+          type: string
+        password:
+          maxLength: 2147483647
+          minLength: 8
+          type: string
+    UserRegistrationDTO:
+      required:
+      - email
+      - pseudo
+      type: object
+      properties:
+        pseudo:
+          maxLength: 50
+          minLength: 3
+          type: string
+        password:
+          maxLength: 2147483647
+          minLength: 8
+          type: string
+        email:
+          type: string
+    UserLoginDTO:
+      required:
+      - email
+      type: object
+      properties:
+        email:
+          type: string
+        password:
+          type: string
+    ForgotPasswordRequestDTO:
+      required:
+      - email
+      type: object
+      properties:
+        email:
+          type: string
+    CreateArticleDTO:
+      required:
+      - title
+      type: object
+      properties:
+        title:
+          type: string
+        content:
+          type: string
+        coverUrl:
+          type: string
+        mediaIds:
+          type: array
+          items:
+            type: integer
+            format: int64
+        userId:
+          type: integer
+          format: int64
+    UpdateUserRolesDTO:
+      required:
+      - admin
+      type: object
+      properties:
+        admin:
+          type: boolean
+    StepLikeUpdateRequestDTO:
+      required:
+      - increment
+      type: object
+      properties:
+        increment:
+          type: boolean
+    ModerateCommentDTO:
+      required:
+      - status
+      type: object
+      properties:
+        status:
+          type: string
+    SummaryStepDTO:
+      type: object
+      properties:
+        title:
+          type: string
+        id:
+          type: integer
+          format: int64
+    SummaryTravelDiaryDTO:
+      type: object
+      properties:
+        id:
+          type: integer
+          format: int64
+        title:
+          type: string
+        description:
+          type: string
+        createdAt:
+          type: string
+          format: date-time
+        updatedAt:
+          type: string
+          format: date-time
+        isPrivate:
+          type: boolean
+        isPublished:
+          type: boolean
+        status:
+          type: string
+          enum:
+          - IN_PROGRESS
+          - COMPLETED
+          - DISABLED
+        startDate:
+          type: string
+          format: date
+        endDate:
+          type: string
+          format: date
+        canComment:
+          type: boolean
+        latitude:
+          type: number
+          format: double
+        longitude:
+          type: number
+          format: double
+        steps:
+          type: array
+          items:
+            $ref: '#/components/schemas/SummaryStepDTO'
+        media:
+          $ref: '#/components/schemas/MediaDTO'
+    UserWithDiariesDTO:
+      type: object
+      properties:
+        id:
+          type: integer
+          format: int64
+        pseudo:
+          type: string
+        avatar:
+          type: string
+        email:
+          type: string
+        biography:
+          type: string
+        status:
+          type: string
+        roles:
+          uniqueItems: true
+          type: array
+          items:
+            type: string
+        createdAt:
+          type: string
+          format: date-time
+        updatedAt:
+          type: string
+          format: date-time
+        travelDiaries:
+          type: array
+          items:
+            $ref: '#/components/schemas/SummaryTravelDiaryDTO'
+    SearchDiaryDTO:
+      type: object
+      properties:
+        id:
+          type: integer
+          format: int64
+        title:
+          type: string
+        description:
+          type: string
+        coverUrl:
+          type: string
+    SearchResponseDTO:
+      type: object
+      properties:
+        diaries:
+          type: array
+          items:
+            $ref: '#/components/schemas/SearchDiaryDTO'
+        steps:
+          type: array
+          items:
+            $ref: '#/components/schemas/SearchStepDTO'
+    SearchStepDTO:
+      type: object
+      properties:
+        id:
+          type: integer
+          format: int64
+        title:
+          type: string
+        diaryId:
+          type: integer
+          format: int64
+        diaryTitle:
+          type: string
+        excerpt:
+          type: string
+    CloudinaryUrlRequest:
+      type: object
+      properties:
+        width:
+          type: integer
+          format: int32
+        height:
+          type: integer
+          format: int32
+        crop:
+          type: string
+        format:
+          type: string
+        quality:
+          type: string
+    CloudinaryUrlResponse:
+      type: object
+      properties:
+        publicId:
+          type: string
+        url:
+          type: string

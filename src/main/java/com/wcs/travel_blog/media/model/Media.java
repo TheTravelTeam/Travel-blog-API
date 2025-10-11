@@ -1,5 +1,6 @@
 package com.wcs.travel_blog.media.model;
 
+import com.wcs.travel_blog.article.model.Article;
 import com.wcs.travel_blog.step.model.Step;
 import com.wcs.travel_blog.travel_diary.model.TravelDiary;
 import jakarta.persistence.*;
@@ -27,21 +28,6 @@ public class Media {
 
     @Column(length = 255)
     private String publicId;
-
-    @Column(length = 255)
-    private String folder;
-
-    @Column(length = 32)
-    private String resourceType;
-
-    @Column(length = 32)
-    private String format;
-
-    private Long bytes;
-
-    private Integer width;
-
-    private Integer height;
 
     //nullable = false : contrainte au niveau base de données (DDL).
     //→ Génère une colonne NOT NULL dans ta table.
@@ -73,5 +59,9 @@ public class Media {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "step_id")
     private Step step;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "article_id")
+    private Article article;
 
 }

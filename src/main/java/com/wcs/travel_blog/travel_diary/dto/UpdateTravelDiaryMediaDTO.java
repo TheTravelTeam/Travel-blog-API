@@ -17,16 +17,4 @@ public class UpdateTravelDiaryMediaDTO {
     private Boolean isVisible;
 
     private String publicId;
-
-    private String folder;
-
-    private String resourceType;
-
-    private String format;
-
-    private Long bytes;
-
-    private Integer width;
-
-    private Integer height;
 }

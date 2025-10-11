@@ -4,6 +4,8 @@ import com.wcs.travel_blog.auth.dto.UserRegistrationDTO;
 import com.wcs.travel_blog.media.dto.MediaDTO;
 import com.wcs.travel_blog.step.dto.SummaryStepDTO;
 import com.wcs.travel_blog.travel_diary.dto.SummaryTravelDiaryDTO;
+import com.wcs.travel_blog.travel_diary.model.TravelDiary;
+import com.wcs.travel_blog.travel_diary.model.TravelStatus;
 import com.wcs.travel_blog.user.dto.UpsertUserDTO;
 import com.wcs.travel_blog.user.dto.UserDTO;
 import com.wcs.travel_blog.user.dto.UserWithDiariesDTO;
@@ -44,20 +46,27 @@ public class UserMapper {
     }
 
     public UserWithDiariesDTO converToDtoWithDiaries(User user){
-        UserWithDiariesDTO UserWithDiariesDTO = new UserWithDiariesDTO();
-        UserWithDiariesDTO.setId(user.getId());
-        UserWithDiariesDTO.setPseudo(user.getPseudo());
-        UserWithDiariesDTO.setEmail(user.getEmail());
-        UserWithDiariesDTO.setAvatar(user.getAvatar());
-        UserWithDiariesDTO.setBiography(user.getBiography());
-        // Récupérer le contenu de l'énum
-        UserWithDiariesDTO.setStatus(user.getStatus().getLabel());
-        UserWithDiariesDTO.setCreatedAt(user.getCreatedAt());
-        UserWithDiariesDTO.setUpdatedAt(user.getUpdatedAt());
-        UserWithDiariesDTO.setRoles(user.getRoles());
+        return converToDtoWithDiaries(user, false);
+    }
 
-        List<SummaryTravelDiaryDTO> diariesDTOs = user.getTravel_diaries()
+    public UserWithDiariesDTO converToDtoWithDiaries(User user, boolean includeAllDiaries){
+        UserWithDiariesDTO userWithDiariesDTO = new UserWithDiariesDTO();
+        userWithDiariesDTO.setId(user.getId());
+        userWithDiariesDTO.setPseudo(user.getPseudo());
+        userWithDiariesDTO.setEmail(user.getEmail());
+        userWithDiariesDTO.setAvatar(user.getAvatar());
+        userWithDiariesDTO.setBiography(user.getBiography());
+        // Récupérer le contenu de l'énum
+        userWithDiariesDTO.setStatus(user.getStatus().getLabel());
+        userWithDiariesDTO.setCreatedAt(user.getCreatedAt());
+        userWithDiariesDTO.setUpdatedAt(user.getUpdatedAt());
+        userWithDiariesDTO.setRoles(user.getRoles());
+
+        List<SummaryTravelDiaryDTO> diariesDTOs = user.getTravel_diaries() == null
+                ? List.of()
+                : user.getTravel_diaries()
                 .stream()
+                .filter(diary -> includeAllDiaries || shouldExposeDiary(diary))
                 .map(diary -> {
                     SummaryTravelDiaryDTO diaryDTO = new SummaryTravelDiaryDTO();
                     diaryDTO.setId(diary.getId());
@@ -68,6 +77,8 @@ public class UserMapper {
                     diaryDTO.setIsPrivate(diary.getIsPrivate());
                     diaryDTO.setIsPublished(diary.getIsPublished());
                     diaryDTO.setStatus(diary.getStatus());
+                    diaryDTO.setStartDate(diary.getStartDate());
+                    diaryDTO.setEndDate(diary.getEndDate());
                     diaryDTO.setCanComment(diary.getCanComment());
                     diaryDTO.setLatitude(diary.getLatitude());
                     diaryDTO.setLongitude(diary.getLongitude());
@@ -97,9 +108,17 @@ public class UserMapper {
                     return diaryDTO;
                 }).toList();
 
-        UserWithDiariesDTO.setTravelDiaries(diariesDTOs);
+        userWithDiariesDTO.setTravelDiaries(diariesDTOs);
 
-        return UserWithDiariesDTO;
+        return userWithDiariesDTO;
+    }
+
+    private boolean shouldExposeDiary(TravelDiary diary) {
+        return Boolean.TRUE.equals(diary.getIsPublished())
+                && Boolean.FALSE.equals(diary.getIsPrivate())
+                && diary.getStatus() != TravelStatus.DISABLED
+                && diary.getSteps() != null
+                && !diary.getSteps().isEmpty();
     }
 
     public User converToEntityOnUpdate(UpsertUserDTO userDTO){

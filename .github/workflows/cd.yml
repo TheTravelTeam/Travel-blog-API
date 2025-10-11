@@ -81,6 +81,21 @@ jobs:
           echo 'CORS_ALLOWED_ORIGIN=https://travel-blog.cloud,https://www.travel-blog.cloud' >> /home/${{ secrets.SERVER_USER }}/${{ secrets.PROJECT_NAME }}/.env.prod &&
           echo 'JWT_SECRET=${{ secrets.JWT_SECRET }}' >> /home/${{ secrets.SERVER_USER }}/${{ secrets.PROJECT_NAME }}/.env.prod &&
           echo 'JWT_EXP_TIME=${{ secrets.JWT_EXP_TIME }}' >> /home/${{ secrets.SERVER_USER }}/${{ secrets.PROJECT_NAME }}/.env.prod &&
+          echo 'JWT_COOKIE_SECURE=true' >> /home/${{ secrets.SERVER_USER }}/${{ secrets.PROJECT_NAME }}/.env.prod &&
+          echo 'JWT_COOKIE_SAMESITE=None' >> /home/${{ secrets.SERVER_USER }}/${{ secrets.PROJECT_NAME }}/.env.prod &&
+          echo 'CLOUDINARY_CLOUD_NAME=${{secrets.CLOUDINARY_CLOUD_NAME}}' >> /home/${{ secrets.SERVER_USER }}/${{ secrets.PROJECT_NAME }}/.env.prod &&
+          echo 'CLOUDINARY_API_KEY=${{secrets.CLOUDINARY_API_KEY}}' >> /home/${{ secrets.SERVER_USER }}/${{ secrets.PROJECT_NAME }}/.env.prod &&
+          echo 'CLOUDINARY_API_SECRET=${{secrets.CLOUDINARY_API_SECRET}}' >> /home/${{ secrets.SERVER_USER }}/${{ secrets.PROJECT_NAME }}/.env.prod &&
+          echo 'CLOUDINARY_ENABLED=${{secrets.CLOUDINARY_ENABLED}}' >> /home/${{ secrets.SERVER_USER }}/${{ secrets.PROJECT_NAME }}/.env.prod &&
+          echo 'FRONTEND_BASE_URL=${{secrets.FRONTEND_BASE_URL}}' >> /home/${{ secrets.SERVER_USER }}/${{ secrets.PROJECT_NAME }}/.env.prod &&
+          echo 'AUTH_PASSWORD_RESET_TOKEN_TTL_MINUTES=${{secrets.AUTH_PASSWORD_RESET_TOKEN_TTL_MINUTES}}' >> /home/${{ secrets.SERVER_USER }}/${{ secrets.PROJECT_NAME }}/.env.prod &&
+          echo 'SPRING_MAIL_HOST=${{secrets.SPRING_MAIL_HOST}}' >> /home/${{ secrets.SERVER_USER }}/${{ secrets.PROJECT_NAME }}/.env.prod &&
+          echo 'SPRING_MAIL_PORT=${{secrets.SPRING_MAIL_PORT}}' >> /home/${{ secrets.SERVER_USER }}/${{ secrets.PROJECT_NAME }}/.env.prod &&
+          echo 'SPRING_MAIL_USERNAME=${{secrets.SPRING_MAIL_USERNAME}}' >> /home/${{ secrets.SERVER_USER }}/${{ secrets.PROJECT_NAME }}/.env.prod &&
+          echo 'SPRING_MAIL_PASSWORD=${{secrets.SPRING_MAIL_PASSWORD}}' >> /home/${{ secrets.SERVER_USER }}/${{ secrets.PROJECT_NAME }}/.env.prod &&
+          echo 'SPRING_MAIL_FROM=${{secrets.SPRING_MAIL_FROM}}' >> /home/${{ secrets.SERVER_USER }}/${{ secrets.PROJECT_NAME }}/.env.prod &&
+          echo 'SPRING_MAIL_PROPERTIES_MAIL_SMTP_AUTH=${{secrets.SPRING_MAIL_PROPERTIES_MAIL_SMTP_AUTH}}' >> /home/${{ secrets.SERVER_USER }}/${{ secrets.PROJECT_NAME }}/.env.prod &&
+          echo 'SPRING_MAIL_PROPERTIES_MAIL_SMTP_STARTTLS_ENABLE=${{secrets.SPRING_MAIL_PROPERTIES_MAIL_SMTP_STARTTLS_ENABLE}}' >> /home/${{ secrets.SERVER_USER }}/${{ secrets.PROJECT_NAME }}/.env.prod &&
           chmod 600 /home/${{ secrets.SERVER_USER }}/${{ secrets.PROJECT_NAME }}/.env.prod
           "
 

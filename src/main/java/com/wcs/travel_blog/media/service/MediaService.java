@@ -1,5 +1,6 @@
 package com.wcs.travel_blog.media.service;
 
+import com.wcs.travel_blog.article.repository.ArticleRepository;
 import com.wcs.travel_blog.cloudinary.dto.CloudinaryAssetRequest;
 import com.wcs.travel_blog.exception.ResourceNotFoundException;
 import com.wcs.travel_blog.media.dto.CreateMediaDTO;
@@ -26,15 +27,18 @@ public class MediaService {
     private final MediaMapper mediaMapper;
     private final TravelDiaryRepository travelDiaryRepository;
     private final StepRepository stepRepository;
+    private final ArticleRepository articleRepository;
 
     public MediaService(MediaRepository mediaRepository,
                         MediaMapper mediaMapper,
                         TravelDiaryRepository travelDiaryRepository,
-                        StepRepository stepRepository) {
+                        StepRepository stepRepository,
+                        ArticleRepository articleRepository) {
         this.mediaRepository = mediaRepository;
         this.mediaMapper = mediaMapper;
         this.travelDiaryRepository = travelDiaryRepository;
         this.stepRepository = stepRepository;
+        this.articleRepository = articleRepository;
     }
 
     public List<MediaDTO> getAllMedias() {
@@ -68,24 +72,6 @@ public class MediaService {
         if (StringUtils.hasText(dto.getPublicId()) && !dto.getPublicId().equals(media.getPublicId())) {
             media.setPublicId(dto.getPublicId());
         }
-        if (StringUtils.hasText(dto.getFolder()) && !dto.getFolder().equals(media.getFolder())) {
-            media.setFolder(dto.getFolder());
-        }
-        if (StringUtils.hasText(dto.getResourceType()) && !dto.getResourceType().equals(media.getResourceType())) {
-            media.setResourceType(dto.getResourceType());
-        }
-        if (StringUtils.hasText(dto.getFormat()) && !dto.getFormat().equals(media.getFormat())) {
-            media.setFormat(dto.getFormat());
-        }
-        if (dto.getBytes() != null && !dto.getBytes().equals(media.getBytes())) {
-            media.setBytes(dto.getBytes());
-        }
-        if (dto.getWidth() != null && !dto.getWidth().equals(media.getWidth())) {
-            media.setWidth(dto.getWidth());
-        }
-        if (dto.getHeight() != null && !dto.getHeight().equals(media.getHeight())) {
-            media.setHeight(dto.getHeight());
-        }
         if (dto.getMediaType() != null && !dto.getMediaType().equals(media.getMediaType())) {
             media.setMediaType(dto.getMediaType());
         }
@@ -97,8 +83,7 @@ public class MediaService {
             Step step = stepRepository.findById(dto.getStepId())
                     .orElseThrow(() -> new ResourceNotFoundException("Étape non trouvée"));
             media.setStep(step);
-        } else {
-            // Si explicitement null dans le DTO, on efface le lien
+        } else if (dto.getStepId() == null) {
             media.setStep(null);
         }
 
@@ -106,8 +91,15 @@ public class MediaService {
             TravelDiary travelDiary = travelDiaryRepository.findById(dto.getTravelDiaryId())
                     .orElseThrow(() -> new ResourceNotFoundException("Carnet non trouvé"));
             media.setTravelDiary(travelDiary);
-        } else {
+        } else if (dto.getTravelDiaryId() == null) {
             media.setTravelDiary(null);
+        }
+
+        if (dto.getArticleId() != null) {
+            media.setArticle(articleRepository.findById(dto.getArticleId())
+                    .orElseThrow(() -> new ResourceNotFoundException("Article non trouvé")));
+        } else if (dto.getArticleId() == null) {
+            media.setArticle(null);
         }
 
         media.setUpdatedAt(LocalDateTime.now());
@@ -126,18 +118,12 @@ public class MediaService {
 
         media.setFileUrl(request.getSecureUrl());
         media.setPublicId(request.getPublicId());
-        media.setFolder(request.getFolder());
-        media.setResourceType(request.getResourceType());
-        media.setFormat(request.getFormat());
-        media.setBytes(request.getBytes());
-        media.setWidth(request.getWidth());
-        media.setHeight(request.getHeight());
         media.setIsVisible(request.getIsVisible() != null ? request.getIsVisible() : Boolean.TRUE);
 
         if (request.getMediaType() != null) {
             media.setMediaType(request.getMediaType());
         } else {
-            media.setMediaType(resolveMediaType(request.getResourceType()));
+            media.setMediaType(MediaType.PHOTO);
         }
 
         if (request.getStepId() != null) {
@@ -154,6 +140,13 @@ public class MediaService {
             media.setTravelDiary(travelDiary);
         } else {
             media.setTravelDiary(null);
+        }
+
+        if (request.getArticleId() != null) {
+            media.setArticle(articleRepository.findById(request.getArticleId())
+                .orElseThrow(() -> new ResourceNotFoundException("Article non trouvé")));
+        } else {
+            media.setArticle(null);
         }
 
         media.setUpdatedAt(LocalDateTime.now());
@@ -179,19 +172,17 @@ public class MediaService {
                 .collect(Collectors.toList());
     }
 
+    public List<MediaDTO> getMediaByArticle(Long articleId) {
+        return mediaRepository.findByArticle_Id(articleId).stream()
+                .map(mediaMapper::toDto)
+                .collect(Collectors.toList());
+    }
+
     public MediaDTO getMediaByTravelDiary(Long diaryId) {
         Media media =  mediaRepository.findByTravelDiary_Id(diaryId)
                 .orElseThrow(() -> new ResourceNotFoundException("Aucun média lié au carnet " + diaryId));
         return mediaMapper.toDto(media);
     }
 
-    private MediaType resolveMediaType(String resourceType) {
-        if (!StringUtils.hasText(resourceType)) {
-            return MediaType.PHOTO;
-        }
-        return switch (resourceType.toLowerCase()) {
-            case "video" -> MediaType.VIDEO;
-            default -> MediaType.PHOTO;
-        };
-    }
+    
 }

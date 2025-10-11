@@ -3,14 +3,13 @@ package com.wcs.travel_blog.media.repository;
 
 import com.wcs.travel_blog.media.model.Media;
 import com.wcs.travel_blog.media.model.MediaType;
-import com.wcs.travel_blog.security.JWTAuthenticationFilter;
 import com.wcs.travel_blog.step.model.Step;
 import com.wcs.travel_blog.step.repository.StepRepository;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.test.context.ActiveProfiles;
-import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import java.util.List;
 import java.util.Optional;
 
@@ -26,6 +25,12 @@ class MediaRepositoryTest {
     private MediaRepository mediaRepository;
     @Autowired
     private StepRepository stepRepository;
+
+    @BeforeEach
+    void resetDatabase() {
+        mediaRepository.deleteAll();
+        stepRepository.deleteAll();
+    }
 
     private Step createStep() {
         Step step = new Step();

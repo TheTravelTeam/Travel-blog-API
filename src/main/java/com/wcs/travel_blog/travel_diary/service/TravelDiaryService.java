@@ -12,10 +12,12 @@ import com.wcs.travel_blog.travel_diary.dto.UpdateTravelDiaryMediaDTO;
 import com.wcs.travel_blog.travel_diary.mapper.TravelDiaryMapper;
 import com.wcs.travel_blog.travel_diary.model.TravelDiary;
 import com.wcs.travel_blog.travel_diary.repository.TravelDiaryRepository;
+import com.wcs.travel_blog.travel_diary.model.TravelStatus;
 import com.wcs.travel_blog.user.model.User;
 import com.wcs.travel_blog.user.repository.UserRepository;
 import jakarta.persistence.EntityNotFoundException;
 import org.springframework.stereotype.Service;
+import org.springframework.util.CollectionUtils;
 import org.springframework.util.StringUtils;
 
 import java.time.LocalDateTime;
@@ -41,8 +43,25 @@ public class TravelDiaryService {
     }
 
     public List<TravelDiaryDTO> getAllTravelDiaries(){
-        List<TravelDiary> travelDiaries = travelDiaryRepository.findAll();
+        List<TravelDiary> travelDiaries = travelDiaryRepository.findAllPublishedPublicWithSteps();
         return travelDiaries.stream().map(travelDiaryMapper::toDto).collect(Collectors.toList());
+    }
+
+    /**
+     * Returns the diaries visible for a given viewer. Admins and owners see every diary (draft/private included),
+     * visitors only get the public, published ones.
+     */
+    public List<TravelDiaryDTO> getTravelDiariesForUser(Long userId, Long currentUserId, boolean isAdmin) {
+        boolean isOwner = currentUserId != null && currentUserId.equals(userId);
+        boolean canViewAll = isAdmin || isOwner;
+
+        List<TravelDiary> travelDiaries = canViewAll
+                ? travelDiaryRepository.findAllByUserIdOrderByUpdatedAtDesc(userId)
+                : travelDiaryRepository.findPublishedPublicByUserId(userId);
+
+        return travelDiaries.stream()
+                .map(travelDiaryMapper::toDto)
+                .collect(Collectors.toList());
     }
 
     public TravelDiaryDTO getTravelDiaryById(Long id){
@@ -84,6 +103,20 @@ public class TravelDiaryService {
             travelDiary.setSteps(steps);
         }
 
+        if (travelDiary.getIsPrivate() == null) {
+            travelDiary.setIsPrivate(Boolean.FALSE);
+        }
+
+        if (CollectionUtils.isEmpty(travelDiary.getSteps()) || travelDiary.getIsPublished() == null) {
+            travelDiary.setIsPublished(Boolean.FALSE);
+        }
+
+        if (travelDiary.getStatus() == null) {
+            travelDiary.setStatus(resolveDiaryStatus(travelDiary));
+        }
+
+        alignStepsWithDiaryStatus(travelDiary);
+
         TravelDiary travelDiaryToSaved= travelDiaryRepository.save(travelDiary);
 
         return travelDiaryMapper.toDto(travelDiaryToSaved);
@@ -104,6 +137,10 @@ public class TravelDiaryService {
            travelDiary.setIsPrivate(updateTravelDiaryResponse.getIsPrivate());
        }
 
+       if (travelDiary.getIsPrivate() == null) {
+           travelDiary.setIsPrivate(Boolean.FALSE);
+       }
+
        if (updateTravelDiaryResponse.getIsPublished() != null && !updateTravelDiaryResponse.getIsPublished().equals(travelDiary.getIsPublished())) {
            travelDiary.setIsPublished(updateTravelDiaryResponse.getIsPublished());
        }
@@ -111,6 +148,20 @@ public class TravelDiaryService {
        if (updateTravelDiaryResponse.getStatus() != null && !updateTravelDiaryResponse.getStatus().equals(travelDiary.getStatus())) {
            travelDiary.setStatus(updateTravelDiaryResponse.getStatus());
        }
+
+       if (updateTravelDiaryResponse.getStartDate() != null) {
+           travelDiary.setStartDate(updateTravelDiaryResponse.getStartDate());
+       }
+
+       if (updateTravelDiaryResponse.getEndDate() != null) {
+           travelDiary.setEndDate(updateTravelDiaryResponse.getEndDate());
+       }
+
+       if (updateTravelDiaryResponse.getStatus() == null && travelDiary.getStatus() != TravelStatus.DISABLED) {
+           travelDiary.setStatus(resolveDiaryStatus(travelDiary));
+       }
+
+       alignStepsWithDiaryStatus(travelDiary);
 
        if (updateTravelDiaryResponse.getCanComment() != null && !updateTravelDiaryResponse.getCanComment().equals(travelDiary.getCanComment())) {
            travelDiary.setCanComment(updateTravelDiaryResponse.getCanComment());
@@ -139,10 +190,17 @@ public class TravelDiaryService {
                    throw new EntityNotFoundException("Quelques étapes n'ont pas été trouvé");
                }
                travelDiary.setSteps(steps);
-           } else {
+           } else if (travelDiary.getSteps() != null) {
                travelDiary.getSteps().clear();
            }
        }
+
+       if (CollectionUtils.isEmpty(travelDiary.getSteps()) || travelDiary.getIsPublished() == null) {
+           travelDiary.setIsPublished(Boolean.FALSE);
+       }
+
+
+
 
        TravelDiary updated = travelDiaryRepository.save(travelDiary);
        return travelDiaryMapper.toDto(updated);
@@ -175,15 +233,22 @@ public class TravelDiaryService {
        media.setMediaType(mediaDto.getMediaType() != null ? mediaDto.getMediaType() : MediaType.PHOTO);
        media.setIsVisible(mediaDto.getIsVisible() != null ? mediaDto.getIsVisible() : Boolean.TRUE);
        media.setPublicId(mediaDto.getPublicId());
-       media.setFolder(mediaDto.getFolder());
-       media.setResourceType(mediaDto.getResourceType());
-       media.setFormat(mediaDto.getFormat());
-       media.setBytes(mediaDto.getBytes());
-       media.setWidth(mediaDto.getWidth());
-       media.setHeight(mediaDto.getHeight());
        media.setTravelDiary(travelDiary);
 
        Media saved = mediaRepository.save(media);
        travelDiary.setMedia(saved);
    }
+
+   private void alignStepsWithDiaryStatus(TravelDiary travelDiary) {
+       if (travelDiary.getStatus() != TravelStatus.DISABLED || CollectionUtils.isEmpty(travelDiary.getSteps())) {
+           return;
+       }
+
+       travelDiary.getSteps().forEach(step -> step.setStatus(TravelStatus.DISABLED));
+   }
+
+   private TravelStatus resolveDiaryStatus(TravelDiary travelDiary) {
+       return travelDiary.getEndDate() != null ? TravelStatus.COMPLETED : TravelStatus.IN_PROGRESS;
+   }
+
 }
