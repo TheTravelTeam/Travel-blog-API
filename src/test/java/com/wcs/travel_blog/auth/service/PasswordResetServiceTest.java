@@ -90,12 +90,10 @@ class PasswordResetServiceTest {
     }
 
     @Test
-    void shouldThrowWhenUserDoesNotExist() {
+    void shouldSilentlyIgnoreWhenUserDoesNotExist() {
         when(userRepository.findByEmail("unknown@example.com")).thenReturn(Optional.empty());
 
-        assertThatThrownBy(() -> passwordResetService.requestPasswordReset("unknown@example.com"))
-                .isInstanceOf(com.wcs.travel_blog.exception.ResourceNotFoundException.class)
-                .hasMessage("Aucun utilisateur trouvé pour cet email");
+        passwordResetService.requestPasswordReset("unknown@example.com");
 
         verify(passwordResetTokenRepository, never()).save(any());
         verify(mailService, never()).send(anyString(), anyString(), anyString());

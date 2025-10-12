@@ -20,6 +20,7 @@ import org.springframework.util.StringUtils;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
 import java.time.LocalDateTime;
+import java.util.Optional;
 import java.util.UUID;
 
 @Service
@@ -43,15 +44,21 @@ public class PasswordResetService {
     /**
      * Generates a single-use reset token, persists it, and attempts to email the reset link.
      */
-    @Transactional
+    @Transactional(noRollbackFor = ExternalServiceException.class)
     public void requestPasswordReset(String rawEmail) {
         final String email = normalizeEmail(rawEmail);
         if (!StringUtils.hasText(email)) {
             throw new InvalidPasswordResetRequestException("Une adresse e-mail est requise pour réinitialiser un mot de passe");
         }
 
-        User user = userRepository.findByEmail(email)
-                .orElseThrow(() -> new ResourceNotFoundException("Aucun utilisateur trouvé pour cet email"));
+        Optional<User> userOpt = userRepository.findByEmail(email);
+
+        if (userOpt.isEmpty()) {
+            log.info("Password reset requested for unknown email: {}", email);
+            return;
+        }
+
+        User user = userOpt.get();
         String token = UUID.randomUUID().toString();
         LocalDateTime createdAt = LocalDateTime.now();
         LocalDateTime expiresAt = createdAt.plusMinutes(getPositiveTtlMinutes());
@@ -67,6 +74,7 @@ public class PasswordResetService {
             mailService.send(user.getEmail(), SUBJECT, emailBody);
             log.info("Password reset email sent for user {}", user.getId());
         } catch (MailException exception) {
+            log.error("Échec d'envoi de l'email de réinitialisation pour {} : {}",  email, exception.getMessage());
             throw new ExternalServiceException("L'envoi de l'email de réinitialisation a échoué", exception);
         }
     }
@@ -74,7 +82,7 @@ public class PasswordResetService {
     /**
      * Validates a reset token and updates the linked user password when the token is valid.
      */
-    @Transactional
+    @Transactional(noRollbackFor = ExpiredPasswordResetTokenException.class)
     public void resetPassword(String rawToken, String newPassword) {
         if (!StringUtils.hasText(rawToken)) {
             throw new InvalidPasswordResetTokenException("Token de réinitialisation invalide");

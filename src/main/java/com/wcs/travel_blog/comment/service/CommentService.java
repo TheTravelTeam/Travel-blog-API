@@ -13,6 +13,7 @@ import com.wcs.travel_blog.step.model.Step;
 import com.wcs.travel_blog.step.repository.StepRepository;
 import com.wcs.travel_blog.user.model.User;
 import com.wcs.travel_blog.user.repository.UserRepository;
+import com.wcs.travel_blog.util.HtmlSanitizerService;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
@@ -26,16 +27,17 @@ public class CommentService {
     private final StepRepository stepRepository;
     private final UserRepository userRepository;
     private final CommentMapper commentMapper;
-
+    private final HtmlSanitizerService htmlSanitizerService;
 
     public CommentService(CommentRepository commentRepository,
                           StepRepository stepRepository,
                           UserRepository userRepository,
-                          CommentMapper commentMapper) {
+                          CommentMapper commentMapper, HtmlSanitizerService htmlSanitizerService) {
         this.commentRepository = commentRepository;
         this.stepRepository = stepRepository;
         this.userRepository = userRepository;
         this.commentMapper = commentMapper;
+        this.htmlSanitizerService = htmlSanitizerService;
     }
 
     public List<CommentDTO> getAllComments() {
@@ -64,6 +66,9 @@ public class CommentService {
                 .orElseThrow(() -> new ResourceNotFoundException("Étape introuvable : " + upsertCommentDTO.getStepId()));
 
         Comment comment = commentMapper.toEntity(upsertCommentDTO, author, step);
+
+        comment.setContent(htmlSanitizerService.sanitize(upsertCommentDTO.getContent()));
+
         comment.setCreatedAt(LocalDateTime.now());
         comment.setUpdatedAt(LocalDateTime.now());
         Comment savedComment = commentRepository.save(comment);

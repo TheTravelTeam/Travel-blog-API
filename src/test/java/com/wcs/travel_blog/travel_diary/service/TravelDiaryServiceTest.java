@@ -10,6 +10,7 @@ import com.wcs.travel_blog.travel_diary.model.TravelDiary;
 import com.wcs.travel_blog.travel_diary.repository.TravelDiaryRepository;
 import com.wcs.travel_blog.travel_diary.model.TravelStatus;
 import com.wcs.travel_blog.user.repository.UserRepository;
+import com.wcs.travel_blog.util.HtmlSanitizerService;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -48,6 +49,9 @@ class TravelDiaryServiceTest {
 
     @InjectMocks
     private TravelDiaryService travelDiaryService;
+
+    @Mock(strictness = Mock.Strictness.LENIENT)
+    private HtmlSanitizerService htmlSanitizerService;
 
     @Test
     @DisplayName("createTravelDiary force isPublished à false lorsqu'il n'y a pas d'étape")
