@@ -16,5 +16,4 @@ public class CreateArticleDTO {
     private String coverUrl;
     private List<Long> mediaIds;
     private Long userId;
-    private List<Long> themeIds;
 }
