@@ -6,9 +6,12 @@ import com.wcs.travel_blog.auth.dto.UserLoginDTO;
 import com.wcs.travel_blog.auth.dto.UserRegistrationDTO;
 import com.wcs.travel_blog.auth.service.AuthService;
 import com.wcs.travel_blog.auth.service.PasswordResetService;
+import com.wcs.travel_blog.exception.ExternalServiceException;
+import com.wcs.travel_blog.exception.ResourceNotFoundException;
 import com.wcs.travel_blog.user.dto.UserDTO;
 import com.wcs.travel_blog.user.service.UserService;
 import jakarta.validation.Valid;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
@@ -20,6 +23,7 @@ import org.springframework.web.bind.annotation.*;
 import java.time.Duration;
 import java.util.Set;
 
+@Slf4j
 @RestController
 @RequestMapping("/auth")
 public class AuthController {
@@ -96,7 +100,15 @@ public class AuthController {
      */
     @PostMapping("/forgot-password")
     public ResponseEntity<Void> forgotPassword(@Valid @RequestBody ForgotPasswordRequestDTO request) {
-        passwordResetService.requestPasswordReset(request.getEmail());
+        try {
+            passwordResetService.requestPasswordReset(request.getEmail());
+        } catch (ExternalServiceException e) {
+            // On ne révèle pas les problèmes SMTP à l'utilisateur
+            log.warn("Échec d'envoi de l'email de réinitialisation : {}", e.getMessage());
+        } catch (ResourceNotFoundException e) {
+            // On masque aussi le fait qu'un utilisateur n'existe pas
+            log.info("Demande de réinitialisation pour un email inconnu : {}", request.getEmail());
+        }
         return ResponseEntity.noContent().build();
     }
 

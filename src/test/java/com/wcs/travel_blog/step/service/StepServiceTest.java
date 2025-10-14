@@ -12,6 +12,8 @@ import com.wcs.travel_blog.theme.model.Theme;
 import com.wcs.travel_blog.theme.repository.ThemeRepository;
 import com.wcs.travel_blog.user.model.User;
 import com.wcs.travel_blog.util.CurrentUserProvider;
+import com.wcs.travel_blog.util.HtmlSanitizerService;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.ArgumentCaptor;
@@ -46,6 +48,9 @@ class StepServiceTest {
 
     @Mock
     private CurrentUserProvider currentUserProvider;
+
+    @Mock(strictness = Mock.Strictness.LENIENT)
+    private HtmlSanitizerService htmlSanitizerService;
 
     @InjectMocks
     private StepService stepService;

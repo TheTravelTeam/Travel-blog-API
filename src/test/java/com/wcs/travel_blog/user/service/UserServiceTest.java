@@ -11,6 +11,7 @@ import com.wcs.travel_blog.user.mapper.UserMapper;
 import com.wcs.travel_blog.user.model.User;
 import com.wcs.travel_blog.user.model.UserStatus;
 import com.wcs.travel_blog.user.repository.UserRepository;
+import com.wcs.travel_blog.util.HtmlSanitizerService;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -45,6 +46,9 @@ public class UserServiceTest {
 
     @Mock
     private PasswordEncoder passwordEncoder;
+
+    @Mock(strictness = Mock.Strictness.LENIENT)
+    private HtmlSanitizerService htmlSanitizerService;
 
     User getUser1(){
         User user1 = new User();
