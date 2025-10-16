@@ -13,6 +13,7 @@ import com.wcs.travel_blog.theme.repository.ThemeRepository;
 import com.wcs.travel_blog.util.CurrentUserProvider;
 import com.wcs.travel_blog.user.model.User;
 import com.wcs.travel_blog.travel_diary.model.TravelStatus;
+import com.wcs.travel_blog.util.HtmlSanitizerService;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -31,17 +32,19 @@ public class StepService {
     private final ThemeRepository themeRepository;
     private final StepLikeRepository stepLikeRepository;
     private final CurrentUserProvider currentUserProvider;
+    private final HtmlSanitizerService htmlSanitizerService;
 
     public StepService(StepRepository stepRepository,
                        StepMapper stepMapper,
                        ThemeRepository themeRepository,
                        StepLikeRepository stepLikeRepository,
-                       CurrentUserProvider currentUserProvider) {
+                       CurrentUserProvider currentUserProvider, HtmlSanitizerService htmlSanitizerService) {
         this.stepRepository = stepRepository;
         this.stepMapper = stepMapper;
         this.themeRepository = themeRepository;
         this.stepLikeRepository = stepLikeRepository;
         this.currentUserProvider = currentUserProvider;
+        this.htmlSanitizerService = htmlSanitizerService;
     }
 
     public List<StepResponseDTO> getAllSteps() {
@@ -59,6 +62,11 @@ public class StepService {
 
     public StepResponseDTO createStep(StepRequestDTO stepDto) {
         Step step = stepMapper.toEntity(stepDto);
+
+        // nettoyage des champs sensibles
+        step.setTitle(htmlSanitizerService.sanitize(step.getTitle()));
+        step.setDescription(htmlSanitizerService.sanitize(step.getDescription()));
+
         step.setLikesCount(0L);
         step.setCreatedAt(LocalDateTime.now());
         step.setUpdatedAt(LocalDateTime.now());
@@ -74,8 +82,8 @@ public class StepService {
         Step existingStep = stepRepository.findById(stepId)
                 .orElseThrow(() -> new ResourceNotFoundException("Step not found with id: " + stepId));
 
-        existingStep.setTitle(stepDto.getTitle());
-        existingStep.setDescription(stepDto.getDescription());
+        existingStep.setTitle(htmlSanitizerService.sanitize(stepDto.getTitle()));
+        existingStep.setDescription(htmlSanitizerService.sanitize(stepDto.getDescription()));
         existingStep.setStartDate(stepDto.getStartDate());
         existingStep.setEndDate(stepDto.getEndDate());
         if (stepDto.getStatus() != null) {

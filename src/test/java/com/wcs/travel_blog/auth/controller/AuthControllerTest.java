@@ -50,7 +50,7 @@ public class AuthControllerTest {
     void shouldRegisterUserAndReturn201() throws Exception {
         UserRegistrationDTO userRegistrationDTO = new UserRegistrationDTO();
         userRegistrationDTO.setEmail("test@example.com");
-        userRegistrationDTO.setPassword("password123");
+        userRegistrationDTO.setPassword("Password123!");
         userRegistrationDTO.setPseudo("TestUser");
 
         UserDTO responseDto = new UserDTO();

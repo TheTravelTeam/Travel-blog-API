@@ -15,6 +15,7 @@ import com.wcs.travel_blog.travel_diary.repository.TravelDiaryRepository;
 import com.wcs.travel_blog.travel_diary.model.TravelStatus;
 import com.wcs.travel_blog.user.model.User;
 import com.wcs.travel_blog.user.repository.UserRepository;
+import com.wcs.travel_blog.util.HtmlSanitizerService;
 import jakarta.persistence.EntityNotFoundException;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
@@ -33,13 +34,15 @@ public class TravelDiaryService {
     private final UserRepository userRepository;
     private final MediaRepository mediaRepository;
     private final StepRepository stepRepository;
+    private  final HtmlSanitizerService htmlSanitizerService;
 
-    public TravelDiaryService(TravelDiaryRepository travelDiaryRepository, TravelDiaryMapper travelDiaryMapper, UserRepository userRepository, MediaRepository mediaRepository, StepRepository stepRepository){
+    public TravelDiaryService(TravelDiaryRepository travelDiaryRepository, TravelDiaryMapper travelDiaryMapper, UserRepository userRepository, MediaRepository mediaRepository, StepRepository stepRepository, HtmlSanitizerService htmlSanitizerService){
         this.travelDiaryRepository=travelDiaryRepository;
         this.travelDiaryMapper=travelDiaryMapper;
         this.userRepository = userRepository;
         this.mediaRepository = mediaRepository;
         this.stepRepository = stepRepository;
+        this.htmlSanitizerService = htmlSanitizerService;
     }
 
     public List<TravelDiaryDTO> getAllTravelDiaries(){
@@ -71,6 +74,9 @@ public class TravelDiaryService {
 
     public TravelDiaryDTO createTravelDiary(CreateTravelDiaryDTO createTravelDto){
         TravelDiary travelDiary = travelDiaryMapper.toEntity(createTravelDto);
+
+        travelDiary.setTitle(htmlSanitizerService.sanitize(createTravelDto.getTitle()));
+        travelDiary.setDescription(htmlSanitizerService.sanitize(createTravelDto.getDescription()));
 
         travelDiary.setCreatedAt(LocalDateTime.now());
         travelDiary.setUpdatedAt(LocalDateTime.now());
@@ -126,11 +132,11 @@ public class TravelDiaryService {
        TravelDiary travelDiary = travelDiaryRepository.findById(id).orElseThrow(() -> new EntityNotFoundException("Carnet de voyage non trouvé"));
 
        if (updateTravelDiaryResponse.getTitle() != null && !updateTravelDiaryResponse.getTitle().equals(travelDiary.getTitle())) {
-           travelDiary.setTitle(updateTravelDiaryResponse.getTitle());
+           travelDiary.setTitle(htmlSanitizerService.sanitize(updateTravelDiaryResponse.getTitle()));
        }
 
        if (updateTravelDiaryResponse.getDescription() != null && !updateTravelDiaryResponse.getDescription().equals(travelDiary.getDescription())) {
-           travelDiary.setDescription(updateTravelDiaryResponse.getDescription());
+           travelDiary.setDescription(htmlSanitizerService.sanitize(updateTravelDiaryResponse.getDescription()));
        }
 
        if (updateTravelDiaryResponse.getIsPrivate() != null && !updateTravelDiaryResponse.getIsPrivate().equals(travelDiary.getIsPrivate())) {

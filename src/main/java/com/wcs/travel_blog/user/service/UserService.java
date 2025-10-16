@@ -11,6 +11,7 @@ import com.wcs.travel_blog.user.mapper.UserMapper;
 import com.wcs.travel_blog.user.model.User;
 import com.wcs.travel_blog.user.model.UserStatus;
 import com.wcs.travel_blog.user.repository.UserRepository;
+import com.wcs.travel_blog.util.HtmlSanitizerService;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -26,11 +27,13 @@ public class UserService {
     private final UserRepository userRepository;
     private final UserMapper userMapper;
     private final PasswordEncoder passwordEncoder;
+    private final HtmlSanitizerService htmlSanitizerService;
 
-    public UserService(UserRepository userRepository, UserMapper userMapper, PasswordEncoder passwordEncoder) {
+    public UserService(UserRepository userRepository, UserMapper userMapper, PasswordEncoder passwordEncoder, HtmlSanitizerService htmlSanitizerService) {
         this.userRepository = userRepository;
         this.userMapper = userMapper;
         this.passwordEncoder = passwordEncoder;
+        this.htmlSanitizerService = htmlSanitizerService;
     }
 
     public List<UserDTO> getAllUsers(){
@@ -75,7 +78,7 @@ public class UserService {
         existingUser.setPseudo(upsertUserDTO.getPseudo());
         existingUser.setEmail(upsertUserDTO.getEmail());
         if(upsertUserDTO.getBiography() != null  && !upsertUserDTO.getBiography().equals(existingUser.getBiography())){
-            existingUser.setBiography(upsertUserDTO.getBiography());
+            existingUser.setBiography(htmlSanitizerService.sanitize(upsertUserDTO.getBiography()));
         }
         if(upsertUserDTO.getAvatar() != null && !upsertUserDTO.getAvatar().equals(existingUser.getAvatar())){
             existingUser.setAvatar(upsertUserDTO.getAvatar());

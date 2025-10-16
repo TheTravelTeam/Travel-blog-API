@@ -2,10 +2,13 @@ package com.wcs.travel_blog.auth.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.wcs.travel_blog.auth.dto.ForgotPasswordRequestDTO;
+import com.wcs.travel_blog.auth.model.PasswordResetToken;
 import com.wcs.travel_blog.auth.repository.PasswordResetTokenRepository;
 import com.wcs.travel_blog.notification.service.MailService;
 import com.wcs.travel_blog.user.model.User;
 import com.wcs.travel_blog.user.repository.UserRepository;
+import jakarta.persistence.EntityManager;
+import org.hibernate.Hibernate;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,6 +20,7 @@ import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
 
+import java.util.List;
 import java.util.Set;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -56,7 +60,7 @@ class ForgotPasswordControllerIT {
     @Test
     void shouldReturn204AndPersistTokenWhenEmailExists() throws Exception {
         User user = buildUser("alice@example.com");
-        userRepository.save(user);
+        userRepository.saveAndFlush(user);
 
         ForgotPasswordRequestDTO request = new ForgotPasswordRequestDTO();
         request.setEmail("alice@example.com");
@@ -66,12 +70,16 @@ class ForgotPasswordControllerIT {
                         .content(objectMapper.writeValueAsString(request)))
                 .andExpect(status().isNoContent());
 
-        assertThat(passwordResetTokenRepository.findAll()).hasSize(1)
-                .first()
-                .satisfies(token -> {
-                    assertThat(token.getUser().getEmail()).isEqualTo("alice@example.com");
-                    assertThat(token.getToken()).isNotBlank();
-                });
+        List<PasswordResetToken> tokens = passwordResetTokenRepository.findAll();
+        assertThat(tokens).hasSize(1);
+
+        PasswordResetToken token = passwordResetTokenRepository
+                .findByIdWithUser(tokens.getFirst().getId())
+                .orElseThrow();
+
+        assertThat(token.getUser().getEmail()).isEqualTo("alice@example.com");
+        assertThat(token.getToken()).isNotBlank();
+
         verify(mailService).send(anyString(), anyString(), anyString());
     }
 

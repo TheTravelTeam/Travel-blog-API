@@ -23,6 +23,11 @@ public class GlobalExceptionHandler {
         return new ResponseEntity<>(exception.getMessage(), HttpStatus.CONFLICT);
     }
 
+    @ExceptionHandler(PseudoAlreadyExistException.class)
+    public ResponseEntity<String> handlePseudoAlreadyExist(PseudoAlreadyExistException exception){
+        return new ResponseEntity<>(exception.getMessage(), HttpStatus.CONFLICT);
+    }
+
     @ExceptionHandler(ExternalServiceException.class)
     public ResponseEntity<String> handleExternalServiceException(ExternalServiceException exception) {
         return ResponseEntity.status(HttpStatus.BAD_GATEWAY).body(exception.getMessage());

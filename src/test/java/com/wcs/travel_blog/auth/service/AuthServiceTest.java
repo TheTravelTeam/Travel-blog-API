@@ -6,6 +6,7 @@ import com.wcs.travel_blog.user.dto.UserDTO;
 import com.wcs.travel_blog.user.mapper.UserMapper;
 import com.wcs.travel_blog.user.model.User;
 import com.wcs.travel_blog.user.repository.UserRepository;
+import com.wcs.travel_blog.util.HtmlSanitizerService;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -33,6 +34,9 @@ public class AuthServiceTest {
 
     @Mock
     private PasswordEncoder passwordEncoder;
+
+    @Mock(strictness = Mock.Strictness.LENIENT)
+    private HtmlSanitizerService htmlSanitizerService;
 
     UserRegistrationDTO getUserRegistrationDTO(){
         UserRegistrationDTO userRegistrationDTO = new UserRegistrationDTO();
