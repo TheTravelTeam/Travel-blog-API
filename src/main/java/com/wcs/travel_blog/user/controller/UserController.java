@@ -57,7 +57,8 @@ public class UserController {
         return ResponseEntity.ok(user);
     }
 
-    @PreAuthorize("hasRole('ROLE_ADMIN')")
+    // authentication.getName() -> returns the user's unique identifier (usually the email or username)
+    @PreAuthorize("isFullyAuthenticated() and (hasRole('ROLE_ADMIN') or #email == authentication.name)")
     @GetMapping("/email")
     public ResponseEntity<?> getUserByEmail(
             @RequestParam  String email,
@@ -74,7 +75,8 @@ public class UserController {
         }
     }
 
-    @PreAuthorize("hasRole('ROLE_ADMIN')")
+    // authentication.getPrincipal().getPseudo() -> returns the user's pseudo from the UserDetails object
+    @PreAuthorize("isFullyAuthenticated() and (hasRole('ROLE_ADMIN') or #pseudo == authentication.principal.pseudo)")
     @GetMapping("/pseudo")
     public ResponseEntity<UserWithDiariesDTO> getUserByPseudo(@RequestParam  String pseudo) {
         UserWithDiariesDTO user = userService.getUserByPseudo(pseudo);
