@@ -13,6 +13,13 @@ import java.util.Map;
 @RestControllerAdvice
 public class GlobalExceptionHandler {
 
+    @ExceptionHandler({org.springframework.security.access.AccessDeniedException.class})
+    public ResponseEntity<String> handleAccessDenied(org.springframework.security.access.AccessDeniedException ex) {
+        return ResponseEntity
+                .status(HttpStatus.FORBIDDEN)
+                .body("Accès refusé : Vous n'êtes pas autorisé à effectuer cette action.");
+    }
+
     @ExceptionHandler(ResourceNotFoundException.class)
     public ResponseEntity<String> handleResourceNotFound(ResourceNotFoundException exception){
         return new ResponseEntity<>(exception.getMessage(), HttpStatus.NOT_FOUND);
