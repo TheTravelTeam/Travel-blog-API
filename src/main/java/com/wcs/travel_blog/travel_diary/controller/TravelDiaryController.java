@@ -10,6 +10,8 @@ import org.springframework.http.ResponseEntity;
 import com.wcs.travel_blog.user.model.User;
 import org.springframework.security.authentication.AnonymousAuthenticationToken;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -33,7 +35,6 @@ public class TravelDiaryController {
         return ResponseEntity.ok(travelDiaries);
     }
 
-//    @GetMapping("/users/{userId}")
     /**
      * REST entrypoint dedicated to a user's diaries. Consumers retrieve the profile via {@code /users/{id}} and call
      * this endpoint for the diary collection. Ownership/admin privileges are derived from the Spring Security
@@ -68,25 +69,32 @@ public class TravelDiaryController {
         return ResponseEntity.ok(travelDiary);
     }
 
+    @PreAuthorize("isAuthenticated()")
     @PostMapping
-    public ResponseEntity<TravelDiaryDTO> createTravelDiary(@Valid @RequestBody CreateTravelDiaryDTO createTravelDiaryRequest){
+    public ResponseEntity<TravelDiaryDTO> createTravelDiary(@Valid @RequestBody CreateTravelDiaryDTO createTravelDiaryRequest,
+                                                            @AuthenticationPrincipal(expression = "id") Long currentUserId){
 
-        TravelDiaryDTO travelDiaryResponse = travelDiaryService.createTravelDiary(createTravelDiaryRequest);
+        TravelDiaryDTO travelDiaryResponse = travelDiaryService.createTravelDiary(createTravelDiaryRequest, currentUserId);
         return ResponseEntity.status(HttpStatus.CREATED).body(travelDiaryResponse);
     }
 
+    @PreAuthorize("isAuthenticated()")
     @PutMapping("/{id}")
-    public ResponseEntity<TravelDiaryDTO> updateTravelDiary(@PathVariable Long id , @RequestBody UpdateTravelDiaryDTO updateTravelDiaryRequest){
-        TravelDiaryDTO updateTravelDiaryResponse = travelDiaryService.updateTravelDiary(id,updateTravelDiaryRequest);
+    public ResponseEntity<TravelDiaryDTO> updateTravelDiary(@PathVariable Long id ,
+                                                            @RequestBody UpdateTravelDiaryDTO updateTravelDiaryRequest,
+                                                            @AuthenticationPrincipal(expression = "id") Long currentUserId){
+        TravelDiaryDTO updateTravelDiaryResponse = travelDiaryService.updateTravelDiary(id, updateTravelDiaryRequest, currentUserId);
         if(updateTravelDiaryResponse==null){
             return ResponseEntity.notFound().build();
         }
         return ResponseEntity.ok(updateTravelDiaryResponse);
     }
 
+    @PreAuthorize("isAuthenticated()")
     @DeleteMapping("/{id}")
-    public ResponseEntity<String> deleteTravelDiary(@PathVariable Long id){
-        travelDiaryService.deleteTravelDiary(id);
+    public ResponseEntity<String> deleteTravelDiary(@PathVariable Long id,
+                                                    @AuthenticationPrincipal(expression = "id") Long currentUserId){
+        travelDiaryService.deleteTravelDiary(id, currentUserId);
         return ResponseEntity.ok("Carnet de voyage supprimé avec succès");
     }
 

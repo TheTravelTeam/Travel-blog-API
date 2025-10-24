@@ -65,6 +65,8 @@ public class SecurityConfig {
                         // Auth path
                         .requestMatchers(HttpMethod.POST,"/auth/**").permitAll()
 
+                        // search path
+                        .requestMatchers(HttpMethod.GET,"/search/**").permitAll()
                         // Articles paths
                         .requestMatchers(HttpMethod.GET, "/articles/**").permitAll()
                         .requestMatchers(HttpMethod.POST, "/articles/**").permitAll()

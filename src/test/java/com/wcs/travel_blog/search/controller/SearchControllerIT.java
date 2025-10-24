@@ -98,7 +98,7 @@ class SearchControllerIT {
     }
 
     @Test
-    void shouldReturnOwnerSpecificResultsWhenAuthenticated() throws Exception {
+    void shouldReturnOnlyPublicResultsEvenWhenAuthenticated() throws Exception {
         User persistedOwner = userRepository.findByEmail(OWNER_EMAIL).orElseThrow();
         UsernamePasswordAuthenticationToken authToken = new UsernamePasswordAuthenticationToken(
                 persistedOwner,
@@ -111,12 +111,8 @@ class SearchControllerIT {
                         .with(authentication(authToken))
                         .accept(org.springframework.http.MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.diaries", hasSize(1)))
-                .andExpect(jsonPath("$.diaries[0].title").value("Owner Draft Diary"))
-                .andExpect(jsonPath("$.diaries[0].description").value("Carnet perso en cours"))
-                .andExpect(jsonPath("$.steps", hasSize(1)))
-                .andExpect(jsonPath("$.steps[0].title").value("Owner Step"))
-                .andExpect(jsonPath("$.steps[0].diaryTitle").value("Owner Draft Diary"));
+                .andExpect(jsonPath("$.diaries", hasSize(0)))
+                .andExpect(jsonPath("$.steps", hasSize(0)));
     }
 
     @Test
