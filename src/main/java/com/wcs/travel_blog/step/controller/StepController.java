@@ -6,6 +6,8 @@ import com.wcs.travel_blog.step.dto.StepResponseDTO;
 import com.wcs.travel_blog.step.service.StepService;
 import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -35,29 +37,38 @@ public class StepController {
         return ResponseEntity.ok(stepDTo);
     }
 
+    @PreAuthorize("isAuthenticated()")
     @PostMapping
-    public ResponseEntity<StepResponseDTO> createStep(@Valid @RequestBody StepRequestDTO stepDTo) {
-        StepResponseDTO createdStep = stepService.createStep(stepDTo);
+    public ResponseEntity<StepResponseDTO> createStep(@Valid @RequestBody StepRequestDTO stepDTo,
+                                                      @AuthenticationPrincipal(expression = "id") Long currentUserId) {
+        StepResponseDTO createdStep = stepService.createStep(stepDTo, currentUserId);
         return ResponseEntity.status(201).body(createdStep);
     }
 
+    @PreAuthorize("isAuthenticated()")
     @PutMapping("/{stepId}")
-    public ResponseEntity<StepResponseDTO> updateStep(@PathVariable Long stepId, @Valid @RequestBody StepRequestDTO stepDTo) {
-        StepResponseDTO updatedStep = stepService.updateStep(stepId, stepDTo);
+    public ResponseEntity<StepResponseDTO> updateStep(@PathVariable Long stepId,
+                                                     @Valid @RequestBody StepRequestDTO stepDTo,
+                                                     @AuthenticationPrincipal(expression = "id") Long currentUserId) {
+        StepResponseDTO updatedStep = stepService.updateStep(stepId, stepDTo, currentUserId);
         return ResponseEntity.ok(updatedStep);
     }
 
+    @PreAuthorize("isAuthenticated()")
     @PatchMapping("/{stepId}/likes")
     public ResponseEntity<StepResponseDTO> updateStepLikes(@PathVariable Long stepId,
-                                                           @Valid @RequestBody StepLikeUpdateRequestDTO likeUpdate) {
-        StepResponseDTO updatedStep = stepService.updateLikes(stepId, likeUpdate.getIncrement());
+                                                           @Valid @RequestBody StepLikeUpdateRequestDTO likeUpdate,
+                                                           @AuthenticationPrincipal(expression = "id") Long currentUserId) {
+        StepResponseDTO updatedStep = stepService.updateLikes(stepId, likeUpdate.getIncrement(), currentUserId);
         return ResponseEntity.ok(updatedStep);
     }
 
+    @PreAuthorize("isAuthenticated()")
     @DeleteMapping("/{stepId}")
-    public ResponseEntity<Void> deleteStep(@PathVariable Long stepId) {
+    public ResponseEntity<Void> deleteStep(@PathVariable Long stepId,
+                                           @AuthenticationPrincipal(expression = "id") Long currentUserId) {
         try {
-            stepService.deleteStep(stepId);
+            stepService.deleteStep(stepId, currentUserId);
             return ResponseEntity.noContent().build();
         } catch (Exception e) {
             return ResponseEntity.notFound().build();

@@ -25,7 +25,11 @@
             url: '/openapi.yaml',
             dom_id: '#swagger-ui',
             presets: [SwaggerUIBundle.presets.apis],
-            layout: 'BaseLayout'
+            layout: 'BaseLayout',
+            requestInterceptor: (request) => {
+                request.credentials = 'include';
+                return request;
+            }
         });
     };
 </script>
