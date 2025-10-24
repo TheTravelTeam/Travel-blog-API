@@ -19,6 +19,8 @@ import org.springframework.test.web.servlet.MockMvc;
 
 import java.util.List;
 
+import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.ArgumentMatchers.isNull;
 import static org.mockito.Mockito.when;
 import static org.springframework.http.MediaType.APPLICATION_JSON;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
@@ -70,7 +72,7 @@ public class UserControllerTest {
         userDTO1.setId(1L);
         userDTO1.setPseudo("user1");
 
-        when(userService.getUserById(1L)).thenReturn(userDTO1);
+        when(userService.getUserById(eq(1L), isNull(), eq(false))).thenReturn(userDTO1);
 
         // Act & assert
         mockMvc.perform(get("/users/1"))
@@ -136,7 +138,7 @@ public class UserControllerTest {
     @Test
     void getUserById_shouldReturnNotFoundException() throws Exception {
         //Arrange
-        when(userService.getUserById(99L)).thenThrow(new ResourceNotFoundException("Aucun user trouvé"));
+        when(userService.getUserById(eq(99L), isNull(), eq(false))).thenThrow(new ResourceNotFoundException("Aucun user trouvé"));
 
         // Act & assert
         mockMvc.perform(get("/users/99"))

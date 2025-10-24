@@ -10,11 +10,8 @@ import java.util.List;
 public interface StepRepository extends JpaRepository<Step, Long> {
 
     /**
-     * Recherche les étapes visibles pour l'utilisateur courant ou pour un visiteur anonyme.
-     * Les étapes publiques proviennent de carnets publiés et non privés ;
-     * les étapes privées ne sont renvoyées que pour le propriétaire du carnet associé.
-     * @param query  fragment recherché
-     * @param userId identifiant de l'utilisateur courant, {@code null} sinon
+     * Recherche les étapes appartenant à des carnets publics et publiés.
+     * @param query fragment recherché
      * @return étapes triées par date de mise à jour décroissante
      */
     @Query("""
@@ -24,14 +21,10 @@ public interface StepRepository extends JpaRepository<Step, Long> {
                 LOWER(step.title) LIKE LOWER(CONCAT('%', :query, '%'))
                 OR LOWER(step.description) LIKE LOWER(CONCAT('%', :query, '%'))
             )
-            AND (
-                (:userId IS NOT NULL AND td.user.id = :userId)
-                OR (
-                    td.isPublished = TRUE
-                    AND (td.isPrivate IS NULL OR td.isPrivate = FALSE)
-                )
-            )
+            AND td.isPublished = TRUE
+            AND COALESCE(td.isPrivate, FALSE) = FALSE
+            AND (td.status IS NULL OR td.status <> com.wcs.travel_blog.travel_diary.model.TravelStatus.DISABLED)
             ORDER BY step.updatedAt DESC
             """)
-    List<Step> searchVisibleSteps(@Param("query") String query, @Param("userId") Long userId);
+    List<Step> searchVisibleSteps(@Param("query") String query);
 }

@@ -6,6 +6,7 @@ import lombok.Getter;
 import lombok.Setter;
 import org.springframework.stereotype.Component;
 
+import java.time.LocalDate;
 import java.util.List;
 
 
@@ -24,6 +25,10 @@ public class UpdateTravelDiaryDTO {
     private Boolean isPublished;
 
     private TravelStatus status;
+
+    private LocalDate startDate;
+
+    private LocalDate endDate;
 
     private Boolean canComment;
 

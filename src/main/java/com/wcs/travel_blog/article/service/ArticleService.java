@@ -2,13 +2,12 @@ package com.wcs.travel_blog.article.service;
 
 import com.wcs.travel_blog.article.dto.ArticleDTO;
 import com.wcs.travel_blog.article.dto.CreateArticleDTO;
-
 import com.wcs.travel_blog.article.dto.UpdateArticleDTO;
 import com.wcs.travel_blog.article.mapper.ArticleMapper;
 import com.wcs.travel_blog.article.model.Article;
 import com.wcs.travel_blog.article.repository.ArticleRepository;
-import com.wcs.travel_blog.theme.model.Theme;
-import com.wcs.travel_blog.theme.repository.ThemeRepository;
+import com.wcs.travel_blog.media.model.Media;
+import com.wcs.travel_blog.media.repository.MediaRepository;
 import com.wcs.travel_blog.user.model.User;
 import com.wcs.travel_blog.user.repository.UserRepository;
 import com.wcs.travel_blog.util.SlugUtil;
@@ -16,7 +15,12 @@ import jakarta.persistence.EntityNotFoundException;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.LinkedHashSet;
 import java.util.List;
+import java.util.Map;
+import java.util.Objects;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 
 @Service
@@ -24,16 +28,16 @@ public class ArticleService {
     private final ArticleRepository articleRepository;
     private final ArticleMapper articleMapper;
     private final UserRepository userRepository;
-    private final ThemeRepository themeRepository;
+    private final MediaRepository mediaRepository;
 
     public ArticleService(ArticleRepository articleRepository,
                           ArticleMapper articleMapper,
                           UserRepository userRepository,
-                          ThemeRepository themeRepository) {
+                          MediaRepository mediaRepository) {
         this.articleRepository = articleRepository;
         this.articleMapper = articleMapper;
         this.userRepository = userRepository;
-        this.themeRepository = themeRepository;
+        this.mediaRepository = mediaRepository;
     }
 
     // READ ALL
@@ -56,15 +60,19 @@ public class ArticleService {
         User user= userRepository.findById(createArticleDTO.getUserId())
                 .orElseThrow(() -> new EntityNotFoundException("utilisateur non trouvé"));
 
-        List<Theme> themes = resolveThemes(createArticleDTO.getThemeIds());
-
-        Article article= articleMapper.convertToEntity(createArticleDTO, user, themes);
+        Article article= articleMapper.convertToEntity(createArticleDTO, user);
 
         article.setCreatedAt(LocalDateTime.now());
         article.setUpdatedAt(LocalDateTime.now());
 
         String slug= SlugUtil.slugify(createArticleDTO.getTitle());
         article.setSlug(slug);
+
+        if (createArticleDTO.getMediaIds() != null && !createArticleDTO.getMediaIds().isEmpty()) {
+            List<Media> medias = resolveMedias(createArticleDTO.getMediaIds());
+            medias.forEach(media -> media.setArticle(article));
+            article.setMedias(medias);
+        }
 
         Article savedArticle = articleRepository.save(article);
 
@@ -89,16 +97,24 @@ public class ArticleService {
             article.setContent(updArticleDTO.getContent());
         }
 
+        if (updArticleDTO.getCoverUrl() != null && !updArticleDTO.getCoverUrl().equals(article.getCoverUrl())) {
+            article.setCoverUrl(updArticleDTO.getCoverUrl());
+        }
+
+        if (updArticleDTO.getMediaIds() != null) {
+            if (article.getMedias() != null) {
+                article.getMedias().forEach(media -> media.setArticle(null));
+            }
+            List<Media> medias = resolveMedias(updArticleDTO.getMediaIds());
+            medias.forEach(media -> media.setArticle(article));
+            article.setMedias(medias);
+        }
+
         // Checks and updates the user (author of the article) if modified
         if (updArticleDTO.getUserId() != null && !updArticleDTO.getUserId().equals(article.getUser().getId())) {
             User user = userRepository.findById(updArticleDTO.getUserId())
                     .orElseThrow(() -> new EntityNotFoundException("Utilisateur non trouvé"));
             article.setUser(user);
-        }
-
-        if (updArticleDTO.getThemeIds() != null) {
-            List<Theme> themes = resolveThemes(updArticleDTO.getThemeIds());
-            article.setThemes(new java.util.ArrayList<>(themes));
         }
 
         //automatic LocalDateTime update
@@ -118,15 +134,32 @@ public class ArticleService {
         articleRepository.delete(article);
     }
 
-    private List<Theme> resolveThemes(List<Long> themeIds) {
-        if (themeIds == null || themeIds.isEmpty()) {
-            return List.of();
+    private List<Media> resolveMedias(List<Long> mediaIds) {
+        if (mediaIds == null || mediaIds.isEmpty()) {
+            return new ArrayList<>();
         }
 
-        List<Theme> themes = themeRepository.findAllById(themeIds);
-        if (themes.size() != themeIds.size()) {
-            throw new EntityNotFoundException("Un ou plusieurs thèmes sont introuvables");
+        List<Long> distinctIds = mediaIds.stream()
+                .filter(Objects::nonNull)
+                .collect(Collectors.collectingAndThen(
+                        Collectors.toCollection(LinkedHashSet::new),
+                        ArrayList::new
+                ));
+
+        if (distinctIds.isEmpty()) {
+            return new ArrayList<>();
         }
-        return themes;
+
+        List<Media> medias = mediaRepository.findAllById(distinctIds);
+        Map<Long, Media> mediasById = medias.stream()
+                .collect(Collectors.toMap(Media::getId, Function.identity()));
+
+        if (mediasById.size() != distinctIds.size()) {
+            throw new EntityNotFoundException("Un ou plusieurs médias sont introuvables");
+        }
+
+        return distinctIds.stream()
+                .map(mediasById::get)
+                .collect(Collectors.toCollection(ArrayList::new));
     }
 }

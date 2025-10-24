@@ -7,13 +7,7 @@ import com.wcs.travel_blog.step.model.Step;
 import com.wcs.travel_blog.step.repository.StepRepository;
 import com.wcs.travel_blog.travel_diary.model.TravelDiary;
 import com.wcs.travel_blog.travel_diary.repository.TravelDiaryRepository;
-import com.wcs.travel_blog.user.model.User;
-import com.wcs.travel_blog.user.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
-import org.springframework.security.authentication.AnonymousAuthenticationToken;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 
@@ -30,7 +24,6 @@ public class SearchService {
 
     private final TravelDiaryRepository travelDiaryRepository;
     private final StepRepository stepRepository;
-    private final UserRepository userRepository;
 
     /**
      * Exécute une recherche full-text basique sur les carnets et les étapes en fonction du visiteur courant.
@@ -39,14 +32,12 @@ public class SearchService {
      */
     public SearchResponseDTO search(String query) {
         String normalizedQuery = query.trim();
-        Long currentUserId = resolveCurrentUserId();
-
-        List<SearchDiaryDTO> diaries = travelDiaryRepository.searchVisibleDiaries(normalizedQuery, currentUserId)
+        List<SearchDiaryDTO> diaries = travelDiaryRepository.searchVisibleDiaries(normalizedQuery)
                 .stream()
                 .map(this::toDiaryDto)
                 .toList();
 
-        List<SearchStepDTO> steps = stepRepository.searchVisibleSteps(normalizedQuery, currentUserId)
+        List<SearchStepDTO> steps = stepRepository.searchVisibleSteps(normalizedQuery)
                 .stream()
                 .map(this::toStepDto)
                 .toList();
@@ -107,35 +98,5 @@ public class SearchService {
             return trimmed;
         }
         return trimmed.substring(0, EXCERPT_MAX_LENGTH).trim() + "...";
-    }
-
-    /**
-     * Récupère l'identifiant de l'utilisateur courant à partir du SecurityContext.
-     * @return identifiant si l'utilisateur est authentifié, {@code null} sinon
-     */
-    private Long resolveCurrentUserId() {
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        if (authentication == null || !authentication.isAuthenticated() || authentication instanceof AnonymousAuthenticationToken) {
-            return null;
-        }
-
-        Object principal = authentication.getPrincipal();
-        if (principal instanceof User user) {
-            return user.getId();
-        }
-
-        if (principal instanceof UserDetails userDetails) {
-            return userRepository.findByEmail(userDetails.getUsername())
-                    .map(User::getId)
-                    .orElse(null);
-        }
-
-        if (principal instanceof String username && StringUtils.hasText(username) && !"anonymousUser".equals(username)) {
-            return userRepository.findByEmail(username)
-                    .map(User::getId)
-                    .orElse(null);
-        }
-
-        return null;
     }
 }

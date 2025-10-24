@@ -75,6 +75,10 @@ class SearchControllerIT {
         TravelDiary inProgressDiary = createDiary(publicAuthor, "In Progress Diary", "Voyage toujours en cours", false, true, TravelStatus.IN_PROGRESS);
         createStep(inProgressDiary, "In Progress Step", "Etape publique encore en preparation", TravelStatus.COMPLETED);
 
+        TravelDiary disabledDiary = createDiary(publicAuthor, "Disabled Diary", "Carnet temporairement masqué", false, true, TravelStatus.DISABLED);
+        attachCover(disabledDiary, "https://cdn.example.com/disabled.jpg", true);
+        createStep(disabledDiary, "Disabled Step", "Etape masquée", TravelStatus.COMPLETED);
+
         TravelDiary ownerDiary = createDiary(owner, "Owner Draft Diary", "Carnet perso en cours", true, false, TravelStatus.IN_PROGRESS);
         createStep(ownerDiary, "Owner Step", "Etape perso encore a planifier", TravelStatus.IN_PROGRESS);
     }

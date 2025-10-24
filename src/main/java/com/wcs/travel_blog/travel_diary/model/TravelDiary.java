@@ -3,13 +3,22 @@ package com.wcs.travel_blog.travel_diary.model;
 import com.wcs.travel_blog.media.model.Media;
 import com.wcs.travel_blog.user.model.User;
 import com.wcs.travel_blog.step.model.Step;
+import jakarta.persistence.CascadeType;
+import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
-import jakarta.persistence.*;
+import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
+import jakarta.persistence.OneToMany;
+import jakarta.persistence.OneToOne;
 import lombok.Getter;
 import lombok.Setter;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -33,6 +42,10 @@ public class TravelDiary {
 
     @Column(nullable = false)
     private LocalDateTime updatedAt;
+
+    private LocalDate startDate;
+
+    private LocalDate endDate;
 
     private Boolean isPrivate;
 

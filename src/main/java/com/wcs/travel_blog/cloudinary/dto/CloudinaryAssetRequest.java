@@ -2,7 +2,6 @@ package com.wcs.travel_blog.cloudinary.dto;
 
 import com.wcs.travel_blog.media.model.MediaType;
 import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.NotNull;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -16,18 +15,6 @@ public class CloudinaryAssetRequest {
     @NotBlank
     private String secureUrl;
 
-    private String folder;
-
-    private String resourceType;
-
-    private String format;
-
-    private Long bytes;
-
-    private Integer width;
-
-    private Integer height;
-
     private Boolean isVisible;
 
     private MediaType mediaType;
@@ -35,4 +22,6 @@ public class CloudinaryAssetRequest {
     private Long stepId;
 
     private Long travelDiaryId;
+
+    private Long articleId;
 }

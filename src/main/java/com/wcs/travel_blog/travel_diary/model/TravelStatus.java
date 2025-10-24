@@ -6,6 +6,7 @@ import com.fasterxml.jackson.annotation.JsonValue;
 public enum TravelStatus {
         IN_PROGRESS("IN_PROGRESS"),
         COMPLETED("COMPLETED"),
+        DISABLED("DISABLED"),
         ;
 
         private final String code;

@@ -44,6 +44,9 @@ public class Step {
     @Enumerated(EnumType.STRING)
     private TravelStatus status;
 
+    @Column(nullable = false)
+    private Long likesCount = 0L;
+
     private Double latitude;
 
     private Double longitude;

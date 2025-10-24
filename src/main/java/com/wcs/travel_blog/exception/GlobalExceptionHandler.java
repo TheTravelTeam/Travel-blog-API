@@ -13,6 +13,13 @@ import java.util.Map;
 @RestControllerAdvice
 public class GlobalExceptionHandler {
 
+    @ExceptionHandler({org.springframework.security.access.AccessDeniedException.class})
+    public ResponseEntity<String> handleAccessDenied(org.springframework.security.access.AccessDeniedException ex) {
+        return ResponseEntity
+                .status(HttpStatus.FORBIDDEN)
+                .body("Accès refusé : Vous n'êtes pas autorisé à effectuer cette action.");
+    }
+
     @ExceptionHandler(ResourceNotFoundException.class)
     public ResponseEntity<String> handleResourceNotFound(ResourceNotFoundException exception){
         return new ResponseEntity<>(exception.getMessage(), HttpStatus.NOT_FOUND);
@@ -20,6 +27,11 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(EmailAlreadyExistException.class)
     public ResponseEntity<String> handleEmailAlreadyExist(EmailAlreadyExistException exception){
+        return new ResponseEntity<>(exception.getMessage(), HttpStatus.CONFLICT);
+    }
+
+    @ExceptionHandler(PseudoAlreadyExistException.class)
+    public ResponseEntity<String> handlePseudoAlreadyExist(PseudoAlreadyExistException exception){
         return new ResponseEntity<>(exception.getMessage(), HttpStatus.CONFLICT);
     }
 
@@ -51,6 +63,11 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(ForbiddenOperationException.class)
     public ResponseEntity<String> handleForbiddenOperationException(ForbiddenOperationException ex){
         return ResponseEntity.status(HttpStatus.FORBIDDEN).body(ex.getMessage());
+    }
+
+    @ExceptionHandler({InvalidPasswordResetTokenException.class, ExpiredPasswordResetTokenException.class, InvalidPasswordResetRequestException.class})
+    public ResponseEntity<String> handlePasswordResetTokenExceptions(RuntimeException ex) {
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(ex.getMessage());
     }
 
     // Gere les erreurs de validations des DTOS (@NotBlank etc ...)

@@ -3,6 +3,7 @@ package com.wcs.travel_blog.auth.controller;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.wcs.travel_blog.auth.dto.UserRegistrationDTO;
 import com.wcs.travel_blog.auth.service.AuthService;
+import com.wcs.travel_blog.auth.service.PasswordResetService;
 import com.wcs.travel_blog.security.JWTAuthenticationFilter;
 import com.wcs.travel_blog.user.dto.UserDTO;
 import com.wcs.travel_blog.user.service.UserService;
@@ -17,7 +18,6 @@ import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
 
-import java.util.Set;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
@@ -38,6 +38,9 @@ public class AuthControllerTest {
     private UserService userService;
 
     @MockitoBean
+    private PasswordResetService passwordResetService;
+
+    @MockitoBean
     private JWTAuthenticationFilter jwtAuthenticationFilter;
 
     @Autowired
@@ -47,7 +50,7 @@ public class AuthControllerTest {
     void shouldRegisterUserAndReturn201() throws Exception {
         UserRegistrationDTO userRegistrationDTO = new UserRegistrationDTO();
         userRegistrationDTO.setEmail("test@example.com");
-        userRegistrationDTO.setPassword("password123");
+        userRegistrationDTO.setPassword("Password123!");
         userRegistrationDTO.setPseudo("TestUser");
 
         UserDTO responseDto = new UserDTO();
@@ -128,6 +131,19 @@ public class AuthControllerTest {
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.id").value(1L))
                 .andExpect(jsonPath("$.email").value("test@example.com"));
+    }
+
+    @Test
+    void shouldTriggerPasswordResetAndReturn204() throws Exception {
+        String payload = "{\"token\":\"abc-123\",\"password\":\"Password42!\"}";
+
+        mockMvc.perform(post("/auth/reset-password")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(payload))
+                .andExpect(status().isNoContent());
+
+        Mockito.verify(passwordResetService)
+                .resetPassword("abc-123", "Password42!");
     }
 
 }
