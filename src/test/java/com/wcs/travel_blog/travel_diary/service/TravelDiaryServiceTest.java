@@ -66,10 +66,11 @@ class TravelDiaryServiceTest {
         mappedEntity.setIsPrivate(null);
 
         when(travelDiaryMapper.toEntity(request)).thenReturn(mappedEntity);
+        when(userRepository.findById(1L)).thenReturn(Optional.of(user(1L)));
         when(travelDiaryRepository.save(any(TravelDiary.class))).thenReturn(mappedEntity);
         when(travelDiaryMapper.toDto(mappedEntity)).thenReturn(new TravelDiaryDTO());
 
-        travelDiaryService.createTravelDiary(request);
+        travelDiaryService.createTravelDiary(request, 1L);
 
         verify(travelDiaryRepository).save(mappedEntity);
         assertThat(mappedEntity.getIsPublished()).isFalse();
@@ -100,10 +101,11 @@ class TravelDiaryServiceTest {
 
         when(travelDiaryMapper.toEntity(request)).thenReturn(mappedEntity);
         when(stepRepository.findAllById(request.getSteps())).thenReturn(List.of(step));
+        when(userRepository.findById(2L)).thenReturn(Optional.of(user(2L)));
         when(travelDiaryRepository.save(any(TravelDiary.class))).thenReturn(mappedEntity);
         when(travelDiaryMapper.toDto(mappedEntity)).thenReturn(new TravelDiaryDTO());
 
-        travelDiaryService.createTravelDiary(request);
+        travelDiaryService.createTravelDiary(request, 2L);
 
         verify(travelDiaryRepository).save(mappedEntity);
         assertThat(mappedEntity.getIsPublished()).isTrue();
@@ -138,7 +140,8 @@ class TravelDiaryServiceTest {
         when(travelDiaryRepository.save(mappedEntity)).thenReturn(mappedEntity);
         when(travelDiaryMapper.toDto(mappedEntity)).thenReturn(new TravelDiaryDTO());
 
-        travelDiaryService.createTravelDiary(request);
+        when(userRepository.findById(3L)).thenReturn(Optional.of(user(3L)));
+        travelDiaryService.createTravelDiary(request, 3L);
 
         assertThat(step.getStatus()).isEqualTo(TravelStatus.DISABLED);
     }
@@ -167,7 +170,8 @@ class TravelDiaryServiceTest {
         when(travelDiaryRepository.save(existing)).thenReturn(existing);
         when(travelDiaryMapper.toDto(existing)).thenReturn(new TravelDiaryDTO());
 
-        travelDiaryService.updateTravelDiary(1L, request);
+        existing.setUser(user(5L));
+        travelDiaryService.updateTravelDiary(1L, request, 5L);
 
         verify(travelDiaryRepository).save(existing);
         assertThat(existing.getIsPublished()).isFalse();
@@ -199,7 +203,8 @@ class TravelDiaryServiceTest {
         when(travelDiaryRepository.save(existing)).thenReturn(existing);
         when(travelDiaryMapper.toDto(existing)).thenReturn(new TravelDiaryDTO());
 
-        travelDiaryService.updateTravelDiary(1L, request);
+        existing.setUser(user(6L));
+        travelDiaryService.updateTravelDiary(1L, request, 6L);
 
         assertThat(existing.getStatus()).isEqualTo(TravelStatus.DISABLED);
         assertThat(step.getStatus()).isEqualTo(TravelStatus.DISABLED);
@@ -218,10 +223,11 @@ class TravelDiaryServiceTest {
         mappedEntity.setUpdatedAt(LocalDateTime.now());
 
         when(travelDiaryMapper.toEntity(request)).thenReturn(mappedEntity);
+        when(userRepository.findById(4L)).thenReturn(Optional.of(user(4L)));
         when(travelDiaryRepository.save(any(TravelDiary.class))).thenReturn(mappedEntity);
         when(travelDiaryMapper.toDto(mappedEntity)).thenReturn(new TravelDiaryDTO());
 
-        travelDiaryService.createTravelDiary(request);
+        travelDiaryService.createTravelDiary(request, 4L);
 
         verify(travelDiaryRepository).save(mappedEntity);
         assertThat(mappedEntity.getIsPrivate()).isTrue();
@@ -292,5 +298,12 @@ class TravelDiaryServiceTest {
         assertThat(result).containsExactly(dto1, dto2);
         verify(travelDiaryRepository).findAllByUserIdOrderByUpdatedAtDesc(42L);
         verify(travelDiaryRepository, never()).findPublishedPublicByUserId(42L);
+    }
+
+    private com.wcs.travel_blog.user.model.User user(Long id) {
+        com.wcs.travel_blog.user.model.User u = new com.wcs.travel_blog.user.model.User();
+        u.setId(id);
+        u.setEmail("user" + id + "@mail.test");
+        return u;
     }
 }
