@@ -41,6 +41,10 @@ public class CloudinaryService {
             paramsToSign.put("public_id", request.getPublicId());
         }
 
+        if (StringUtils.hasText(request.getFolder())) {
+            paramsToSign.put("folder", request.getFolder());
+        }
+
         String uploadPreset = StringUtils.hasText(request.getUploadPreset())
             ? request.getUploadPreset()
             : properties.getUploadPreset();

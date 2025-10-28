@@ -9,4 +9,6 @@ public class CloudinarySignatureRequest {
     private String publicId;
 
     private String uploadPreset;
+
+    private String folder;
 }
