@@ -1,5 +1,6 @@
 package com.wcs.travel_blog.travel_diary.service;
 
+import com.wcs.travel_blog.exception.ForbiddenOperationException;
 import com.wcs.travel_blog.media.model.Media;
 import com.wcs.travel_blog.media.model.MediaType;
 import com.wcs.travel_blog.media.repository.MediaRepository;
@@ -72,20 +73,23 @@ public class TravelDiaryService {
         return travelDiaryMapper.toDto(travelDiary);
     }
 
-    public TravelDiaryDTO createTravelDiary(CreateTravelDiaryDTO createTravelDto){
+    public TravelDiaryDTO createTravelDiary(CreateTravelDiaryDTO createTravelDto, Long currentUserId){
         TravelDiary travelDiary = travelDiaryMapper.toEntity(createTravelDto);
-
         travelDiary.setTitle(htmlSanitizerService.sanitize(createTravelDto.getTitle()));
         travelDiary.setDescription(htmlSanitizerService.sanitize(createTravelDto.getDescription()));
-
         travelDiary.setCreatedAt(LocalDateTime.now());
         travelDiary.setUpdatedAt(LocalDateTime.now());
 
-        if (createTravelDto.getUser() != null) {
-            User user = userRepository.findById(createTravelDto.getUser())
-                    .orElseThrow(() -> new EntityNotFoundException("Utilisateur non trouvé"));
-            travelDiary.setUser(user);
+        Long ownerId = createTravelDto.getUser() != null ? createTravelDto.getUser() : currentUserId;
+        if (ownerId == null) {
+            throw new EntityNotFoundException("Utilisateur non trouvé");
         }
+        if (!isAdmin(currentUserId) && !ownerId.equals(currentUserId)) {
+            throw new ForbiddenOperationException("Non autorisé à créer un carnet pour un autre utilisateur.");
+        }
+        User user = userRepository.findById(ownerId)
+                .orElseThrow(() -> new EntityNotFoundException("Utilisateur non trouvé"));
+        travelDiary.setUser(user);
 
         // Media (créé en même temps que le carnet)
         if (createTravelDto.getMedia() != null) {
@@ -128,8 +132,13 @@ public class TravelDiaryService {
         return travelDiaryMapper.toDto(travelDiaryToSaved);
     }
 
-   public TravelDiaryDTO updateTravelDiary(Long id, UpdateTravelDiaryDTO updateTravelDiaryResponse) {
+   public TravelDiaryDTO updateTravelDiary(Long id, UpdateTravelDiaryDTO updateTravelDiaryResponse, Long currentUserId) {
        TravelDiary travelDiary = travelDiaryRepository.findById(id).orElseThrow(() -> new EntityNotFoundException("Carnet de voyage non trouvé"));
+
+       boolean isOwner = travelDiary.getUser() != null && travelDiary.getUser().getId() != null && travelDiary.getUser().getId().equals(currentUserId);
+       if (!isAdmin(currentUserId) && !isOwner) {
+           throw new ForbiddenOperationException("Non autorisé à modifier ce carnet de voyage.");
+       }
 
        if (updateTravelDiaryResponse.getTitle() != null && !updateTravelDiaryResponse.getTitle().equals(travelDiary.getTitle())) {
            travelDiary.setTitle(htmlSanitizerService.sanitize(updateTravelDiaryResponse.getTitle()));
@@ -212,8 +221,12 @@ public class TravelDiaryService {
        return travelDiaryMapper.toDto(updated);
    }
 
-   public void deleteTravelDiary(Long id){
+   public void deleteTravelDiary(Long id, Long currentUserId){
         TravelDiary travelDiary=travelDiaryRepository.findById(id).orElseThrow(()->new EntityNotFoundException("Carnet de voyage Non trouvé"));
+        boolean isOwner = travelDiary.getUser() != null && travelDiary.getUser().getId() != null && travelDiary.getUser().getId().equals(currentUserId);
+        if (!isAdmin(currentUserId) && !isOwner) {
+            throw new ForbiddenOperationException("Non autorisé à supprimer ce carnet de voyage.");
+        }
         travelDiaryRepository.delete(travelDiary);
    }
 
@@ -256,5 +269,15 @@ public class TravelDiaryService {
    private TravelStatus resolveDiaryStatus(TravelDiary travelDiary) {
        return travelDiary.getEndDate() != null ? TravelStatus.COMPLETED : TravelStatus.IN_PROGRESS;
    }
+
+    private boolean isAdmin(Long userId) {
+        if (userId == null) {
+            return false;
+        }
+        return userRepository.findById(userId)
+                .map(User::getRoles)
+                .map(roles -> roles.contains("ROLE_ADMIN"))
+                .orElse(false);
+    }
 
 }

@@ -1,5 +1,6 @@
 package com.wcs.travel_blog.security;
 
+import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -14,6 +15,7 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+import org.springframework.security.web.util.matcher.RegexRequestMatcher;
 import org.springframework.web.cors.CorsConfiguration;
 
 import java.util.Arrays;
@@ -60,18 +62,41 @@ public class SecurityConfig {
                         })
                 )
                 .authorizeHttpRequests(auth -> auth
+                        // Auth path
                         .requestMatchers(HttpMethod.POST,"/auth/**").permitAll()
-                        .requestMatchers("/**").permitAll()
+
+                        // search path
+                        .requestMatchers(HttpMethod.GET,"/search/**").permitAll()
+                        // Articles paths
+                        .requestMatchers(HttpMethod.GET, "/articles/**").permitAll()
+                        .requestMatchers(HttpMethod.POST, "/articles/**").permitAll()
+
+                        // Travel Diaries paths
                         .requestMatchers(HttpMethod.GET, "/travel-diaries/**").permitAll()
                         .requestMatchers(HttpMethod.POST, "/travel-diaries/**").hasAnyRole("ADMIN","USER")
                         .requestMatchers(HttpMethod.PUT, "/travel-diaries/**").hasAnyRole("ADMIN","USER")
                         .requestMatchers(HttpMethod.DELETE, "/travel-diaries/**").hasAnyRole("ADMIN","USER")
+
+                        // Users paths
+                        .requestMatchers(HttpMethod.GET, "/users").permitAll()
+                        .requestMatchers(new RegexRequestMatcher("^/users/\\d+$", "GET")).permitAll() // Regex allowing only get by id
+                        .requestMatchers(HttpMethod.GET, "/users/email").authenticated()
+                        .requestMatchers(HttpMethod.GET, "/users/pseudo").authenticated()
+
+                        // The rest of requests
                         .anyRequest().authenticated()
                 )
                 .userDetailsService(customUserDetailsService)
                 .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class)
                 .sessionManagement(session -> session
                         .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
+                )
+                .exceptionHandling(ex -> ex
+                        .authenticationEntryPoint((request, response, authException) -> {
+                            response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+                            response.setContentType("text/plain");
+                            response.getWriter().write("Accès refusé : Vous devez être connecté pour accéder à cette ressource. ");
+                        })
                 );
         return http.build();
     }

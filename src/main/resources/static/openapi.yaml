@@ -928,6 +928,8 @@ paths:
         required: true
         schema:
           type: string
+      security:
+      - JwtCookieAuth: []
       responses:
         '200':
           description: OK
@@ -935,6 +937,10 @@ paths:
             '*/*':
               schema:
                 $ref: '#/components/schemas/UserWithDiariesDTO'
+        '401':
+          description: Unauthorized – no valid JWT cookie provided.
+        '403':
+          description: Forbidden – authenticated user lacks the required admin role.
       summary: Find user by pseudo
       description: Looks up a user profile by pseudo (username). Requires the `pseudo`
         query parameter.
@@ -955,6 +961,8 @@ paths:
         schema:
           type: boolean
           default: false
+      security:
+      - JwtCookieAuth: []
       responses:
         '200':
           description: OK
@@ -962,6 +970,10 @@ paths:
             '*/*':
               schema:
                 type: object
+        '401':
+          description: Unauthorized – no valid JWT cookie provided.
+        '403':
+          description: Forbidden – authenticated user lacks the required admin role.
       summary: Find user by email
       description: Looks up a user by email address. Requires the `email` query parameter
         and accepts optional `withDiaries` to include owned travel diaries.
@@ -1163,6 +1175,11 @@ paths:
       description: Returns the authenticated user profile inferred from the JWT cookie.
         Requires a valid session; no parameters or body needed.
 components:
+  securitySchemes:
+    JwtCookieAuth:
+      type: apiKey
+      in: cookie
+      name: jwt
   schemas:
     UpsertUserDTO:
       required:
