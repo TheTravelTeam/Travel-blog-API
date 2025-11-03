@@ -53,6 +53,14 @@ public class ArticleService {
         return  articleMapper.convertToDTO(article);
     }
 
+    // READ BY SLUG
+    public ArticleDTO getArticleBySlug(String slug) {
+        Article article = articleRepository.findBySlug(slug)
+                .orElseThrow(() -> new EntityNotFoundException("Article non trouvé pour le slug : " + slug));
+
+        return articleMapper.convertToDTO(article);
+    }
+
     // CREATE
     public ArticleDTO createArticle(CreateArticleDTO createArticleDTO) {
         if (createArticleDTO.getUserId() == null) {
