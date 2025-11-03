@@ -39,6 +39,13 @@ public class ArticleController {
         return ResponseEntity.ok(article);
     }
 
+    // READ BY SLUG
+    @GetMapping("/slug/{slug}")
+    public ResponseEntity<ArticleDTO> getArticleBySlug(@PathVariable String slug) {
+        ArticleDTO article = articleService.getArticleBySlug(slug);
+        return ResponseEntity.ok(article);
+    }
+
     // CREATE
     @PostMapping
     public ResponseEntity<ArticleDTO> createArticle(@RequestBody CreateArticleDTO createArticleDTO) {
