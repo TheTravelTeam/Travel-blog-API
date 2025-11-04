@@ -71,6 +71,9 @@ public class ReverseGeocodingService {
 
         String country = emptyToNull(address.getCountry());
         String continent = emptyToNull(address.getContinent());
+        if (!StringUtils.hasText(continent) && StringUtils.hasText(address.getCountryCode())) {
+            continent = ContinentLookup.lookup(address.getCountryCode());
+        }
 
         ReverseGeocodingResult result = new ReverseGeocodingResult();
         result.setLatitude(latitude);
