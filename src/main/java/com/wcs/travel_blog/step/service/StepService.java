@@ -79,9 +79,8 @@ public class StepService {
         TravelDiary diary = travelDiaryRepository.findById(stepDto.getTravelDiaryId())
                 .orElseThrow(() -> new ResourceNotFoundException("Carnet de voyage introuvable avec l'id: " + stepDto.getTravelDiaryId()));
 
-        boolean isAdmin = isAdmin(currentUserId);
         boolean isOwner = diary.getUser() != null && diary.getUser().getId() != null && diary.getUser().getId().equals(currentUserId);
-        if (!isAdmin && !isOwner) {
+        if (!isOwner) {
             throw new ForbiddenOperationException("Non autorisé à ajouter une étape à ce carnet de voyage.");
         }
         step.setTravelDiary(diary);
@@ -156,7 +155,9 @@ public class StepService {
         step.setUpdatedAt(LocalDateTime.now());
 
         Step updatedStep = stepRepository.save(step);
-        return stepMapper.toResponseDto(updatedStep);
+        StepResponseDTO response = stepMapper.toResponseDto(updatedStep);
+        response.setViewerHasLiked(increment);
+        return response;
     }
 
     public void deleteStep(Long stepId, Long currentUserId) {

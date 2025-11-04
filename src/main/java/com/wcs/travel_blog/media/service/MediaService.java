@@ -10,16 +10,13 @@ import com.wcs.travel_blog.media.mapper.MediaMapper;
 import com.wcs.travel_blog.media.model.Media;
 import com.wcs.travel_blog.media.model.MediaType;
 import com.wcs.travel_blog.media.repository.MediaRepository;
-import com.wcs.travel_blog.step.model.Step;
 import com.wcs.travel_blog.step.repository.StepRepository;
-import com.wcs.travel_blog.travel_diary.model.TravelDiary;
 import com.wcs.travel_blog.travel_diary.repository.TravelDiaryRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 
 import java.time.LocalDateTime;
 import java.util.List;
-import java.util.stream.Collectors;
 
 @Service
 public class MediaService {
@@ -42,10 +39,9 @@ public class MediaService {
     }
 
     public List<MediaDTO> getAllMedias() {
-        List<Media> medias = mediaRepository.findAll();
-        return medias.stream()
+        return mediaRepository.findAll().stream()
                 .map(mediaMapper::toDto)
-                .collect(Collectors.toList());
+                .toList();
     }
 
     public MediaDTO getMediaById(Long id) {
@@ -79,28 +75,7 @@ public class MediaService {
             media.setIsVisible(dto.getIsVisible());
         }
 
-        if (dto.getStepId() != null) {
-            Step step = stepRepository.findById(dto.getStepId())
-                    .orElseThrow(() -> new ResourceNotFoundException("Étape non trouvée"));
-            media.setStep(step);
-        } else if (dto.getStepId() == null) {
-            media.setStep(null);
-        }
-
-        if (dto.getTravelDiaryId() != null) {
-            TravelDiary travelDiary = travelDiaryRepository.findById(dto.getTravelDiaryId())
-                    .orElseThrow(() -> new ResourceNotFoundException("Carnet non trouvé"));
-            media.setTravelDiary(travelDiary);
-        } else if (dto.getTravelDiaryId() == null) {
-            media.setTravelDiary(null);
-        }
-
-        if (dto.getArticleId() != null) {
-            media.setArticle(articleRepository.findById(dto.getArticleId())
-                    .orElseThrow(() -> new ResourceNotFoundException("Article non trouvé")));
-        } else if (dto.getArticleId() == null) {
-            media.setArticle(null);
-        }
+        applyRelations(media, dto.getStepId(), dto.getTravelDiaryId(), dto.getArticleId());
 
         media.setUpdatedAt(LocalDateTime.now());
 
@@ -120,34 +95,9 @@ public class MediaService {
         media.setPublicId(request.getPublicId());
         media.setIsVisible(request.getIsVisible() != null ? request.getIsVisible() : Boolean.TRUE);
 
-        if (request.getMediaType() != null) {
-            media.setMediaType(request.getMediaType());
-        } else {
-            media.setMediaType(MediaType.PHOTO);
-        }
+        media.setMediaType(request.getMediaType() != null ? request.getMediaType() : MediaType.PHOTO);
 
-        if (request.getStepId() != null) {
-            Step step = stepRepository.findById(request.getStepId())
-                .orElseThrow(() -> new ResourceNotFoundException("Étape non trouvée"));
-            media.setStep(step);
-        } else {
-            media.setStep(null);
-        }
-
-        if (request.getTravelDiaryId() != null) {
-            TravelDiary travelDiary = travelDiaryRepository.findById(request.getTravelDiaryId())
-                .orElseThrow(() -> new ResourceNotFoundException("Carnet non trouvé"));
-            media.setTravelDiary(travelDiary);
-        } else {
-            media.setTravelDiary(null);
-        }
-
-        if (request.getArticleId() != null) {
-            media.setArticle(articleRepository.findById(request.getArticleId())
-                .orElseThrow(() -> new ResourceNotFoundException("Article non trouvé")));
-        } else {
-            media.setArticle(null);
-        }
+        applyRelations(media, request.getStepId(), request.getTravelDiaryId(), request.getArticleId());
 
         media.setUpdatedAt(LocalDateTime.now());
         Media saved = mediaRepository.save(media);
@@ -169,20 +119,29 @@ public class MediaService {
     public List<MediaDTO> getMediaByStep(Long stepId) {
         return mediaRepository.findByStep_Id(stepId).stream()
                 .map(mediaMapper::toDto)
-                .collect(Collectors.toList());
+                .toList();
     }
 
     public List<MediaDTO> getMediaByArticle(Long articleId) {
         return mediaRepository.findByArticle_Id(articleId).stream()
                 .map(mediaMapper::toDto)
-                .collect(Collectors.toList());
+                .toList();
     }
 
     public MediaDTO getMediaByTravelDiary(Long diaryId) {
-        Media media =  mediaRepository.findByTravelDiary_Id(diaryId)
+        Media media = mediaRepository.findByTravelDiary_Id(diaryId)
                 .orElseThrow(() -> new ResourceNotFoundException("Aucun média lié au carnet " + diaryId));
         return mediaMapper.toDto(media);
     }
 
-    
+    private void applyRelations(Media media, Long stepId, Long travelDiaryId, Long articleId) {
+        media.setStep(stepId != null ? stepRepository.findById(stepId)
+                .orElseThrow(() -> new ResourceNotFoundException("Étape non trouvée")) : null);
+
+        media.setTravelDiary(travelDiaryId != null ? travelDiaryRepository.findById(travelDiaryId)
+                .orElseThrow(() -> new ResourceNotFoundException("Carnet non trouvé")) : null);
+
+        media.setArticle(articleId != null ? articleRepository.findById(articleId)
+                .orElseThrow(() -> new ResourceNotFoundException("Article non trouvé")) : null);
+    }
 }

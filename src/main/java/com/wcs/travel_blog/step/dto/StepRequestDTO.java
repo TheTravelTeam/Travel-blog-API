@@ -32,7 +32,9 @@ public class StepRequestDTO {
 
     private TravelStatus status;
 
+    @NotNull
     private Double latitude;
+    @NotNull
     private Double longitude;
 
     @Size(min = 2, max = 100, message = "La ville doit contenir entre 2 et 100 caractères")

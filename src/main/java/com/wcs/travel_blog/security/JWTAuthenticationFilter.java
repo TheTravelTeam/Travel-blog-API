@@ -32,29 +32,13 @@ public class JWTAuthenticationFilter extends OncePerRequestFilter {
 
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
-        String jwt = null;
+        String jwt = extractJwtFromCookies(request);
 
-        // Chercher le JWT dans le header Authorization
-        String authHeader = request.getHeader("Authorization");
-
-        if (authHeader != null && authHeader.startsWith("Bearer ")) {
-            jwt = authHeader.substring(7);
-        }
-
-        // Si le JWT n'est pas dans le header, chercher dans les cookies
-        if (jwt == null && request.getCookies() != null) {
-            for (Cookie cookie : request.getCookies()) {
-                if ("jwt".equals(cookie.getName())) {
-                    jwt = cookie.getValue();
-                }
-            }
-        }
-        // Si JWT trouvé et authentification pas déjà définie
-        if (jwt != null) {
+        if (jwt != null && SecurityContextHolder.getContext().getAuthentication() == null) {
             try {
                 var claims = jwtService.extractClaims(jwt);
                 String email = claims.getSubject();
-                if (email != null && SecurityContextHolder.getContext().getAuthentication() == null) {
+                if (email != null) {
                     UserDetails userDetails = userDetailsService.loadUserByUsername(email);
                     if (claims.getExpiration().after(new Date())) {
                         UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthenticationToken(
@@ -71,6 +55,18 @@ public class JWTAuthenticationFilter extends OncePerRequestFilter {
         }
 
         filterChain.doFilter(request, response);
+    }
+
+    private String extractJwtFromCookies(HttpServletRequest request) {
+        if (request.getCookies() == null) {
+            return null;
+        }
+        for (Cookie cookie : request.getCookies()) {
+            if ("jwt".equals(cookie.getName())) {
+                return cookie.getValue();
+            }
+        }
+        return null;
     }
 
     private void clearJwtCookie(HttpServletRequest request, HttpServletResponse response) {
