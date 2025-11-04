@@ -9,8 +9,6 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 @ConfigurationProperties(prefix = "cloudinary")
 public class CloudinaryProperties {
 
-    private boolean enabled;
-
     private String cloudName;
 
     private String apiKey;

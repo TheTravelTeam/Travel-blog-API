@@ -7,24 +7,22 @@ import com.wcs.travel_blog.cloudinary.dto.CloudinarySignatureRequest;
 import com.wcs.travel_blog.cloudinary.dto.CloudinarySignatureResponse;
 import com.wcs.travel_blog.cloudinary.dto.CloudinaryUrlRequest;
 import com.wcs.travel_blog.cloudinary.dto.CloudinaryUrlResponse;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
+import com.wcs.travel_blog.cloudinary.dto.CloudinaryUploadResponse;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
+import org.springframework.web.multipart.MultipartFile;
+import org.springframework.web.server.ResponseStatusException;
 
+import java.io.IOException;
 import java.time.Instant;
 import java.util.HashMap;
 import java.util.Map;
 
 @Service
-@ConditionalOnProperty(prefix = "cloudinary", name = "enabled", havingValue = "true")
 public class CloudinaryService {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(CloudinaryService.class);
-
     private final Cloudinary cloudinary;
-
     private final CloudinaryProperties properties;
 
     public CloudinaryService(Cloudinary cloudinary, CloudinaryProperties properties) {
@@ -54,15 +52,14 @@ public class CloudinaryService {
         }
 
         String signature = cloudinary.apiSignRequest(paramsToSign, properties.getApiSecret());
-        LOGGER.debug("Signature Cloudinary générée pour le publicId {}", request.getPublicId());
 
-        return CloudinarySignatureResponse.builder()
-            .timestamp(timestamp)
-            .signature(signature)
-            .apiKey(properties.getApiKey())
-            .cloudName(properties.getCloudName())
-            .uploadPreset(uploadPreset)
-            .build();
+        return new CloudinarySignatureResponse(
+                timestamp,
+                signature,
+                properties.getApiKey(),
+                properties.getCloudName(),
+                uploadPreset
+        );
     }
 
     public CloudinaryUrlResponse buildDeliveryUrl(String publicId, CloudinaryUrlRequest request) {
@@ -87,14 +84,44 @@ public class CloudinaryService {
         }
 
         String url = cloudinary.url()
-            .secure(true)
-            .transformation(transformation)
-            .generate(publicId);
+                .secure(true)
+                .transformation(transformation)
+                .generate(publicId);
 
-        LOGGER.debug("URL Cloudinary générée pour {}", publicId);
-        return CloudinaryUrlResponse.builder()
-            .publicId(publicId)
-            .url(url)
-            .build();
+        return new CloudinaryUrlResponse(publicId, url);
+    }
+
+    public CloudinaryUploadResponse uploadFile(MultipartFile file, String folder, String publicId, String resourceType) {
+        if (file == null || file.isEmpty()) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Le fichier à téléverser est manquant");
+        }
+
+        Map<String, Object> options = new HashMap<>();
+        if (StringUtils.hasText(folder)) {
+            options.put("folder", folder);
+        }
+        if (StringUtils.hasText(publicId)) {
+            options.put("public_id", publicId);
+        }
+
+        String resolvedResourceType = StringUtils.hasText(resourceType) ? resourceType : "image";
+        options.put("resource_type", resolvedResourceType);
+
+        try {
+            byte[] content = file.getBytes();
+            Map<?, ?> uploadResult = cloudinary.uploader().upload(content, options);
+            String uploadedPublicId = (String) uploadResult.get("public_id");
+            String secureUrl = (String) uploadResult.get("secure_url");
+
+            if (!StringUtils.hasText(uploadedPublicId) || !StringUtils.hasText(secureUrl)) {
+                throw new ResponseStatusException(HttpStatus.BAD_GATEWAY, "Réponse Cloudinary incomplète");
+            }
+
+            return new CloudinaryUploadResponse(uploadedPublicId, secureUrl, resolvedResourceType);
+        } catch (IOException ex) {
+            throw new ResponseStatusException(HttpStatus.BAD_GATEWAY, "Erreur lors de l'upload sur Cloudinary", ex);
+        } catch (Exception ex) {
+            throw new ResponseStatusException(HttpStatus.BAD_GATEWAY, "Cloudinary a refusé le fichier", ex);
+        }
     }
 }

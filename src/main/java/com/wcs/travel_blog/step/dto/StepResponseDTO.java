@@ -33,6 +33,10 @@ public class StepResponseDTO {
 
     private Long likesCount = 0L;
 
+    private Long likes = 0L;
+
+    private Boolean viewerHasLiked = Boolean.FALSE;
+
     private Double latitude;
 
     private Double longitude;

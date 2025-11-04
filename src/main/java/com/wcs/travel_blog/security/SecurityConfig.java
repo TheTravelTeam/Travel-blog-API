@@ -15,7 +15,6 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
-import org.springframework.security.web.util.matcher.RegexRequestMatcher;
 import org.springframework.web.cors.CorsConfiguration;
 
 import java.util.Arrays;
@@ -67,9 +66,10 @@ public class SecurityConfig {
 
                         // search path
                         .requestMatchers(HttpMethod.GET,"/search/**").permitAll()
+                        .requestMatchers(HttpMethod.GET, "/geocoding/**").permitAll()
                         // Articles paths
                         .requestMatchers(HttpMethod.GET, "/articles/**").permitAll()
-                        .requestMatchers(HttpMethod.POST, "/articles/**").permitAll()
+                        .requestMatchers(HttpMethod.POST, "/articles/**").hasAnyRole("ADMIN")
 
                         // Travel Diaries paths
                         .requestMatchers(HttpMethod.GET, "/travel-diaries/**").permitAll()
@@ -79,7 +79,7 @@ public class SecurityConfig {
 
                         // Users paths
                         .requestMatchers(HttpMethod.GET, "/users").permitAll()
-                        .requestMatchers(new RegexRequestMatcher("^/users/\\d+$", "GET")).permitAll() // Regex allowing only get by id
+                        .requestMatchers(HttpMethod.GET, "/users/{id}").permitAll()
                         .requestMatchers(HttpMethod.GET, "/users/email").authenticated()
                         .requestMatchers(HttpMethod.GET, "/users/pseudo").authenticated()
 
